@@ -18,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "EPI'AI",
   description: "Association Étudiante",
+  icons: {
+    icon: "/assets/logo.jpg",
+    apple: "/assets/logo.jpg",
+  }
 };
 
 export default async function RootLayout({
