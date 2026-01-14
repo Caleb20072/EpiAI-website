@@ -43,7 +43,7 @@ export default function ProjectDetailPage() {
             {/* Background Image */}
             <div className="fixed inset-0 -z-10">
                 <Image
-                    src="/assets/Sleek elegance, shadowed depth.jpg"
+                    src="/assets/hero-bg.jpg"
                     alt="Background"
                     fill
                     className="object-cover brightness-[0.2] scale-105"

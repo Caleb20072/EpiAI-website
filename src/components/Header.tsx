@@ -2,21 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { Link, usePathname, useRouter } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import { ChangeEvent, useTransition } from 'react';
+import { AuthHeader } from '@/components/auth/AuthHeader';
 
 export default function Header() {
     const t = useTranslations('Header');
-    const router = useRouter();
     const pathname = usePathname();
-    const [isPending, startTransition] = useTransition();
 
-    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        const nextLocale = e.target.value;
-        startTransition(() => {
-            router.replace(pathname, { locale: nextLocale });
-        });
-    };
+    // Extraire la locale du pathname
+    const locale = pathname.startsWith('/fr') ? 'fr' : 'en';
 
     return (
         <header className="fixed top-0 left-0 w-full z-50 px-6 py-4">
@@ -43,24 +38,8 @@ export default function Header() {
                     <Link href="/#projects" className="text-white/80 hover:text-white transition-colors">{t('projects')}</Link>
                 </nav>
 
-                {/* Actions */}
-                <div className="flex items-center gap-4">
-                    <select
-                        onChange={handleChange}
-                        defaultValue={pathname.startsWith('/fr') ? 'fr' : 'en'} // Simple check for demo
-                        disabled={isPending}
-                        className="bg-transparent text-white border border-white/30 rounded-lg px-2 py-1 text-sm focus:outline-none focus:bg-black/50"
-                    >
-                        <option value="en" className="text-black">EN</option>
-                        <option value="fr" className="text-black">FR</option>
-                    </select>
-
-                    <Link href="/join">
-                        <button className="bg-white/20 hover:bg-white/30 text-white border border-white/40 px-4 py-2 rounded-xl transition-all backdrop-blur-sm font-semibold whitespace-nowrap">
-                            {t('join')}
-                        </button>
-                    </Link>
-                </div>
+                {/* Actions - Auth */}
+                <AuthHeader locale={locale} />
             </div>
         </header>
     );

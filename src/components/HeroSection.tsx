@@ -23,6 +23,7 @@ export default function HeroSection() {
                             alt="Epi'AI Logo"
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 96px, 128px"
                         />
                     </div>
 
@@ -37,6 +38,7 @@ export default function HeroSection() {
                                 alt="Epitech Logo"
                                 fill
                                 className="object-contain"
+                                sizes="(max-width: 768px) 192px, 224px"
                             />
                         </div>
                     </div>

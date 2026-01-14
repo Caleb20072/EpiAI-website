@@ -1,26 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Loader2 } from 'lucide-react';
 
 export default function JoinPage() {
     const t = useTranslations('Join');
     const [submitted, setSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const conditions = t('conditions_list').split(';');
     const procedure = t('procedure_steps').split(';');
     const rights = t('rights_list').split(';');
     const duties = t('duties_list').split(';');
 
+    // Form state
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        whatsapp: '',
+        motivations: '',
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/membership', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to submit application');
+            }
+
+            setSubmitted(true);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="relative min-h-screen font-[family-name:var(--font-geist-sans)] text-white overflow-x-hidden">
             {/* Background Image */}
             <div className="fixed inset-0 -z-10">
                 <Image
-                    src="/assets/Sleek elegance, shadowed depth.jpg"
+                    src="/assets/hero-bg.jpg"
                     alt="Background"
                     fill
                     className="object-cover brightness-[0.2] scale-105"
@@ -159,20 +201,29 @@ export default function JoinPage() {
                                 </div>
                                 <h3 className="text-2xl font-bold mb-4 text-white">{t('form_success')}</h3>
                                 <button
-                                    onClick={() => setSubmitted(false)}
+                                    onClick={() => { setSubmitted(false); setFormData({ firstName: '', lastName: '', email: '', whatsapp: '', motivations: '' }); }}
                                     className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors"
                                 >
                                     Envoyer une autre candidature
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                {error && (
+                                    <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-center">
+                                        {error}
+                                    </div>
+                                )}
+
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">{t('form_first_name')}</label>
                                         <input
                                             required
                                             type="text"
+                                            name="firstName"
+                                            value={formData.firstName}
+                                            onChange={handleChange}
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-all font-light"
                                             placeholder="Jean"
                                         />
@@ -182,6 +233,9 @@ export default function JoinPage() {
                                         <input
                                             required
                                             type="text"
+                                            name="lastName"
+                                            value={formData.lastName}
+                                            onChange={handleChange}
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-all font-light"
                                             placeholder="Dupont"
                                         />
@@ -193,6 +247,9 @@ export default function JoinPage() {
                                     <input
                                         required
                                         type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-all font-light"
                                         placeholder="jean.dupont@epitech.eu"
                                     />
@@ -203,6 +260,9 @@ export default function JoinPage() {
                                     <input
                                         required
                                         type="tel"
+                                        name="whatsapp"
+                                        value={formData.whatsapp}
+                                        onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-all font-light"
                                         placeholder="+33 6 00 00 00 00"
                                     />
@@ -212,6 +272,9 @@ export default function JoinPage() {
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">{t('form_motivations')}</label>
                                     <textarea
                                         required
+                                        name="motivations"
+                                        value={formData.motivations}
+                                        onChange={handleChange}
                                         rows={4}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-all font-light resize-none"
                                         placeholder={t('form_motivations_placeholder')}
@@ -221,9 +284,17 @@ export default function JoinPage() {
                                 <div className="pt-4">
                                     <button
                                         type="submit"
-                                        className="w-full py-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-lg transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transform hover:-translate-y-1.5 active:scale-[0.98]"
+                                        disabled={isLoading}
+                                        className="w-full py-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-lg transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transform hover:-translate-y-1.5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
                                     >
-                                        {t('form_submit')}
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                                Envoi en cours...
+                                            </>
+                                        ) : (
+                                            t('form_submit')
+                                        )}
                                     </button>
                                 </div>
                             </form>
