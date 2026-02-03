@@ -134,9 +134,11 @@ export async function POST(request: NextRequest) {
       password,
       firstName: normalizedFirstName,
       lastName: normalizedLastName,
+      skipPasswordChecks: true,
       publicMetadata: {
         roleId: 9, // president
         role: 'president',
+        mustResetPassword: true,
       },
     });
 

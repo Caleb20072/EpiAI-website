@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
 import { useTranslations } from 'next-intl';
-import { INVITABLE_ROLES } from '@/lib/admin/repository';
+import { INVITABLE_ROLES } from '@/lib/admin/roles-constants';
 import { Loader2, Mail, User, Plus, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -12,7 +11,6 @@ export function InviteUserForm() {
   const params = useParams();
   const locale = (params.locale as string) || 'en';
   const t = useTranslations('InviteUser');
-  const { isAdmin, hasPermission } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,12 +22,6 @@ export function InviteUserForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
-  const canInvite = isAdmin || hasPermission('admin.users.manage');
-
-  if (!canInvite) {
-    return null;
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,8 +65,11 @@ export function InviteUserForm() {
   if (!isOpen) {
     return (
       <button
-        onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all"
+        onClick={() => {
+          console.log('[InviteUserForm] Button clicked, opening modal');
+          setIsOpen(true);
+        }}
+        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 font-medium border border-emerald-500/30 hover:bg-emerald-500/30 transition-all"
       >
         <Plus className="w-5 h-5" />
         {t('invite')}

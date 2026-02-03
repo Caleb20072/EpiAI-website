@@ -30,6 +30,10 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      tls: true,
+      tlsAllowInvalidCertificates: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
@@ -50,7 +54,7 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
 
 export async function getDatabase() {
   const conn = await connectToDatabase();
-  return conn.connection.db!.db(DATABASE);
+  return conn.connection.db;
 }
 
 export { mongoose };

@@ -1,11 +1,14 @@
 'use client';
 
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePasswordResetCheck } from '@/hooks/usePasswordResetCheck';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
-import { usePathname, useRouter } from '@/i18n/routing';
+import { useRouter, usePathname } from 'next/navigation'; // Changed from '@/i18n/routing'
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl'; // Added
 import {
   LayoutDashboard,
   User,
@@ -34,6 +37,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  usePasswordResetCheck();
 
   const navItems = [
     {

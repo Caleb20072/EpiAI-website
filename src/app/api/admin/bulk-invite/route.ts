@@ -25,7 +25,7 @@ const ROLE_LEVELS: Record<string, number> = {
   nouveau_membre: 1,
 };
 
-// Roles that require higher permission to assign
+// Assignation de permission
 const RESTRICTED_ROLES = ['president', 'admin_general'];
 
 // POST /api/admin/bulk-invite
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Verify permission
+    // Verification des permissions
     const client = await clerkClient();
     const currentUser = await client.users.getUser(userId);
     const currentRoleId = (currentUser.publicMetadata?.roleId as number) || 0;
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate all users first
+    // Validation de tous les users d'abord
     const validRoles = Object.keys(ROLE_LEVELS);
     const errors: string[] = [];
     const usersToCreate: UserRow[] = [];
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      // Check role permissions
+      // Checker role permissions
       if (RESTRICTED_ROLES.includes(role)) {
         if (currentRoleId < 8) { // Only president can assign president/admin_general
           errors.push(`Row ${rowNum}: Cannot assign "${role}" role`);
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       await Promise.all(
         batch.map(async (user) => {
           try {
-            // Check if user exists
+            // Checker si le user existe vraiment
             try {
               const existing = await client.users.getUserList({
                 emailAddress: [user.email],
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
               // User doesn't exist, continue
             }
 
-            // Create user
+            // Créer un user
             await client.users.createUser({
               emailAddress: [user.email],
               password: DEFAULT_PASSWORD,
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            // Send welcome email
+            // Envoyer le mail de bienvenue aux nouveau membre, c'est très important même...
             try {
               await sendWelcomeEmail({
                 email: user.email,

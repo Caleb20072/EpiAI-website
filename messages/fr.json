@@ -325,7 +325,9 @@
         "rejected": "Refusées",
         "all": "Toutes",
         "noApplications": "Aucune candidature",
-        "noApplicationsDescription": "Aucune candidature ne correspond à vos critères."
+        "noApplicationsDescription": "Aucune candidature ne correspond à vos critères.",
+        "bulkInvite": "Invitation en Masse",
+        "bulkInviteDescription": "Uploadez un fichier Excel pour inviter plusieurs utilisateurs"
     },
     "ResetPassword": {
         "title": "Nouveau Mot de Passe",

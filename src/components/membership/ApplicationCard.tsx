@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { formatDistanceToNow } from '@/lib/utils/date';
 import {
   User,
@@ -36,18 +35,13 @@ interface ApplicationCardProps {
 }
 
 export function ApplicationCard({ application, locale, onUpdate }: ApplicationCardProps) {
-  const { hasPermission, isAdmin } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const canManage = hasPermission('membership.manage') || isAdmin;
-
   const handleApprove = async () => {
-    if (!canManage) return;
-
     setIsLoading(true);
     setError(null);
 
@@ -73,7 +67,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
   };
 
   const handleReject = async () => {
-    if (!canManage || !rejectReason.trim()) return;
+    if (!rejectReason.trim()) return;
 
     setIsLoading(true);
     setError(null);
@@ -192,7 +186,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
           </div>
 
           {/* Actions (only for pending) */}
-          {application.status === 'pending' && canManage && (
+          {application.status === 'pending' && (
             <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
               {error && (
                 <div className="w-full p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm">

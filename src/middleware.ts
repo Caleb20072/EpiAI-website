@@ -37,6 +37,8 @@ const isPublicRoute = createRouteMatcher([
   '/(fr|en)/setup-admin',
   '/(fr|en)/forgot-password',
   '/(fr|en)/reset-password',
+  '/(fr|en)/change-password',
+  '/(fr|en)/verify-email',
   '/(fr|en)/blog(.*)',
   '/(fr|en)/projects(.*)',
   '/(fr|en)/team(.*)',
@@ -69,6 +71,10 @@ export default clerkMiddleware(async (auth, req) => {
   if (!req.nextUrl.pathname.startsWith('/api')) {
     return createMiddleware(routing)(req);
   }
+}, {
+  // Configurer Clerk pour inclure publicMetadata dans le session token
+  signInUrl: '/sign-in',
+  signUpUrl: '/sign-up',
 });
 
 export const config = {

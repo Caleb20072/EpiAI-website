@@ -46,6 +46,8 @@ export async function POST(
     }
 
     if (body.status === 'approved') {
+      console.log('[Approve API] Creating Clerk account for:', application.email);
+
       // Créer le compte Clerk
       const client = await clerkClient();
       const clerkUser = await client.users.createUser({
@@ -53,33 +55,49 @@ export async function POST(
         password: DEFAULT_PASSWORD,
         firstName: application.firstName,
         lastName: application.lastName,
+        skipPasswordChecks: true,
         publicMetadata: {
           roleId: 1, // nouveau_membre par défaut
           role: 'nouveau_membre',
           approvedAt: new Date().toISOString(),
+          mustResetPassword: true,
         },
       });
 
+      console.log('[Approve API] Clerk account created:', clerkUser.id);
+      console.log('[Approve API] Sending welcome email to:', application.email);
+
       // Envoyer l'email de bienvenu
+      let emailSentSuccessfully = false;
       try {
-        await sendWelcomeEmail({
+        const emailResult = await sendWelcomeEmail({
           email: application.email,
           firstName: application.firstName,
           password: DEFAULT_PASSWORD,
         });
+        console.log('[Approve API] Email sent successfully:', emailResult);
+        emailSentSuccessfully = true;
       } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
+        console.error('[Approve API] Failed to send welcome email:', emailError);
+        console.error('[Approve API] Email error details:', JSON.stringify(emailError, null, 2));
         // Ne pas bloquer l'approbation si l'email échoue
       }
 
       // Mettre à jour le statut
       await reviewApplication(id, body, reviewerId);
 
+      console.log('[Approve API] Application approved successfully');
+
       return NextResponse.json({
         success: true,
         message: 'Application approved and account created',
         accountId: clerkUser.id,
-        emailSent: true,
+        emailSent: emailSentSuccessfully,
+        credentials: emailSentSuccessfully ? null : {
+          email: application.email,
+          password: DEFAULT_PASSWORD,
+          note: 'Email failed to send. User must use these credentials to log in.',
+        },
       });
     } else {
       // Rejeter la candidature

@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
 import { useTranslations } from 'next-intl';
 import { Upload, FileSpreadsheet, CheckCircle, AlertCircle, X, Loader2, Users } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -28,7 +27,6 @@ export function BulkInviteForm() {
   const params = useParams();
   const locale = (params.locale as string) || 'en';
   const t = useTranslations('BulkInvite');
-  const { isAdmin, hasPermission } = useAuth();
 
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -37,8 +35,6 @@ export function BulkInviteForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [results, setResults] = useState<{ created: number; failed: number; errors: string[] } | null>(null);
-
-  const canInvite = isAdmin || hasPermission('admin.users.manage');
 
   const validateRow = (row: UserRow, index: number): PreviewUser => {
     const errors: string[] = [];
@@ -171,10 +167,6 @@ export function BulkInviteForm() {
     setSuccess(false);
     setError(null);
   };
-
-  if (!canInvite) {
-    return null;
-  }
 
   // Success view
   if (success && results) {
