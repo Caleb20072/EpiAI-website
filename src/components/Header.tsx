@@ -19,8 +19,8 @@ export default function Header() {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 px-6 py-4">
-            <div className="max-w-7xl mx-auto rounded-full bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl flex items-center justify-between px-8 py-3">
+        <header className="fixed top-0 left-0 w-full z-50 px-4 sm:px-6 py-4">
+            <div className="max-w-7xl mx-auto rounded-full bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
                 {/* Logo */}
                 <div className="flex items-center gap-2">
                     <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white/30">
@@ -44,7 +44,7 @@ export default function Header() {
                 </nav>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <select
                         onChange={handleChange}
                         defaultValue={pathname.startsWith('/fr') ? 'fr' : 'en'} // Simple check for demo
@@ -56,7 +56,7 @@ export default function Header() {
                     </select>
 
                     <Link href="/join">
-                        <button className="bg-white/20 hover:bg-white/30 text-white border border-white/40 px-4 py-2 rounded-xl transition-all backdrop-blur-sm font-semibold whitespace-nowrap">
+                        <button className="bg-white/20 hover:bg-white/30 text-white border border-white/40 px-3 py-2 sm:px-4 rounded-xl transition-all backdrop-blur-sm font-semibold whitespace-nowrap text-sm sm:text-base">
                             {t('join')}
                         </button>
                     </Link>

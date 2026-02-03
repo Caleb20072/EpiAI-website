@@ -26,6 +26,26 @@ body {
   overflow-x: hidden;
 }
 
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+iframe {
+  width: 100%;
+  max-width: 100%;
+}
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 1280px;
+}
+
 @layer utilities {
   .text-glow {
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);

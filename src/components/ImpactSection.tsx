@@ -8,7 +8,7 @@ export default function ImpactSection() {
             {/* Glow Effects */}
             <div className="absolute right-0 top-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
 
-            <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
+            <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
                 <div className="flex-1 text-center md:text-left z-10">
                     <h2 className="text-2xl md:text-4xl font-bold mb-6 text-white text-glow">{t('impact_title')}</h2>
                     <p className="text-lg text-gray-300 leading-relaxed font-light mb-8">

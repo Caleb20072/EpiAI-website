@@ -56,7 +56,7 @@ export default function ExpertiseSection() {
                     <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {pillars.map((pillar, idx) => (
                         <div key={idx} className={`group p-8 rounded-[2rem] border ${pillar.border} ${pillar.bg} backdrop-blur-md flex flex-col items-center text-center hover:scale-105 transition-transform duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]`}>
                             {pillar.svg}

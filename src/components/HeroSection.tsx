@@ -15,7 +15,7 @@ export default function HeroSection() {
             <div className="max-w-5xl mx-auto animate-fade-in-up relative z-10">
 
                 {/* Logos Row */}
-                <div className="flex justify-center items-center gap-10 mb-12 animate-float">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-10 mb-12 animate-float">
                     {/* Epi'AI Logo */}
                     <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-white/20 overflow-hidden bg-black shadow-2xl">
                         <Image
@@ -26,7 +26,7 @@ export default function HeroSection() {
                         />
                     </div>
 
-                    <div className="h-16 w-px bg-white/20"></div>
+                    <div className="hidden sm:block h-16 w-px bg-white/20"></div>
 
                     {/* Epitech Logo */}
                     <div className="relative w-auto h-12 md:h-16 flex items-center justify-center">

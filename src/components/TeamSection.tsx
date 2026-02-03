@@ -72,7 +72,7 @@ export default function TeamSection() {
                 {/* Strategic Poles */}
                 <div className="mb-16">
                     <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">{tTeam('poles_title')}</h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {poles.map((pole) => (
                             <div key={pole.key} className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 text-left flex items-start gap-4 group hover:-translate-y-1 hover:shadow-xl relative overflow-hidden">
 
@@ -117,7 +117,7 @@ export default function TeamSection() {
                 {/* Mentors */}
                 <div>
                     <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">{tTeam('mentors_title')}</h3>
-                    <div className="flex flex-wrap justify-center gap-3">
+                    <div className="flex flex-wrap justify-center gap-2">
                         {mentors.map((i) => (
                             <div key={i} className="pl-2 pr-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 hover:border-white/30 transition-all cursor-default flex items-center gap-2 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                                 <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-white/10 to-transparent flex items-center justify-center border border-white/10">
