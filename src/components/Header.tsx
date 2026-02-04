@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link, usePathname } from '@/i18n/routing';
-import { ChangeEvent, useTransition } from 'react';
 import { AuthHeader } from '@/components/auth/AuthHeader';
 
 export default function Header() {
@@ -41,9 +40,11 @@ export default function Header() {
                 {/* Actions */}
                 <div className="flex items-center gap-2 sm:gap-4">
                     <select
-                        onChange={handleChange}
+                        onChange={(e) => {
+                            const nextLocale = e.target.value;
+                            window.location.href = `/${nextLocale}${pathname.replace(/^\/(fr|en)/, '')}`;
+                        }}
                         defaultValue={pathname.startsWith('/fr') ? 'fr' : 'en'} // Simple check for demo
-                        disabled={isPending}
                         className="bg-transparent text-white border border-white/30 rounded-lg px-2 py-1 text-sm focus:outline-none focus:bg-black/50"
                     >
                         <option value="en" className="text-black">EN</option>
