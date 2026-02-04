@@ -2,21 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { Link, usePathname, useRouter } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import { ChangeEvent, useTransition } from 'react';
+import { AuthHeader } from '@/components/auth/AuthHeader';
 
 export default function Header() {
     const t = useTranslations('Header');
-    const router = useRouter();
     const pathname = usePathname();
-    const [isPending, startTransition] = useTransition();
 
-    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        const nextLocale = e.target.value;
-        startTransition(() => {
-            router.replace(pathname, { locale: nextLocale });
-        });
-    };
+    // Extraire la locale du pathname
+    const locale = pathname.startsWith('/fr') ? 'fr' : 'en';
 
     return (
         <header className="fixed top-0 left-0 w-full z-50 px-4 sm:px-6 py-4">

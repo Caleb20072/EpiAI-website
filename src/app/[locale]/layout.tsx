@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../globals.css"; // Adjusted path
-import { NextIntlClientProvider } from 'next-intl';
+import "../globals.css";
 import { getMessages } from 'next-intl/server';
 import Chatbot from '@/components/Chatbot';
+import { Providers } from '@/app/providers';
+import Header from '@/components/Header';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,14 +42,15 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="scroll-smooth">
+    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextIntlClientProvider messages={messages}>
+        <Providers locale={locale} messages={messages}>
+          <Header />
           {children}
           <Chatbot />
-        </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -10,7 +10,7 @@ export default function About() {
       {/* Reusing the background for consistency */}
       <div className="absolute inset-0 -z-10 bg-gray-900">
         <Image
-          src="/assets/Sleek elegance, shadowed depth.jpg"
+          src="/assets/hero-bg.jpg"
           alt="Background"
           fill
           quality={100}
