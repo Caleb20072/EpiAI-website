@@ -15,7 +15,7 @@ export default function TeamSection() {
         { key: 'pole_admin', leadKey: 'pole_admin_leads', missionKey: 'pole_admin_mission', color: 'text-gray-300', iconColor: 'text-gray-400', isDual: true, images: ['/assets/caleb.jpg', null] },
     ];
 
-    const mentors = [1, 2, 3, 4, 5];
+    const mentors = [1, 2, 3, 4, 5, 6];
 
     // Reusable Social Icon Component
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url: string }) => (

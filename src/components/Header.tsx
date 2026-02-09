@@ -12,6 +12,24 @@ export default function Header() {
     // Extraire la locale du pathname
     const locale = pathname.startsWith('/fr') ? 'fr' : 'en';
 
+    // Check if we are on a dashboard route
+    const isDashboardRoute = [
+        '/dashboard',
+        '/admin',
+        '/profile',
+        '/settings',
+        '/resources',
+        '/forum',
+        '/events',
+        '/my-registrations',
+        '/my-resources',
+        '/change-password'
+    ].some(route => pathname.includes(route));
+
+    if (isDashboardRoute) {
+        return null;
+    }
+
     return (
         <header className="fixed top-0 left-0 w-full z-50 px-4 sm:px-6 py-4">
             <div className="max-w-7xl mx-auto rounded-full bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">

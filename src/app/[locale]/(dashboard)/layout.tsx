@@ -21,6 +21,7 @@ import {
   Calendar,
   FolderOpen,
   UserPlus,
+  ArrowLeft,
 } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
 import { getRoleName } from '@/lib/roles/utils';
@@ -215,13 +216,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </p>
                 </div>
               </div>
-              <Link
-                href={`/${locale}`}
-                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </Link>
+              <div className="space-y-2">
+                <Link
+                  href={`/${locale}`}
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-blue-600/10 text-blue-400 hover:text-white hover:bg-blue-600 transition-all text-sm font-medium border border-blue-600/20 hover:border-blue-600"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Home
+                </Link>
+                <Link
+                  href={`/${locale}/sign-in`} // Changed to redirect to sign-in or handle logout properly
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
+                  onClick={() => {
+                    // Optional: Add logout logic here if needed, or rely on UserButton
+                  }}
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </Link>
+              </div>
             </div>
           </div>
         </aside>
