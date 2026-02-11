@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import { useParams, useRouter } from 'next/navigation';
-import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Shield } from 'lucide-react';
+import { PermissionGate } from '@/components/shared/PermissionGate';
 
 interface Project {
     _id: string;
@@ -84,122 +85,135 @@ export default function AdminProjectsPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Projects Management</h1>
-                    <p className="text-white/60">Manage and publish projects for the homepage</p>
+        <PermissionGate
+            permission="content.create"
+            fallback={
+                <div className="flex flex-col items-center justify-center py-20">
+                    <Shield className="w-16 h-16 text-white/20 mb-4" />
+                    <h2 className="text-xl font-semibold text-white mb-2">Access Denied</h2>
+                    <p className="text-white/60 text-center max-w-md">
+                        You don&apos;t have permission to manage projects.
+                    </p>
                 </div>
-                {/* Direct link - guaranteed to work */}
-                <a
-                    href="/en/admin/projects/new"
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '12px 16px',
-                        backgroundColor: '#10b981',
-                        color: 'white',
-                        borderRadius: '12px',
-                        textDecoration: 'none',
-                        fontWeight: '600'
-                    }}
-                >
-                    + New Project
-                </a>
-            </div>
-
-            {loading ? (
-                <div className="flex items-center justify-center py-20">
-                    <div className="animate-spin w-12 h-12 border-2 border-white/20 border-t-emerald-400 rounded-full"></div>
-                </div>
-            ) : projects.length === 0 ? (
-                <div className="text-center py-20 rounded-2xl bg-white/5 border border-white/10">
-                    <Plus className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                    <p className="text-white/40 mb-4">No projects yet</p>
-                    <Link
-                        href={`/${locale}/admin/projects/new`}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
+            }
+        >
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white mb-2">Projects Management</h1>
+                        <p className="text-white/60">Manage and publish projects for the homepage</p>
+                    </div>
+                    {/* Direct link - guaranteed to work */}
+                    <a
+                        href="/en/admin/projects/new"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '12px 16px',
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            borderRadius: '12px',
+                            textDecoration: 'none',
+                            fontWeight: '600'
+                        }}
                     >
-                        <Plus className="w-5 h-5" />
-                        Create First Project
-                    </Link>
+                        + New Project
+                    </a>
                 </div>
-            ) : (
-                <div className="space-y-4">
-                    {projects.map((project) => (
-                        <div
-                            key={project._id}
-                            className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
+
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="animate-spin w-12 h-12 border-2 border-white/20 border-t-emerald-400 rounded-full"></div>
+                    </div>
+                ) : projects.length === 0 ? (
+                    <div className="text-center py-20 rounded-2xl bg-white/5 border border-white/10">
+                        <Plus className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                        <p className="text-white/40 mb-4">No projects yet</p>
+                        <Link
+                            href={`/${locale}/admin/projects/new`}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors"
                         >
-                            <div className="flex items-start gap-4">
-                                <img
-                                    src={project.imageUrl}
-                                    alt={project.title[locale as 'en' | 'fr']}
-                                    className="w-32 h-24 object-cover rounded-xl border border-white/10"
-                                />
-                                <div className="flex-1">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div>
-                                            <h3 className="text-xl font-bold text-white mb-1">
-                                                {project.title[locale as 'en' | 'fr']}
-                                            </h3>
-                                            <p className="text-white/60 text-sm line-clamp-2">
-                                                {project.description[locale as 'en' | 'fr']}
-                                            </p>
+                            <Plus className="w-5 h-5" />
+                            Create First Project
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {projects.map((project) => (
+                            <div
+                                key={project._id}
+                                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
+                            >
+                                <div className="flex items-start gap-4">
+                                    <img
+                                        src={project.imageUrl}
+                                        alt={project.title[locale as 'en' | 'fr']}
+                                        className="w-32 h-24 object-cover rounded-xl border border-white/10"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="flex items-start justify-between mb-2">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white mb-1">
+                                                    {project.title[locale as 'en' | 'fr']}
+                                                </h3>
+                                                <p className="text-white/60 text-sm line-clamp-2">
+                                                    {project.description[locale as 'en' | 'fr']}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => togglePublished(project._id, project.published)}
+                                                    className={`p-2 rounded-lg transition-colors ${project.published
+                                                        ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+                                                        : 'bg-white/5 text-white/40 hover:bg-white/10'
+                                                        }`}
+                                                    title={project.published ? 'Published' : 'Draft'}
+                                                >
+                                                    {project.published ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        console.log('Edit clicked for project:', project._id);
+                                                        window.location.href = `/${locale}/admin/projects/${project._id}/edit`;
+                                                    }}
+                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                                                >
+                                                    <Edit className="w-5 h-5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        console.log('Delete clicked for project:', project._id);
+                                                        deleteProject(project._id);
+                                                    }}
+                                                    className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => togglePublished(project._id, project.published)}
-                                                className={`p-2 rounded-lg transition-colors ${project.published
-                                                    ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
-                                                    : 'bg-white/5 text-white/40 hover:bg-white/10'
-                                                    }`}
-                                                title={project.published ? 'Published' : 'Draft'}
-                                            >
-                                                {project.published ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    console.log('Edit clicked for project:', project._id);
-                                                    window.location.href = `/${locale}/admin/projects/${project._id}/edit`;
-                                                }}
-                                                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-                                            >
-                                                <Edit className="w-5 h-5" />
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    console.log('Delete clicked for project:', project._id);
-                                                    deleteProject(project._id);
-                                                }}
-                                                className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
-                                            >
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
+                                        <div className="flex flex-wrap gap-2 mt-3">
+                                            <span className="px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 text-xs border border-blue-500/20">
+                                                {project.status}
+                                            </span>
+                                            {project.techStack.slice(0, 3).map((tech) => (
+                                                <span key={tech} className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/60 text-xs">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                            {project.techStack.length > 3 && (
+                                                <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/40 text-xs">
+                                                    +{project.techStack.length - 3} more
+                                                </span>
+                                            )}
                                         </div>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2 mt-3">
-                                        <span className="px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 text-xs border border-blue-500/20">
-                                            {project.status}
-                                        </span>
-                                        {project.techStack.slice(0, 3).map((tech) => (
-                                            <span key={tech} className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/60 text-xs">
-                                                {tech}
-                                            </span>
-                                        ))}
-                                        {project.techStack.length > 3 && (
-                                            <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/40 text-xs">
-                                                +{project.techStack.length - 3} more
-                                            </span>
-                                        )}
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </PermissionGate>
     );
 }

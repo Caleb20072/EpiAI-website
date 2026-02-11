@@ -1,5 +1,8 @@
-import { ROLES, ADMIN_ROLES, ROLES_WITH_ASSIGN_PERMISSION, isValidRole } from './definitions';
+import { ROLES, ADMIN_ROLES, ROLES_WITH_ASSIGN_PERMISSION, isValidRole as isValidRoleDef } from './definitions';
 import type { RoleDefinition, Permission, RoleLevel } from './types';
+
+// Re-export isValidRole
+export const isValidRole = isValidRoleDef;
 
 // Verifier si un utilisateur a une permission
 export function hasPermission(

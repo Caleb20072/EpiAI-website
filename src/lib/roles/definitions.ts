@@ -62,7 +62,7 @@ export const ROLES: Record<string, RoleDefinition> = {
     id: 'admin_general',
     name: { en: 'General Admin', fr: 'Admin Général' },
     level: 8,
-    permissions: ['dashboard.access', 'dashboard.admin', 'admin.roles.assign', 'content.create', 'content.edit.all', 'profile.edit', 'profile.edit.others', 'membership.manage'],
+    permissions: ['dashboard.access', 'dashboard.admin', 'admin.roles.assign', 'admin.users.manage', 'content.create', 'content.edit.all', 'profile.edit', 'profile.edit.others', 'membership.manage'],
     color: 'text-orange-500',
     icon: 'Shield',
   },

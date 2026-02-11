@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { connectDB } from '@/lib/db/mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -51,6 +51,19 @@ export async function PUT(
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
+            );
+        }
+
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        const roleId = user.publicMetadata?.roleId as string;
+
+        // Check if user has permission to edit content
+        const { hasPermission } = await import('@/lib/roles/utils');
+        if (!hasPermission(roleId, 'content.edit.all')) {
+            return NextResponse.json(
+                { error: 'Insufficient permissions' },
+                { status: 403 }
             );
         }
 
@@ -121,9 +134,20 @@ export async function DELETE(
         const { userId } = await auth();
 
         if (!userId) {
+            { status: 401 }
+            );
+        }
+
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        const roleId = user.publicMetadata?.roleId as string;
+
+        // Check if user has permission to delete/manage content
+        const { hasPermission } = await import('@/lib/roles/utils');
+        if (!hasPermission(roleId, 'content.edit.all')) {
             return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
+                { error: 'Insufficient permissions' },
+                { status: 403 }
             );
         }
 

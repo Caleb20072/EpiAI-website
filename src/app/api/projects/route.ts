@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { connectDB } from '@/lib/db/mongodb';
 
 export async function GET(request: NextRequest) {
@@ -40,8 +40,18 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // TODO: Check if user is admin/president
-        // For now, allow any authenticated user
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        const roleId = user.publicMetadata?.roleId as string;
+
+        // Check if user has permission to create content
+        const { hasPermission } = await import('@/lib/roles/utils');
+        if (!hasPermission(roleId, 'content.create')) {
+            return NextResponse.json(
+                { error: 'Insufficient permissions' },
+                { status: 403 }
+            );
+        }
 
         const body = await request.json();
         const {

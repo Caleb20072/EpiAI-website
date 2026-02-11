@@ -21,6 +21,7 @@ import {
   X,
   Clock,
   RefreshCw,
+  Save,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -64,6 +65,11 @@ export default function AdminPage({ params }: AdminPageProps) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Edit Modal State
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [newRole, setNewRole] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
+
   const roles = getRolesOrderedByLevel();
 
   // Fetch stats and users
@@ -96,6 +102,75 @@ export default function AdminPage({ params }: AdminPageProps) {
   useEffect(() => {
     fetchData();
   }, []);
+
+  async function handleDeleteUser(userId: string) {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Optimistic UI update
+        setUsers(users.filter(u => u.id !== userId));
+        // Refresh stats in background
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('An error occurred while deleting the user');
+    }
+  }
+
+  function openEditModal(user: User) {
+    setEditingUser(user);
+    setNewRole(user.role);
+  }
+
+  function closeEditModal() {
+    setEditingUser(null);
+    setNewRole('');
+    setIsSaving(false);
+  }
+
+  async function handleSaveRole() {
+    if (!editingUser) return;
+
+    try {
+      setIsSaving(true);
+      const response = await fetch(`/api/admin/users/${editingUser.id}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ roleId: newRole }),
+      });
+
+      if (response.ok) {
+        // Update local state
+        setUsers(users.map(u =>
+          u.id === editingUser.id ? { ...u, role: newRole } : u
+        ));
+        closeEditModal();
+        // Refresh full data to be sure
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to update user role');
+      }
+    } catch (error) {
+      console.error('Error updating role:', error);
+      alert('An error occurred while updating the role');
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   // Filter users based on search and role
   const filteredUsers = users.filter(user => {
@@ -330,11 +405,17 @@ export default function AdminPage({ params }: AdminPageProps) {
                         <td className="py-4">
                           <PermissionGate permission="admin.roles.assign">
                             <div className="flex items-center gap-2">
-                              <button className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors">
+                              <button
+                                onClick={() => openEditModal(user)}
+                                className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                              >
                                 <Edit className="w-4 h-4" />
                               </button>
                               <PermissionGate permission="admin.users.manage">
-                                <button className="p-2 rounded-lg hover:bg-red-500/10 text-white/60 hover:text-red-400 transition-colors">
+                                <button
+                                  onClick={() => handleDeleteUser(user.id)}
+                                  className="p-2 rounded-lg hover:bg-red-500/10 text-white/60 hover:text-red-400 transition-colors"
+                                >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </PermissionGate>
@@ -349,7 +430,79 @@ export default function AdminPage({ params }: AdminPageProps) {
             </table>
           </div>
         </div>
+
+        {/* Edit User Modal */}
+        {editingUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div className="w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-white">Modifier l&apos;utilisateur</h3>
+                <button onClick={closeEditModal} className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
+                    {editingUser.imageUrl ? (
+                      <img src={editingUser.imageUrl} alt={editingUser.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <UserCog className="w-6 h-6 text-white/60" />
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium text-lg">{editingUser.name}</h4>
+                    <p className="text-white/40 text-sm">{editingUser.email}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/60 mb-2">Rôle</label>
+                  <select
+                    value={newRole}
+                    onChange={(e) => setNewRole(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+                  >
+                    {roles.map((role) => (
+                      <option key={role.id} value={role.id} className="bg-zinc-900">
+                        {role.name[locale as 'en' | 'fr'] || role.name.en} (Lv.{role.level})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    onClick={closeEditModal}
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={handleSaveRole}
+                    disabled={isSaving || newRole === editingUser.role}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSaving ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        Sauvegarde...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Sauvegarder
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </PermissionGate >
   );
 }
+
