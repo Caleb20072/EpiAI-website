@@ -21,8 +21,9 @@ import {
   Calendar,
   FolderOpen,
   UserPlus,
+  Plus,
 } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton, useClerk, useUser } from '@clerk/nextjs';
 import { getRoleName } from '@/lib/roles/utils';
 import { cn } from '@/lib/utils/cn';
 
@@ -37,8 +38,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { signOut } = useClerk();
+  const { user } = useUser();
 
   usePasswordResetCheck();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push(`/${locale}`);
+  };
 
   const navItems = [
     {
@@ -71,12 +79,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       icon: User,
       active: pathname === `/${locale}/profile`,
     },
-    {
-      label: 'Settings',
-      href: `/${locale}/settings`,
-      icon: Settings,
-      active: pathname === `/${locale}/settings`,
-    },
   ];
 
   // Admin items
@@ -86,6 +88,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: `/${locale}/admin/membership`,
       icon: UserPlus,
       active: pathname.startsWith(`/${locale}/admin/membership`),
+      adminOnly: true,
+    },
+    {
+      label: 'Projects',
+      href: `/${locale}/admin/projects`,
+      icon: FolderOpen,
+      active: pathname.startsWith(`/${locale}/admin/projects`),
       adminOnly: true,
     },
     {
@@ -188,6 +197,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       </Link>
                     );
                   })}
+
+                  {/* New Project Button - Always visible for admins */}
+                  {isAdmin && (
+                    <div className="px-4 pt-2">
+                      <a
+                        href={`/${locale}/admin/projects/new`}
+                        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition-all no-underline shadow-lg"
+                      >
+                        <Plus className="w-5 h-5" />
+                        <span>NEW PROJECT</span>
+                      </a>
+                    </div>
+                  )}
                 </>
               )}
             </nav>
@@ -205,7 +227,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium text-sm truncate">
-                    User
+                    {user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress || 'User'}
                   </p>
                   <p className={cn(
                     'text-xs truncate',
@@ -215,13 +237,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </p>
                 </div>
               </div>
-              <Link
-                href={`/${locale}`}
+              <button
+                onClick={handleSignOut}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out
-              </Link>
+              </button>
             </div>
           </div>
         </aside>

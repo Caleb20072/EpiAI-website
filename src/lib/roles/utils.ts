@@ -40,8 +40,8 @@ export function getRoleDefinition(roleId: string): RoleDefinition | undefined {
 
 // Recuperer le nom du role dans la langue specifiee
 export function getRoleName(roleId: string, locale: 'en' | 'fr'): string {
-  if (!isValidRole(roleId)) return roleId;
-  return ROLES[roleId]?.name[locale] ?? roleId;
+  if (!isValidRole(roleId)) return locale === 'fr' ? 'Membre' : 'Member';
+  return ROLES[roleId]?.name[locale] ?? (locale === 'fr' ? 'Membre' : 'Member');
 }
 
 // Recuperer la couleur du role
