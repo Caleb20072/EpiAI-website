@@ -28,10 +28,7 @@ export function Providers({
           identityPreviewEditButton: 'text-white/70',
         },
       }}
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       afterSignOutUrl={`/${locale}`}
-      // Configuration pour éviter les erreurs de cookie en développement
-      allowedRedirectOrigins={['http://localhost:3000', 'http://192.168.100.64:3000']}
     >
       <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Paris">
         {children}
