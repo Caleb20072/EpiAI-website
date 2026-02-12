@@ -2,15 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { Link, usePathname } from '@/i18n/routing';
+import { Link } from '@/i18n/routing';
+import { usePathname } from 'next/navigation';
 import { AuthHeader } from '@/components/auth/AuthHeader';
 
 export default function Header() {
     const t = useTranslations('Header');
     const pathname = usePathname();
-
-    // Extraire la locale du pathname
-    const locale = pathname.startsWith('/fr') ? 'fr' : 'en';
 
     // Check if we are on a dashboard route
     const isDashboardRoute = [
