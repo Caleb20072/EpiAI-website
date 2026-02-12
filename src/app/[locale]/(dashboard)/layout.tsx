@@ -21,6 +21,7 @@ import {
   Calendar,
   FolderOpen,
   UserPlus,
+  ArrowLeft,
   Plus,
 } from 'lucide-react';
 import { UserButton, useClerk, useUser } from '@clerk/nextjs';
@@ -237,13 +238,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={handleSignOut}
-                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </button>
+              <div className="space-y-2">
+                <Link
+                  href={`/${locale}`}
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-blue-600/10 text-blue-400 hover:text-white hover:bg-blue-600 transition-all text-sm font-medium border border-blue-600/20 hover:border-blue-600"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Home
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </div>
             </div>
           </div>
         </aside>

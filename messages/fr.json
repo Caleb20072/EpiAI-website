@@ -55,14 +55,15 @@
         "pole_tech_leads": "Patrice DAGBE & Rayann BACHABI",
         "pole_research_leads": "Ange ADANTCHEDE & Nerry MISSIKPODE",
         "pole_international_lead": "Yannick AKOTO",
-        "pole_events_lead": "Philippe ABIODUN",
+        "pole_events_leads": "Philippe ABIODUN & Priscilla KANODI",
         "pole_com_leads": "Will-David TCHIAKPE & TSIKA MAMBANI Nathanaël",
         "pole_admin_leads": "Caleb KPOSSOU & Erwan VITOU",
         "mentor_1": "Mr GILCHRIS HOUEKPO Dannon (PhD Candidate in AI)",
         "mentor_2": "Mr Hospice HOUNFODJI (AI Engineer)",
         "mentor_3": "Mr Yann Néris BIOKOU (Chef Projet AI & Data)",
         "mentor_4": "Mr Aime-Rick LOTSU (AI engineer)",
-        "mentor_5": "Mr Farel GAMLAKY (AI engineer)"
+        "mentor_5": "Mr Farel GAMLAKY (AI engineer)",
+        "mentor_6": "Dr ABOUROU ELLA"
     },
     "Blog_Posts": {
         "post_0_title": "Comprendre les Réseaux de Neurones",
