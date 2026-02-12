@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
-import { sendWelcomeEmail } from '@/lib/email/resend';
+import { sendApplicationReceivedEmail } from '@/lib/email/resend';
+import { MembershipApplication } from '@/lib/membership/models';
+import { connectToDatabase } from '@/lib/mongodb/client';
 
 const DEFAULT_PASSWORD = process.env.DEFAULT_MEMBER_PASSWORD || '00000000';
 
@@ -27,6 +29,18 @@ const ROLE_LEVELS: Record<string, number> = {
 
 // Assignation de permission
 const RESTRICTED_ROLES = ['president', 'admin_general'];
+
+const ROLE_MAPPING: Record<string, string> = {
+  'president': 'president',
+  'general admin': 'admin_general', 'admin': 'admin_general',
+  'head of pole': 'chef_pole', 'pole lead': 'chef_pole',
+  'senior mentor': 'mentor_senior',
+  'mentor': 'mentor',
+  'team lead': 'chef_equipe', 'team manager': 'chef_equipe',
+  'team member': 'membre_equipe',
+  'member': 'membre',
+  'new member': 'nouveau_membre'
+};
 
 // POST /api/admin/bulk-invite
 export async function POST(request: NextRequest) {
@@ -93,7 +107,13 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      const role = user.role?.toLowerCase();
+
+      let role = user.role?.toLowerCase().trim();
+
+      if (role && ROLE_MAPPING[role]) {
+        role = ROLE_MAPPING[role];
+      }
+
       if (!validRoles.includes(role)) {
         errors.push(`Row ${rowNum}: Invalid role "${user.role}"`);
         continue;
@@ -127,7 +147,9 @@ export async function POST(request: NextRequest) {
     let failed = 0;
     const creationErrors: string[] = [];
 
-    // Process users in batches of 10 (Clerk rate limit)
+    await connectToDatabase();
+
+    // Process users in batches of 10
     const batchSize = 10;
     for (let i = 0; i < usersToCreate.length; i += batchSize) {
       const batch = usersToCreate.slice(i, i + batchSize);
@@ -135,59 +157,44 @@ export async function POST(request: NextRequest) {
       await Promise.all(
         batch.map(async (user) => {
           try {
-            // Checker si le user existe vraiment
-            try {
-              const existing = await client.users.getUserList({
-                emailAddress: [user.email],
-                limit: 1,
-              });
-
-              if (existing.data.length > 0) {
-                creationErrors.push(`${user.email}: Already exists`);
-                failed++;
-                return;
-              }
-            } catch (e) {
-              // User doesn't exist, continue
-            }
-
-            // Créer un user
-            await client.users.createUser({
-              emailAddress: [user.email],
-              password: DEFAULT_PASSWORD,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              publicMetadata: {
-                roleId: ROLE_LEVELS[user.role],
-                role: user.role,
-              },
+            // Checker si une candidature existe déjà
+            const existing = await MembershipApplication.findOne({
+              email: user.email,
+              status: { $in: ['pending', 'approved'] }
             });
 
-            // Envoyer le mail de bienvenue aux nouveau membre, c'est très important même...
+            if (existing) {
+              creationErrors.push(`${user.email}: Application already exists`);
+              failed++;
+              return;
+            }
+
+            // Créer une candidature (MembershipApplication)
+            await MembershipApplication.create({
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              whatsapp: 'Non renseigné (Import)',
+              motivations: 'Importé via Bulk Invite (Admin)',
+              requestedRole: user.role, // Sauvegarder le role demandé
+              status: 'pending'
+            });
+
+            // Envoyer l'email de confirmation de candidature
             try {
-              await sendWelcomeEmail({
-                email: user.email,
-                firstName: user.firstName,
-                password: DEFAULT_PASSWORD,
-              });
+              await sendApplicationReceivedEmail(user.email, user.firstName);
             } catch (emailError) {
               console.error(`Failed to send email to ${user.email}:`, emailError);
-              // Don't fail the whole process for email errors
             }
 
             created++;
           } catch (err: any) {
-            console.error(`Failed to create user ${user.email}:`, err);
+            console.error(`Failed to create application for ${user.email}:`, err);
             creationErrors.push(`${user.email}: ${err.message || 'Failed to create'}`);
             failed++;
           }
         })
       );
-
-      // Small delay between batches
-      if (i + batchSize < usersToCreate.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
     }
 
     return NextResponse.json({
@@ -203,13 +210,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error in bulk invite:', error);
-
-    if (error.errors) {
-      return NextResponse.json(
-        { error: error.errors[0]?.message || 'Clerk error' },
-        { status: 400 }
-      );
-    }
 
     return NextResponse.json(
       { error: error.message || 'Failed to process bulk invite' },

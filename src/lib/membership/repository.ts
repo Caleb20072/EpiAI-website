@@ -12,6 +12,7 @@ function transformApplication(doc: any) {
     email: doc.email,
     whatsapp: doc.whatsapp,
     motivations: doc.motivations,
+    requestedRole: doc.requestedRole,
     status: doc.status,
     reviewedBy: doc.reviewedBy,
     reviewedAt: doc.reviewedAt?.toISOString() || null,

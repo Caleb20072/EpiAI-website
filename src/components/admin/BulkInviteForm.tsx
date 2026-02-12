@@ -48,7 +48,25 @@ export function BulkInviteForm() {
       'president', 'admin_general', 'chef_pole', 'mentor_senior',
       'mentor', 'chef_equipe', 'membre_equipe', 'membre', 'nouveau_membre'
     ];
-    if (!validRoles.includes(row.role?.toLowerCase())) {
+
+    const ROLE_MAPPING: Record<string, string> = {
+      'president': 'president',
+      'general admin': 'admin_general', 'admin': 'admin_general',
+      'head of pole': 'chef_pole', 'pole lead': 'chef_pole',
+      'senior mentor': 'mentor_senior',
+      'mentor': 'mentor',
+      'team lead': 'chef_equipe', 'team manager': 'chef_equipe',
+      'team member': 'membre_equipe',
+      'member': 'membre',
+      'new member': 'nouveau_membre'
+    };
+
+    let role = row.role?.toLowerCase().trim();
+    if (role && ROLE_MAPPING[role]) {
+      role = ROLE_MAPPING[role];
+    }
+
+    if (!validRoles.includes(role)) {
       errors.push(`Invalid role: ${row.role}`);
     }
 
@@ -56,7 +74,7 @@ export function BulkInviteForm() {
       firstName: row.firstName || '',
       lastName: row.lastName || '',
       email: row.email || '',
-      role: row.role?.toLowerCase() || '',
+      role: role || '',
       valid: errors.length === 0,
       error: errors.length > 0 ? errors.join(', ') : undefined,
     };
@@ -178,7 +196,7 @@ export function BulkInviteForm() {
           </div>
           <h3 className="text-2xl font-bold text-white mb-2">{t('completed')}</h3>
           <p className="text-white/60 mb-6">
-            {t('accountsCreated', { count: results.created })}
+            {results.created} applications created. They are now pending approval in the Membership dashboard.
           </p>
 
           {results.errors.length > 0 && (
@@ -340,7 +358,7 @@ export function BulkInviteForm() {
             ) : (
               <>
                 <Users className="w-5 h-5" />
-                {t('createAccounts', { count: preview.filter(u => u.valid).length })}
+                {t('createAccounts', { count: preview.filter(u => u.valid).length }).replace('Accounts', 'Applications')}
               </>
             )}
           </button>

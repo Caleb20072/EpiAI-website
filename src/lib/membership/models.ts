@@ -29,6 +29,10 @@ const MembershipApplicationSchema = new Schema<IMembershipApplication>(
       type: String,
       required: true,
     },
+    requestedRole: {
+      type: String, // Pour les invites en masse
+      required: false,
+    },
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],

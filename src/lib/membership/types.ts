@@ -8,6 +8,7 @@ export interface IMembershipApplication extends Document {
   email: string;
   whatsapp: string;
   motivations: string;
+  requestedRole?: string;
   status: MembershipStatus;
   reviewedBy?: string;
   reviewedAt?: Date;

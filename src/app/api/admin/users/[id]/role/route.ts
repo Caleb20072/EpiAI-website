@@ -27,8 +27,8 @@ export async function PUT(
 
         const client = await clerkClient();
         const currentUser = await client.users.getUser(userId);
-        const currentRoleId = currentUser.publicMetadata?.roleId as string;
-        const currentLevel = Number(currentUser.publicMetadata?.roleId) || getRoleLevel(currentRoleId);
+        const currentRoleId = (currentUser.publicMetadata?.role as string) || (currentUser.publicMetadata?.roleId as unknown as string);
+        const currentLevel = getRoleLevel(currentRoleId);
 
         // Check permission
         if (!hasPermission(currentRoleId, 'admin.roles.assign')) {

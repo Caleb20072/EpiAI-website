@@ -27,6 +27,7 @@ interface ApplicationCardProps {
     email: string;
     whatsapp: string;
     motivations: string;
+    requestedRole?: string;
     status: string;
     createdAt: string;
   };
@@ -147,6 +148,11 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
                 <Phone className="w-4 h-4" />
                 {application.whatsapp}
               </span>
+              {application.requestedRole && (
+                <span className="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-md bg-white/10 text-white/80 border border-white/10">
+                  Role: {application.requestedRole}
+                </span>
+              )}
             </div>
           </div>
         </div>

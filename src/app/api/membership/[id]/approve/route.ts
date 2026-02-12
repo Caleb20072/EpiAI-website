@@ -4,6 +4,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { getApplicationById, reviewApplication } from '@/lib/membership/repository';
 import { sendWelcomeEmail } from '@/lib/email/resend';
 import type { ReviewApplicationInput } from '@/lib/membership/types';
+import { isValidRole, getRoleLevel } from '@/lib/roles/utils';
 
 // Configuration du mot de passe par défaut
 const DEFAULT_PASSWORD = process.env.DEFAULT_MEMBER_PASSWORD || 'EpiAI2025!';
@@ -48,6 +49,15 @@ export async function POST(
     if (body.status === 'approved') {
       console.log('[Approve API] Creating Clerk account for:', application.email);
 
+      // Determine role to assign
+      let roleToAssign = 'nouveau_membre';
+      let roleLevelToAssign = 1;
+
+      if (application.requestedRole && isValidRole(application.requestedRole)) {
+        roleToAssign = application.requestedRole;
+        roleLevelToAssign = getRoleLevel(roleToAssign);
+      }
+
       // Créer le compte Clerk
       const client = await clerkClient();
       const clerkUser = await client.users.createUser({
@@ -57,8 +67,8 @@ export async function POST(
         lastName: application.lastName,
         skipPasswordChecks: true,
         publicMetadata: {
-          roleId: 1, // nouveau_membre par défaut
-          role: 'nouveau_membre',
+          roleId: roleLevelToAssign,
+          role: roleToAssign,
           approvedAt: new Date().toISOString(),
           mustResetPassword: true,
         },

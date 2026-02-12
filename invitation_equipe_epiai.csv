@@ -1,19 +1,21 @@
 firstName,lastName,email,role
-Fresnel,Satignon,fresnel.satignon@epitech.eu,president
-Méric,Gbemetonou,meric.gbemetonou@epitech.eu,admin_general
-Oscar,Gbenou,oscar.gbenou@epitech.eu,chef_pole
-Patrice,Dagbe,patrice.dagbe@epitech.eu,chef_pole
-Rayann,Bachabi,rayann.bachabi@epitech.eu,chef_pole
-Ange,Adantchede,ange.adantchede-agossou@epitech.eu,chef_pole
-Nerry,Missikpode,nerry.missikpode@epitech.eu,chef_pole
-Yannick,Akoto,yannick.akoto@epitech.eu,chef_pole
-Philippe,Abiodun,philippe.abiodun@epitech.eu,chef_pole
-Will-David,Tchiakpe,will-david.tchiakpe@epitech.eu,chef_pole
-Tchika,Nathanaël,tchika.nathanael@epitech.eu,chef_pole
-Caleb,Kpossou,caleb.kpossou@epitech.eu,chef_pole
-Erwan,Vitou,erwan.vitou@epitech.eu,chef_pole
-Gilchris,Houekpo Dannon,gilchris.houekpo@epitech.eu,mentor_senior
-Hospice,Hounfodji,hospice.hounfodji@epitech.eu,mentor
-Yann,Néris Biokou,yann.nerisbiokou@epitech.eu,mentor
-Aime-Rick,Lotsu,aime-rick.lotsu@epitech.eu,mentor
-Farel,Gamlaky,farel.gamlaky@epitech.eu,mentor
+Sergino,BRADFORD,sergino.bradford@epitech.eu,mentor_senior
+Fresnel,SATIGNON,fresnel.satignon@epitech.eu,president
+Méric,GBEMETONOU,meric.gbemetonou@epitech.eu,admin_general
+Oscar,GBENOU,oscar.gbenou@epitech.eu,chef_pole
+Patrice,DAGBE,patrice.dagbe@epitech.eu,chef_pole
+Rayann,BACHABI,rayann.bachabi@epitech.eu,chef_pole
+Ange,ADANTCHEDE,ange.adantchede-agossou@epitech.eu,chef_pole
+Nerry,MISSIKPODE,nerry.missikpode@epitech.eu,chef_pole
+Yannick,AKOTO,yannick.akoto@epitech.eu,chef_pole
+Philippe,ABIODUN,philippe.abiodun@epitech.eu,chef_pole
+Will-David,TCHIAKPE,will-david.tchiakpe@epitech.eu,chef_pole
+Nathanaël,TCHIKA,tchika.nathanael@epitech.eu,chef_pole
+Caleb,KPOSSOU,caleb.kpossou@epitech.eu,chef_pole
+Erwan,VITOU,erwan.vitou@epitech.eu,chef_pole
+Gilchris,HOUKPO DANNON,gilchris.houekpo@epitech.eu,mentor_senior
+Hospice,HOUNFODJI,hospice.hounfodji@epitech.eu,mentor
+Yann,NERIS BIOKOU,yann.nerisbiokou@epitech.eu,mentor
+Aime-Rick,LOTSU,aime-rick.lotsu@epitech.eu,mentor
+Farel,GAMLAKY,farel.gamlaky@epitech.eu,mentor
+Karyl,SOUMAILA,karyl.soumaila@epitech.eu,member
