@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 mongodb-compass_*.deb
 *.deb
+
+# clerk configuration (can include secrets)
+/.clerk/

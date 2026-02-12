@@ -12,6 +12,7 @@ const nextConfig = {
             },
         ],
         qualities: [75, 100],
+        unoptimized: true,
     },
 };
 
