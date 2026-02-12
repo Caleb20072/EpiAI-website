@@ -3,163 +3,268 @@
 import { useAuth } from '@/hooks/useAuth';
 import { getRoleName, getRoleColor, getRoleLevel } from '@/lib/roles/utils';
 import { useParams } from 'next/navigation';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton, useUser, UserProfile } from '@clerk/nextjs';
 import { routing } from '@/i18n/routing';
-import { use } from 'react';
 import {
   User,
   Mail,
   Shield,
   Calendar,
-  Edit,
-  Save,
-  X,
+  Building2,
+  Users,
+  BadgeCheck,
+  Camera,
+  X as CloseIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ProfilePage() {
   const params = useParams();
   const locale = (params.locale as string) || routing.defaultLocale;
-  const { userId, roleId, role, isAdmin, hasPermission } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
+  const { userId, roleId, role, isAdmin } = useAuth();
+  const { user, isLoaded } = useUser();
+  const [memberData, setMemberData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const roleName = roleId ? getRoleName(roleId, locale as 'en' | 'fr') : 'Member';
   const roleColor = roleId ? getRoleColor(roleId) : 'text-gray-400';
   const roleLevel = roleId ? getRoleLevel(roleId) : 1;
 
-  // Mock user data
-  const userData = {
-    email: 'user@example.com',
-    joinedAt: '2024-01-15',
-    team: 'AI Research',
-    pole: 'Machine Learning',
-  };
+  // Fetch member data from API
+  useEffect(() => {
+    async function fetchMemberData() {
+      if (!userId) return;
+
+      try {
+        const response = await fetch(`/api/members/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setMemberData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching member data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (isLoaded && userId) {
+      fetchMemberData();
+    }
+  }, [userId, isLoaded]);
+
+  if (!isLoaded || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full mx-auto mb-4" />
+          <p className="text-white/60">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const userName = user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User';
+  const userEmail = user?.emailAddresses[0]?.emailAddress || 'No email';
+  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) : 'N/A';
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
-        <p className="text-white/60">
-          Gérez vos informations personnelles et vos préférences.
-        </p>
-      </div>
-
-      {/* Profile Card */}
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-        <div className="flex items-start gap-6">
-          {/* Avatar */}
-          <div className="relative">
-            <div className="w-24 h-24 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-              <User className="w-10 h-10 text-white/60" />
-            </div>
-            <div className="absolute -bottom-2 -right-2">
-              <UserButton
-                afterSignOutUrl={`/${locale}`}
-                appearance={{
-                  elements: {
-                    avatarBox: 'w-10 h-10 rounded-full border-2 border-zinc-900',
-                  },
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Info */}
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-white">User</h2>
-                <p className="text-white/60">{userData.email}</p>
-              </div>
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all text-sm font-medium"
-              >
-                <Edit className="w-4 h-4" />
-                {isEditing ? 'Cancel' : 'Edit'}
-              </button>
-            </div>
-
-            {/* Role Badge */}
-            <div className="flex items-center gap-3 mb-6">
-              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 ${roleColor}`}>
-                <Shield className="w-4 h-4" />
-                <span className="font-medium">{roleName}</span>
-              </span>
-              <span className="text-white/40 text-sm">
-                Level {roleLevel}
-              </span>
-              {isAdmin && (
-                <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium border border-amber-500/30">
-                  Administrator
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Personal Info */}
-        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-          <h3 className="text-lg font-semibold text-white mb-4">Informations Personnelles</h3>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-white/40" />
-              <div>
-                <p className="text-white/40 text-xs uppercase tracking-wide">Email</p>
-                <p className="text-white">{userData.email}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-white/40" />
-              <div>
-                <p className="text-white/40 text-xs uppercase tracking-wide">Membre depuis</p>
-                <p className="text-white">{userData.joinedAt}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Team Info */}
-        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-          <h3 className="text-lg font-semibold text-white mb-4">Équipe & Pôle</h3>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5 text-white/40" />
-              <div>
-                <p className="text-white/40 text-xs uppercase tracking-wide">Pôle</p>
-                <p className="text-white">{userData.pole}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <User className="w-5 h-5 text-white/40" />
-              <div>
-                <p className="text-white/40 text-xs uppercase tracking-wide">Équipe</p>
-                <p className="text-white">{userData.team}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Permissions */}
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-        <h3 className="text-lg font-semibold text-white mb-4">Permissions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {role?.permissions.map((permission) => (
-            <div
-              key={permission}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-white/80 text-sm"
+    <>
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="relative bg-zinc-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-auto">
+            <button
+              onClick={() => setShowProfileModal(false)}
+              className="absolute top-4 right-4 z-10 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all"
             >
-              <Shield className="w-4 h-4 text-emerald-400" />
-              <span className="capitalize">{permission.replace('.', ': ')}</span>
-            </div>
-          ))}
+              <CloseIcon className="w-5 h-5" />
+            </button>
+            <UserProfile
+              routing="hash"
+              appearance={{
+                elements: {
+                  rootBox: 'w-full',
+                  card: 'bg-transparent shadow-none',
+                  navbar: 'bg-white/5 rounded-xl',
+                  navbarButton: 'text-white/70 hover:text-white hover:bg-white/10 rounded-lg',
+                  navbarButtonActive: 'bg-white/10 text-white',
+                  pageScrollBox: 'bg-transparent',
+                  page: 'bg-transparent',
+                  profileSection: 'bg-white/5 border border-white/10 rounded-xl',
+                  profileSectionPrimaryButton: 'bg-white text-black hover:bg-white/90 rounded-lg',
+                  formButtonPrimary: 'bg-white text-black hover:bg-white/90 rounded-lg',
+                  formFieldLabel: 'text-white/70',
+                  formFieldInput: 'bg-white/5 border-white/20 text-white placeholder:text-white/40 rounded-lg',
+                  headerTitle: 'text-white',
+                  headerSubtitle: 'text-white/60',
+                },
+              }}
+            />
+          </div>
         </div>
+      )}
+
+      <div className="space-y-6 max-w-4xl">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
+          <p className="text-white/60">
+            {locale === 'fr' ? 'Gérez vos informations personnelles et vos préférences.' : 'Manage your personal information and preferences.'}
+          </p>
+        </div>
+
+        {/* Profile Card */}
+        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div className="flex items-start gap-6">
+            {/* Avatar */}
+            <div className="relative group">
+              {user?.imageUrl ? (
+                <img
+                  src={user.imageUrl}
+                  alt={userName}
+                  className="w-24 h-24 rounded-2xl object-cover border-2 border-white/20"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                  <User className="w-10 h-10 text-white/60" />
+                </div>
+              )}
+
+              {/* Change Photo Button */}
+              <button
+                onClick={() => setShowProfileModal(true)}
+                className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"
+              >
+                <div className="text-center">
+                  <Camera className="w-6 h-6 text-white mx-auto mb-1" />
+                  <span className="text-white text-xs font-medium">Change</span>
+                </div>
+              </button>
+
+              <div className="absolute -bottom-2 -right-2">
+                <UserButton
+                  afterSignOutUrl={`/${locale}`}
+                  appearance={{
+                    elements: {
+                      avatarBox: 'w-10 h-10 rounded-full border-2 border-zinc-900',
+                    },
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    {userName}
+                    {user?.emailAddresses[0]?.verification?.status === 'verified' && (
+                      <BadgeCheck className="w-5 h-5 text-blue-400" />
+                    )}
+                  </h2>
+                  <p className="text-white/60">{userEmail}</p>
+                </div>
+              </div>
+
+              {/* Role Badge */}
+              <div className="flex items-center gap-3 mb-6 flex-wrap">
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 ${roleColor}`}>
+                  <Shield className="w-4 h-4" />
+                  <span className="font-medium">{roleName}</span>
+                </span>
+                <span className="text-white/40 text-sm">
+                  Level {roleLevel}
+                </span>
+                {isAdmin && (
+                  <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium border border-amber-500/30">
+                    Administrator
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Personal Info */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              {locale === 'fr' ? 'Informations Personnelles' : 'Personal Information'}
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Mail className="w-5 h-5 text-white/40" />
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wide">Email</p>
+                  <p className="text-white">{userEmail}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-white/40" />
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wide">
+                    {locale === 'fr' ? 'Membre depuis' : 'Member since'}
+                  </p>
+                  <p className="text-white">{joinedDate}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Team Info */}
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              {locale === 'fr' ? 'Équipe & Pôle' : 'Team & Department'}
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-white/40" />
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wide">
+                    {locale === 'fr' ? 'Pôle' : 'Department'}
+                  </p>
+                  <p className="text-white">{memberData?.pole || 'Not assigned'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-white/40" />
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wide">
+                    {locale === 'fr' ? 'Équipe' : 'Team'}
+                  </p>
+                  <p className="text-white">{memberData?.team || 'Not assigned'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Permissions */}
+        {role && role.permissions && role.permissions.length > 0 && (
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">Permissions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {role.permissions.map((permission) => (
+                <div
+                  key={permission}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-white/80 text-sm"
+                >
+                  <Shield className="w-4 h-4 text-emerald-400" />
+                  <span className="capitalize">{permission.replace('.', ': ')}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }

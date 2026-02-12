@@ -35,7 +35,7 @@ export function useRole() {
 
   return {
     roleId,
-    roleName: role?.name ?? { en: 'Unknown', fr: 'Inconnu' },
+    roleName: role?.name ?? { en: 'Member', fr: 'Membre' },
     roleLevel,
     roleColor: role?.color ?? 'text-gray-400',
     isAdmin,

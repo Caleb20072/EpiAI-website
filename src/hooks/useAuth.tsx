@@ -50,7 +50,9 @@ export function useAuth() {
     fetchMetadata();
   }, [isSignedIn, userId]);
 
-  const roleId = (metadata?.roleId as string | undefined) || (metadata?.role as string | undefined);
+  // Use 'role' (string) first, then fall back to 'roleId' as string
+  const roleId = (metadata?.role as string | undefined) || String(metadata?.roleId || '');
+
   const role = roleId && isValidRole(roleId) ? ROLES[roleId] : undefined;
   const roleLevel = role?.level ?? 0;
 
@@ -68,7 +70,7 @@ export function useAuth() {
     roleId,
     role,
     roleLevel,
-    roleName: role?.name ?? { en: 'Unknown', fr: 'Inconnu' },
+    roleName: role?.name ?? { en: 'Member', fr: 'Membre' },
     permissions,
     hasPermission: hasPermissionFn,
     isAdmin: isAdminRole(roleId ?? ''),
