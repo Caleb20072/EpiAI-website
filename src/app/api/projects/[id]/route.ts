@@ -134,7 +134,9 @@ export async function DELETE(
         const { userId } = await auth();
 
         if (!userId) {
-            { status: 401 }
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
             );
         }
 
