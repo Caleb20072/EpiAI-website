@@ -1,78 +1,115 @@
+"use client";
+
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import Image from 'next/image';
+import { motion, type Variants } from 'framer-motion';
+import MathFormulas from '@/components/MathFormulas';
+
+const ArrowRight = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+);
+
+const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.2 },
+    },
+};
+
+const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+    },
+};
 
 export default function HeroSection() {
     const t = useTranslations('HomePage');
 
     return (
-        <section id="home" className="flex flex-col items-center justify-center min-h-screen px-4 text-center pt-20 relative overflow-hidden">
+        <section
+            id="home"
+            className="flex flex-col justify-center min-h-screen relative overflow-hidden py-32"
+        >
+            {/* Formules mathématiques flottantes */}
+            <MathFormulas />
 
-            {/* Glow Blobs */}
-            <div className="blob bg-blue-600 w-96 h-96 rounded-full top-0 left-[-100px] animate-pulse-slow"></div>
-            <div className="blob bg-purple-600 w-96 h-96 rounded-full bottom-0 right-[-100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-
-            <div className="max-w-5xl mx-auto animate-fade-in-up relative z-10">
-
-                {/* Logos Row */}
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-10 mb-12 animate-float">
-                    {/* Epi'AI Logo */}
-                    <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-white/20 overflow-hidden bg-black shadow-2xl">
-                        <Image
-                            src="/assets/logo.jpg"
-                            alt="Epi'AI Logo"
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 96px, 128px"
-                        />
-                    </div>
-
-                    <div className="hidden sm:block h-16 w-px bg-white/20"></div>
-
-                    {/* Epitech Logo */}
-                    <div className="relative w-auto h-12 md:h-16 flex items-center justify-center">
-                        {/* Epitech Logo */}
-                        <div className="relative w-48 h-16 md:w-56 md:h-20 flex items-center justify-center">
-                            <Image
-                                src="/assets/epi_logo.jpg"
-                                alt="Epitech Logo"
-                                fill
-                                className="object-contain"
-                                sizes="(max-width: 768px) 192px, 224px"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Subtitle */}
-                <div className="mb-6 inline-block px-6 py-2 rounded-full bg-white/5 border border-white/20 text-xs md:text-sm text-blue-300 font-bold tracking-[0.2em] uppercase shadow-lg backdrop-blur-md">
-                    {t('subtitle')}
-                </div>
-
-                <h1 className="text-4xl md:text-7xl font-black mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-50 via-white to-purple-100 leading-tight drop-shadow-2xl text-glow tracking-tighter">
+            {/* Contenu aligné à gauche */}
+            <motion.div
+                className="max-w-[1400px] w-full mx-auto px-8 relative z-10"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                {/* Titre principal — énorme, bold, gauche */}
+                <motion.h1
+                    className="text-[clamp(2.2rem,5.5vw,4.2rem)] font-black leading-[1.1] mb-8 text-white tracking-tight"
+                    style={{ textShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
+                    variants={itemVariants}
+                >
                     {t('title')}
-                </h1>
+                </motion.h1>
 
-                <p className="text-base md:text-xl text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed font-light">
+                {/* Sous-titre — uppercase, gris, espacé */}
+                <motion.p
+                    className="text-[clamp(1rem,2.5vw,1.3rem)] text-gray-300 font-bold mb-6 tracking-[3px] uppercase"
+                    style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+                    variants={itemVariants}
+                >
+                    {t('subtitle')}
+                </motion.p>
+
+                {/* Description */}
+                <motion.p
+                    className="text-[clamp(1rem,2vw,1.2rem)] text-white/90 leading-relaxed max-w-[600px] mb-12 font-light"
+                    style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
+                    variants={itemVariants}
+                >
                     {t('description')}
-                </p>
+                </motion.p>
 
-                <p className="text-base md:text-lg text-blue-200 font-medium max-w-2xl mx-auto mb-12 italic">
-                    {t('tagline')}
-                </p>
-
-                {/* Buttons */}
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                {/* Boutons */}
+                <motion.div
+                    className="flex flex-wrap gap-6 items-center"
+                    variants={itemVariants}
+                >
                     <Link href="/join">
-                        <button className="px-10 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-base md:text-lg transition-all shadow-[0_0_30px_rgba(37,99,235,0.4)] hover:shadow-[0_0_50px_rgba(37,99,235,0.6)] transform hover:-translate-y-1.5 active:scale-95">
+                        <motion.button
+                            className="flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-white"
+                            style={{
+                                background: 'rgba(255,255,255,0.15)',
+                                border: '1px solid rgba(255,255,255,0.3)',
+                                backdropFilter: 'blur(10px)',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                            }}
+                            whileHover={{ y: -3, scale: 1.03 }}
+                            whileTap={{ scale: 0.96 }}
+                        >
                             {t('join_btn')}
-                        </button>
+                            <ArrowRight />
+                        </motion.button>
                     </Link>
-                    <Link href="/#projects" className="px-10 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/20 hover:border-white/40 font-bold text-base md:text-lg transition-all backdrop-blur-md shadow-lg hover:shadow-white/10 transform hover:-translate-y-1.5 active:scale-95">
-                        {t('projects_btn')}
+
+                    <Link href="/#projects">
+                        <motion.span
+                            className="flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-white"
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid rgba(255,255,255,0.3)',
+                            }}
+                            whileHover={{ y: -3, scale: 1.03, background: 'rgba(255,255,255,0.08)' }}
+                            whileTap={{ scale: 0.96 }}
+                        >
+                            {t('projects_btn')}
+                        </motion.span>
                     </Link>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
         </section>
     );
 }

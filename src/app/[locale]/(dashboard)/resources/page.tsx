@@ -49,9 +49,9 @@ export default function ResourcesPage() {
         const response = await fetch(`/api/resources?${queryParams.toString()}`);
         const data: PaginatedResponse<ResourceWithDetails> = await response.json();
 
-        setResources(data.data);
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
+        setResources(data.data ?? []);
+        setTotalPages(data.totalPages ?? 1);
+        setTotal(data.total ?? 0);
       } catch (error) {
         console.error('Error fetching resources:', error);
       } finally {
@@ -110,11 +110,10 @@ export default function ResourcesPage() {
                   router.push(`/${locale}/resources?${newParams.toString()}`);
                 });
               }}
-              className={`w-10 h-10 rounded-xl font-medium transition-all ${
-                page === currentPage
-                  ? 'bg-white text-black'
-                  : 'bg-white/5 text-white hover:bg-white/10'
-              }`}
+              className={`w-10 h-10 rounded-xl font-medium transition-all ${page === currentPage
+                ? 'bg-white text-black'
+                : 'bg-white/5 text-white hover:bg-white/10'
+                }`}
             >
               {page}
             </button>

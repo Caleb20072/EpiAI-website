@@ -11,7 +11,8 @@ interface EventListProps {
   className?: string;
 }
 
-export function EventList({ events, isLoading, className }: EventListProps) {
+export function EventList({ events: eventsProp, isLoading, className }: EventListProps) {
+  const events = eventsProp ?? [];
   if (isLoading) {
     return (
       <div className={cn('grid gap-6 md:grid-cols-2 lg:grid-cols-3', className)}>

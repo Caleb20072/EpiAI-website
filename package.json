@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
+    "dev": "NEXT_DISABLE_TURBOPACK=1 next dev -p 3002",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -11,7 +11,9 @@
   "dependencies": {
     "@clerk/nextjs": "^6.36.5",
     "@clerk/themes": "^2.4.46",
+    "@next/swc-linux-x64-gnu": "^16.1.6",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.34.3",
     "lucide-react": "^0.562.0",
     "mongodb": "^7.0.0",
     "mongoose": "^9.1.1",
@@ -20,6 +22,8 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "resend": "^6.6.0",
+    "stream-chat": "^9.35.1",
+    "stream-chat-react": "^13.14.1",
     "tailwind-merge": "^3.4.0",
     "xlsx": "^0.18.5"
   },

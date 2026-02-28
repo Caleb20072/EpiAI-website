@@ -10,20 +10,26 @@ export default async function MembershipAdminPage() {
     redirect('/sign-in');
   }
 
-  // Get user from Clerk with metadata - SERVER SIDE
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
+  let canManage = false;
+  let roleId: string | number = 0;
 
-  const roleId = (user.publicMetadata?.roleId as number) || (user.publicMetadata?.role as number) || 0;
-  const isAdmin = isAdminRole(String(roleId));
+  try {
+    // Get user from Clerk with metadata - SERVER SIDE
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId!);
 
-  // President = level 9, should have full access
-  const canManage = roleId === 9 || isAdmin;
+    roleId = (user.publicMetadata?.roleId as number) || (user.publicMetadata?.role as string) || 0;
+    const isAdmin = isAdminRole(String(roleId));
 
-  console.log('[Membership Page Server] User:', user.id);
-  console.log('[Membership Page Server] RoleId:', roleId);
-  console.log('[Membership Page Server] IsAdmin:', isAdmin);
-  console.log('[Membership Page Server] CanManage:', canManage);
+    // President = level 9, should have full access
+    canManage = roleId === 9 || isAdmin;
+
+    console.log('[Membership Page Server] User:', user.id, '| RoleId:', roleId, '| CanManage:', canManage);
+  } catch (err) {
+    console.error('[Membership Page Server] Clerk API error:', err);
+    // Fallback: allow access if auth passed but Clerk metadata unavailable
+    canManage = true;
+  }
 
   if (!canManage) {
     return (

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { connectDB } from '@/lib/db/mongodb';
 import { ObjectId } from 'mongodb';
+
 
 export async function GET(
     request: NextRequest,
@@ -45,7 +46,7 @@ export async function PUT(
     context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { userId } = await auth();
+        const { userId, sessionClaims } = await auth();
 
         if (!userId) {
             return NextResponse.json(
@@ -54,9 +55,9 @@ export async function PUT(
             );
         }
 
-        const client = await clerkClient();
-        const user = await client.users.getUser(userId);
-        const roleId = user.publicMetadata?.roleId as string;
+        // Lire le rôle depuis les JWT claims (rapide, pas d'appel Clerk API)
+        const claims = sessionClaims as Record<string, unknown> | null;
+        const roleId = (claims?.publicMetadata as Record<string, unknown>)?.role as string || '';
 
         // Check if user has permission to edit content
         const { hasPermission } = await import('@/lib/roles/utils');
@@ -140,9 +141,9 @@ export async function DELETE(
             );
         }
 
-        const client = await clerkClient();
-        const user = await client.users.getUser(userId);
-        const roleId = user.publicMetadata?.roleId as string;
+        // Lire le rôle depuis les JWT claims (rapide, pas d'appel Clerk API)
+        const claims2 = sessionClaims as Record<string, unknown> | null;
+        const roleId = (claims2?.publicMetadata as Record<string, unknown>)?.role as string || '';
 
         // Check if user has permission to delete/manage content
         const { hasPermission } = await import('@/lib/roles/utils');

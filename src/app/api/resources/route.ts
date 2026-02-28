@@ -6,6 +6,7 @@ import {
   getFeaturedResources,
 } from '@/lib/resources/repository';
 import type { ResourceFilters, CreateResourceInput } from '@/lib/resources/types';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 
 // GET /api/resources - List resources
 export async function GET(request: NextRequest) {
@@ -36,17 +37,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/resources - Create resource
+// POST /api/resources - Create resource (mentors+ uniquement)
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const check = await checkUserPermission('resources.create');
+    if (!('allowed' in check)) {
+      return NextResponse.json({ error: check.error }, { status: check.status });
     }
+    const { userId } = check;
 
     const body: CreateResourceInput = await request.json();
 

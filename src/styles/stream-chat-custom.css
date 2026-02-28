@@ -1,0 +1,171 @@
+/* =============================================================
+   Stream Chat — Thème sombre custom Epi'AI
+   Surcharge le thème dark officiel de stream-chat-react v13
+   ============================================================= */
+
+.chat-wrapper .str-chat {
+  background: transparent;
+  height: 100%;
+}
+
+/* Fond principal */
+.chat-wrapper .str-chat__container {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Header du canal */
+.chat-wrapper .str-chat__channel-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 20px;
+}
+
+.chat-wrapper .str-chat__channel-header-end h2,
+.chat-wrapper .str-chat__channel-header h2 {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Liste de messages */
+.chat-wrapper .str-chat__list {
+  background: transparent;
+  padding: 16px 20px;
+}
+
+/* Messages */
+.chat-wrapper .str-chat__message-simple {
+  margin-bottom: 4px;
+}
+
+.chat-wrapper .str-chat__message-text {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 8px 14px;
+  max-width: 600px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Message propre (auteur) */
+.chat-wrapper .str-chat__message--me .str-chat__message-text {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Nom auteur */
+.chat-wrapper .str-chat__message-simple-author {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Avatar */
+.chat-wrapper .str-chat__avatar {
+  background: rgba(99, 102, 241, 0.4);
+  border-radius: 50%;
+}
+
+/* Zone de saisie */
+.chat-wrapper .str-chat__message-input {
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 16px;
+}
+
+.chat-wrapper .str-chat__message-input-inner {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  color: #fff;
+  transition: border-color 0.2s;
+}
+
+.chat-wrapper .str-chat__message-input-inner:focus-within {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.chat-wrapper .str-chat__textarea textarea {
+  background: transparent;
+  color: #fff;
+  caret-color: #6366f1;
+}
+
+.chat-wrapper .str-chat__textarea textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Boutons icônes dans input */
+.chat-wrapper .str-chat__fileupload-wrapper .str-chat__input-flat-fileupload,
+.chat-wrapper .str-chat__send-button {
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.2s;
+}
+
+.chat-wrapper .str-chat__send-button:hover {
+  color: #6366f1;
+}
+
+/* Réactions emoji */
+.chat-wrapper .str-chat__reaction-list {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+}
+
+.chat-wrapper .str-chat__simple-reactions-list-item {
+  font-size: 1rem;
+}
+
+/* Selector réactions */
+.chat-wrapper .str-chat__message-reactions-container {
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+}
+
+/* Reply / Thread */
+.chat-wrapper .str-chat__message-reply-in-channel-button {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+}
+
+.chat-wrapper .str-chat__message-reply-in-channel-button:hover {
+  color: #6366f1;
+}
+
+.chat-wrapper .str-chat__thread {
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Timestamp */
+.chat-wrapper .str-chat__message-simple-timestamp {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.7rem;
+}
+
+/* Scrollbar */
+.chat-wrapper .str-chat__list::-webkit-scrollbar {
+  width: 4px;
+}
+.chat-wrapper .str-chat__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-wrapper .str-chat__list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Date separator */
+.chat-wrapper .str-chat__date-separator-line {
+  background: rgba(255, 255, 255, 0.08);
+}
+.chat-wrapper .str-chat__date-separator-date {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+}

@@ -6,6 +6,7 @@ import {
   getFeaturedEvents,
 } from '@/lib/events/repository';
 import type { EventFilters, CreateEventInput } from '@/lib/events/types';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 
 // GET /api/events - List events
 export async function GET(request: NextRequest) {
@@ -36,20 +37,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/events - Create event (admin only)
+// POST /api/events - Create event (admins/chefs de pôle uniquement)
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const check = await checkUserPermission('dashboard.admin');
+    if (!('allowed' in check)) {
+      return NextResponse.json({ error: check.error }, { status: check.status });
     }
-
-    // In a real app, check if user is admin
-    // For now, allow any authenticated user to create events
+    const { userId } = check;
 
     const body: CreateEventInput = await request.json();
 

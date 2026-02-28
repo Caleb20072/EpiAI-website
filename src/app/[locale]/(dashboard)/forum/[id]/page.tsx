@@ -218,10 +218,10 @@ export default function ThreadDetailPage() {
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
               <span className="text-white text-sm font-medium">
-                {thread.authorName.charAt(0).toUpperCase()}
+                {(thread.authorName ?? 'U').charAt(0).toUpperCase()}
               </span>
             </div>
-            <span className="text-white/70">{thread.authorName}</span>
+            <span className="text-white/70">{thread.authorName ?? 'Unknown user'}</span>
           </div>
           <div className="flex items-center gap-1 text-white/50 text-sm">
             <MessageSquare className="w-4 h-4" />

@@ -12,7 +12,8 @@
         "team": "L'équipe",
         "blog": "Blog",
         "projects": "Projets réalisés",
-        "join": "Rejoindre l'association"
+        "join": "Rejoindre l'association",
+        "sign_in": "Se connecter"
     },
     "About": {
         "title": "Notre Mission & Vision",

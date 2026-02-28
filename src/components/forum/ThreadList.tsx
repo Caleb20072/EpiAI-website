@@ -11,7 +11,8 @@ interface ThreadListProps {
   className?: string;
 }
 
-export function ThreadList({ threads, isLoading, className }: ThreadListProps) {
+export function ThreadList({ threads: threadsProp, isLoading, className }: ThreadListProps) {
+  const threads = threadsProp ?? [];
   if (isLoading) {
     return (
       <div className={cn('space-y-4', className)}>

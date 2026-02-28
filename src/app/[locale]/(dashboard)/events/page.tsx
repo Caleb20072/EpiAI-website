@@ -44,9 +44,9 @@ export default function EventsPage() {
         const response = await fetch(`/api/events?${queryParams.toString()}`);
         const data: PaginatedResponse<EventWithDetails> = await response.json();
 
-        setEvents(data.data);
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
+        setEvents(data.data ?? []);
+        setTotalPages(data.totalPages ?? 1);
+        setTotal(data.total ?? 0);
       } catch (error) {
         console.error('Error fetching events:', error);
       } finally {
@@ -78,11 +78,10 @@ export default function EventsPage() {
                 router.push(`/${locale}/events?${newParams.toString()}`);
               });
             }}
-            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              showPast
-                ? 'bg-white text-black'
-                : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
-            }`}
+            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${showPast
+              ? 'bg-white text-black'
+              : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
+              }`}
           >
             {showPast ? t('upcoming') : t('past')}
           </button>
@@ -117,11 +116,10 @@ export default function EventsPage() {
                   router.push(`/${locale}/events?${newParams.toString()}`);
                 });
               }}
-              className={`w-10 h-10 rounded-xl font-medium transition-all ${
-                page === currentPage
-                  ? 'bg-white text-black'
-                  : 'bg-white/5 text-white hover:bg-white/10'
-              }`}
+              className={`w-10 h-10 rounded-xl font-medium transition-all ${page === currentPage
+                ? 'bg-white text-black'
+                : 'bg-white/5 text-white hover:bg-white/10'
+                }`}
             >
               {page}
             </button>

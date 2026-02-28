@@ -103,3 +103,27 @@ iframe {
   opacity: 0.4;
   animation: float 10s infinite alternate;
 }
+
+/* ===== Math Formulas (EPI-AI Hero style) ===== */
+.math-formula:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+/* Nav link underline animation */
+.nav-link-underline {
+  position: relative;
+}
+.nav-link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+.nav-link-underline:hover::after,
+.nav-link-underline.active::after {
+  width: 100%;
+}

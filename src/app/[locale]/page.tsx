@@ -18,7 +18,7 @@ export default function Home() {
           src="/assets/hero-bg.jpg"
           alt="Background"
           fill
-          className="object-cover brightness-[0.3]"
+          className="object-cover"
           priority
           quality={100}
         />

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import {
   getThreads,
+  getThreadById,
   createThread,
   togglePinThread,
   toggleLockThread,
@@ -9,11 +10,22 @@ import {
 } from '@/lib/forum/repository';
 import type { ThreadFilters, CreateThreadInput } from '@/lib/forum/types';
 
-// GET /api/forum/threads - List threads
+// GET /api/forum/threads - List threads or get one by id
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
+    // Fetch single thread by id
+    const id = searchParams.get('id');
+    if (id) {
+      const thread = await getThreadById(id);
+      if (!thread) {
+        return NextResponse.json({ error: 'Thread not found' }, { status: 404 });
+      }
+      return NextResponse.json(thread);
+    }
+
+    // List threads with filters
     const filters: ThreadFilters = {
       categoryId: searchParams.get('category') || undefined,
       tag: searchParams.get('tag') || undefined,

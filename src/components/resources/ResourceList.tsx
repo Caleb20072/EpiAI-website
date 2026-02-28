@@ -11,7 +11,8 @@ interface ResourceListProps {
   className?: string;
 }
 
-export function ResourceList({ resources, isLoading, className }: ResourceListProps) {
+export function ResourceList({ resources: resourcesProp, isLoading, className }: ResourceListProps) {
+  const resources = resourcesProp ?? [];
   if (isLoading) {
     return (
       <div className={cn('space-y-4', className)}>

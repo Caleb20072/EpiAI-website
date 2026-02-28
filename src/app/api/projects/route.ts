@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { connectDB } from '@/lib/db/mongodb';
 
 export async function GET(request: NextRequest) {
@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const client = await clerkClient();
-        const user = await client.users.getUser(userId);
-        const roleId = user.publicMetadata?.roleId as string;
+        // Lire le rôle depuis les JWT claims (instantané, pas d'appel Clerk API)
+        const claims = (await auth()).sessionClaims as Record<string, unknown> | null;
+        const roleId = (claims?.publicMetadata as Record<string, unknown>)?.role as string || '';
 
         // Check if user has permission to create content
         const { hasPermission } = await import('@/lib/roles/utils');

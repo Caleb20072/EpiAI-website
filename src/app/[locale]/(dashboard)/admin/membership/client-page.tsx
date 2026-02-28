@@ -62,8 +62,8 @@ export default function MembershipAdminClient() {
       try {
         const response = await fetch(`/api/membership?status=${filter}&page=${page}&limit=10`);
         const data: PaginatedResponse<Application> = await response.json();
-        setApplications(data.data);
-        setTotalPages(data.totalPages);
+        setApplications(data.data ?? []);
+        setTotalPages(data.totalPages ?? 1);
       } catch (error) {
         console.error('Error fetching applications:', error);
       } finally {
@@ -83,8 +83,8 @@ export default function MembershipAdminClient() {
     fetch(`/api/membership?status=${filter}&page=${page}&limit=10`)
       .then(res => res.json())
       .then((data: PaginatedResponse<Application>) => {
-        setApplications(data.data);
-        setTotalPages(data.totalPages);
+        setApplications(data.data ?? []);
+        setTotalPages(data.totalPages ?? 1);
       });
   };
 

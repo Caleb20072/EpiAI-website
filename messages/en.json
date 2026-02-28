@@ -12,7 +12,8 @@
         "team": "Team",
         "blog": "Blog",
         "projects": "Projects",
-        "join": "Join the Association"
+        "join": "Join the Association",
+        "sign_in": "Sign in"
     },
     "About": {
         "title": "Our Mission & Vision",
@@ -326,7 +327,9 @@
         "rejected": "Rejected",
         "all": "All",
         "noApplications": "No applications found",
-        "noApplicationsDescription": "There are no applications matching your criteria."
+        "noApplicationsDescription": "There are no applications matching your criteria.",
+        "bulkInvite": "Bulk Invite",
+        "bulkInviteDescription": "Upload an Excel file to invite multiple users at once"
     },
     "ResetPassword": {
         "title": "Reset Password",
