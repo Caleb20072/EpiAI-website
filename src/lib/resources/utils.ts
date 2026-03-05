@@ -17,6 +17,7 @@ export function formatFileSize(bytes: number | undefined): string {
 // Format date
 export function formatDate(dateString: string, locale: 'en' | 'fr' = 'en'): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return locale === 'fr' ? 'Date invalide' : 'Invalid date';
   return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
@@ -27,6 +28,7 @@ export function formatDate(dateString: string, locale: 'en' | 'fr' = 'en'): stri
 // Format relative time
 export function formatDistanceToNow(dateString: string, locale: 'en' | 'fr' = 'en'): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return locale === 'fr' ? 'Date invalide' : 'Invalid date';
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -45,7 +47,7 @@ export function formatDistanceToNow(dateString: string, locale: 'en' | 'fr' = 'e
       if (locale === 'fr') {
         return `il y a ${count} ${interval.label}${count > 1 ? 's' : ''}`;
       }
-      return `${count} ${interval.label}${count > 1 ? 's' : ' ago'}`;
+      return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
     }
   }
 

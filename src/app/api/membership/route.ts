@@ -45,9 +45,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/membership - Liste des candidatures (admin)
+// GET /api/membership - Liste des candidatures (admin only)
 export async function GET(request: NextRequest) {
   try {
+    // Vérifier permission admin
+    const { checkUserPermission } = await import('@/lib/auth/checkPermission');
+    const permCheck = await checkUserPermission('membership.manage');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
+    }
+
     const { searchParams } = new URL(request.url);
 
     const status = searchParams.get('status') || 'all';

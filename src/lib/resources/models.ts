@@ -9,11 +9,12 @@ const ResourceSchema = new mongoose.Schema({
     enum: ['pdf', 'code', 'video', 'article', 'course', 'dataset'],
     required: true,
   },
-  url: { type: String, required: true },
+  url: { type: String },
   fileUrl: { type: String },
   fileSize: { type: Number },
   fileType: { type: String },
   thumbnailUrl: { type: String },
+  isDownloadable: { type: Boolean, default: false },
   categoryId: { type: String, required: true },
   tags: [{ type: String }],
   difficulty: {

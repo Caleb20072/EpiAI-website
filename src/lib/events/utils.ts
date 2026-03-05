@@ -1,6 +1,7 @@
 // Format date complète
 export function formatDate(dateString: string, locale: 'en' | 'fr' = 'en'): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return locale === 'fr' ? 'Date invalide' : 'Invalid date';
   return new Intl.DateTimeFormat(locale, {
     weekday: 'long',
     year: 'numeric',
@@ -14,6 +15,7 @@ export function formatDate(dateString: string, locale: 'en' | 'fr' = 'en'): stri
 // Format date courte
 export function formatShortDate(dateString: string, locale: 'en' | 'fr' = 'en'): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return locale === 'fr' ? 'Date invalide' : 'Invalid date';
   return new Intl.DateTimeFormat(locale, {
     month: 'short',
     day: 'numeric',
@@ -25,6 +27,7 @@ export function formatShortDate(dateString: string, locale: 'en' | 'fr' = 'en'):
 // Format date simple
 export function formatSimpleDate(dateString: string, locale: 'en' | 'fr' = 'en'): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return locale === 'fr' ? 'Date invalide' : 'Invalid date';
   return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'short',
@@ -35,6 +38,7 @@ export function formatSimpleDate(dateString: string, locale: 'en' | 'fr' = 'en')
 // Format relative time
 export function formatDistanceToNow(dateString: string, locale: 'en' | 'fr' = 'en'): string {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return locale === 'fr' ? 'Date invalide' : 'Invalid date';
   const now = new Date();
   const diffInSeconds = Math.floor((date.getTime() - now.getTime()) / 1000);
 
@@ -72,6 +76,7 @@ export function getCountdown(dateString: string): {
   isPast: boolean;
 } {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
   const now = new Date();
   const diffInSeconds = Math.floor((date.getTime() - now.getTime()) / 1000);
 

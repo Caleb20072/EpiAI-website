@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { sendWelcomeEmail } from '@/lib/email/resend';
+import { randomBytes } from 'crypto';
 
-const DEFAULT_PASSWORD = process.env.DEFAULT_MEMBER_PASSWORD || '00000000';
+// Générer un mot de passe sécurisé unique par utilisateur
+function generateSecurePassword(): string {
+  return randomBytes(12).toString('base64url').slice(0, 16) + '!A1';
+}
 
 interface UserRow {
   firstName: string;
@@ -151,10 +155,11 @@ export async function POST(request: NextRequest) {
               // User doesn't exist, continue
             }
 
-            // Créer un user
+            // Créer un user avec mot de passe unique
+            const userPassword = generateSecurePassword();
             await client.users.createUser({
               emailAddress: [user.email],
-              password: DEFAULT_PASSWORD,
+              password: userPassword,
               firstName: user.firstName,
               lastName: user.lastName,
               publicMetadata: {
@@ -168,7 +173,7 @@ export async function POST(request: NextRequest) {
               await sendWelcomeEmail({
                 email: user.email,
                 firstName: user.firstName,
-                password: DEFAULT_PASSWORD,
+                password: userPassword,
               });
             } catch (emailError) {
               console.error(`Failed to send email to ${user.email}:`, emailError);

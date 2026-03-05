@@ -1,160 +1,41 @@
-import { useTranslations } from 'next-intl';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import type { ITeamMember } from '@/lib/team/types';
 
 export default function TeamSection() {
-    const tTeam = useTranslations('Team');
-    const tMembers = useTranslations('Members');
+    const [members, setMembers] = useState<ITeamMember[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [locale, setLocale] = useState<'en' | 'fr'>('en');
 
-    // Executive Board with social links
-    const executiveBoard = [
-        {
-            role: 'president',
-            nameKey: 'pres_name',
-            image: '/assets/fresnel.jpg',
-            color: 'blue',
-            social: {
-                github: 'https://github.com/fresnel-cyber',
-                linkedin: 'https://www.linkedin.com/in/fresnel-satignon-58a84229b'
-            }
-        },
-        {
-            role: 'vice_president',
-            nameKey: 'vp_name',
-            image: '/assets/meric.jpg',
-            color: 'purple',
-            social: {
-                linkedin: 'https://www.linkedin.com/in/m%C3%A9ric-gbemetonou-235036233'
-            }
-        }
-    ];
+    useEffect(() => {
+        const path = window.location.pathname;
+        setLocale(path.startsWith('/fr') ? 'fr' : 'en');
+    }, []);
 
-    const poles = [
-        {
-            key: 'pole_training',
-            leadKey: 'pole_training_lead',
-            missionKey: 'pole_training_mission',
-            color: 'text-blue-300',
-            iconColor: 'text-blue-400',
-            isDual: false,
-            images: ['/assets/oscar.jpg'],
-            social: [{
-                github: 'https://github.com/racso27th',
-                linkedin: 'https://www.linkedin.com/in/oscar-gbenou-34b910302'
-            }]
-        },
-        {
-            key: 'pole_tech',
-            leadKey: 'pole_tech_leads',
-            missionKey: 'pole_tech_mission',
-            color: 'text-emerald-300',
-            iconColor: 'text-emerald-400',
-            isDual: true,
-            images: ['/assets/patrice.jpg', '/assets/rayann.jpg'],
-            social: [
-                {
-                    linkedin: 'https://www.linkedin.com/in/patrice-dagbe',
-                    github: 'https://github.com/PatriceDAGBE'
-                },
-                {
-                    github: 'https://github.com/rayann-epitech',
-                    linkedin: 'https://www.linkedin.com/in/rayann-bachabi-b17010312'
-                }
-            ]
-        },
-        {
-            key: 'pole_research',
-            leadKey: 'pole_research_leads',
-            missionKey: 'pole_research_mission',
-            color: 'text-purple-300',
-            iconColor: 'text-purple-400',
-            isDual: true,
-            images: ['/assets/ange.jpg', '/assets/nerry.jpg'],
-            social: [
-                {
-                    linkedin: 'https://www.linkedin.com/in/ange-adantchede-832273324',
-                    github: 'https://github.com/GhostGhis/'
-                },
-                {
-                    github: 'https://github.com/229Triple-V',
-                    linkedin: 'https://www.linkedin.com/in/nerry-missikpode-b452453a1'
-                }
-            ]
-        },
-        {
-            key: 'pole_international',
-            leadKey: 'pole_international_lead',
-            missionKey: 'pole_international_mission',
-            color: 'text-orange-300',
-            iconColor: 'text-orange-400',
-            isDual: false,
-            images: ['/assets/yannick.jpg'],
-            social: [{
-                github: 'https://github.com/Yannickakoto',
-                linkedin: 'https://www.linkedin.com/in/yannick-akoto-836730357'
-            }]
-        },
-        {
-            key: 'pole_events',
-            leadKey: 'pole_events_leads',
-            missionKey: 'pole_events_mission',
-            color: 'text-pink-300',
-            iconColor: 'text-pink-400',
-            isDual: true,
-            images: ['/assets/philipe.jpg', null],
-            social: [
-                {
-                    linkedin: 'https://www.linkedin.com/in/aphilippeme'
-                },
-                {
-                    linkedin: 'https://www.linkedin.com/in/priscilla-kanodi'
-                }
-            ]
-        },
-        {
-            key: 'pole_com',
-            leadKey: 'pole_com_leads',
-            missionKey: 'pole_com_mission',
-            color: 'text-cyan-300',
-            iconColor: 'text-cyan-400',
-            isDual: true,
-            images: [null, '/assets/Nathanael.jpg'],
-            social: [
-                {
-                    linkedin: 'https://www.linkedin.com/in/will-david-tchiakpe'
-                },
-                {
-                    github: 'https://github.com/Mambyves',
-                    linkedin: 'https://www.linkedin.com/in/yves-nathanael-tsika-mambani-1b8a412a5'
-                }
-            ]
-        },
-        {
-            key: 'pole_admin',
-            leadKey: 'pole_admin_leads',
-            missionKey: 'pole_admin_mission',
-            color: 'text-gray-300',
-            iconColor: 'text-gray-400',
-            isDual: true,
-            images: ['/assets/caleb.jpg', null],
-            social: [
-                {
-                    linkedin: 'https://www.linkedin.com/in/caleb-kpossou-325509339',
-                    github: 'https://github.com/Caleb20072'
-                },
-                {
-                    linkedin: 'https://www.linkedin.com/in/erwan-vitou-809ab6353',
-                    github: 'https://github.com/AlmightyGD'
-                }
-            ]
-        },
-    ];
+    useEffect(() => {
+        fetch('/api/team-members')
+            .then(res => res.ok ? res.json() : [])
+            .then(data => setMembers(Array.isArray(data) ? data : []))
+            .catch(() => setMembers([]))
+            .finally(() => setLoading(false));
+    }, []);
 
-    const mentors = [1, 2, 3, 4, 5, 6];
+    const executives = members.filter(m => m.section === 'executive');
+    const poles = members.filter(m => m.section === 'pole');
+    const mentors = members.filter(m => m.section === 'mentor');
 
-    // Reusable Social Icon Component
+    // Regrouper les poles par poleKey
+    const poleGroups = poles.reduce<Record<string, ITeamMember[]>>((acc, m) => {
+        const key = m.poleKey || m.role;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(m);
+        return acc;
+    }, {});
+
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
-
         return (
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors p-1" aria-label={type}>
                 {type === 'linkedin' ? (
@@ -166,113 +47,139 @@ export default function TeamSection() {
         );
     };
 
+    if (loading) {
+        return (
+            <section id="team" className="py-20 px-4 min-h-[400px] flex items-center justify-center">
+                <div className="animate-spin w-10 h-10 border-2 border-white/20 border-t-blue-400 rounded-full" />
+            </section>
+        );
+    }
+
+    if (members.length === 0) {
+        return (
+            <section id="team" className="py-20 px-4 text-center">
+                <p className="text-white/40">
+                    {locale === 'fr' ? 'Aucun membre de l\'équipe à afficher.' : 'No team members to display.'}
+                </p>
+            </section>
+        );
+    }
+
     return (
         <section id="team" className="py-20 px-4 min-h-screen flex flex-col justify-center relative">
-            {/* Background Glow */}
             <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-900/20 rounded-full blur-[100px] -z-10"></div>
             <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] -z-10"></div>
 
             <div className="max-w-6xl mx-auto w-full text-center z-10">
-                <h2 className="text-2xl md:text-3xl font-bold mb-12 text-white text-glow drop-shadow-lg">{tTeam('title')}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-12 text-white text-glow drop-shadow-lg">
+                    {locale === 'fr' ? 'Notre Équipe' : 'Our Team'}
+                </h2>
 
                 {/* Executive Board */}
-                <div className="mb-16">
-                    <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">{tTeam('board_title')}</h3>
-                    <div className="flex flex-col md:flex-row justify-center gap-6">
-                        {executiveBoard.map((member) => (
-                            <div key={member.role} className={`p-6 rounded-[1.5rem] bg-gradient-to-br from-${member.color}-900/30 to-slate-900/30 backdrop-blur-xl border border-white/10 hover:border-${member.color}-500/50 shadow-2xl flex-1 max-w-sm mx-auto transform hover:scale-105 transition-all duration-300 group hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]`}>
-                                <div className={`w-24 h-24 mx-auto mb-4 rounded-full bg-black border-2 border-${member.color}-400/30 flex items-center justify-center overflow-hidden group-hover:border-${member.color}-400/80 transition-colors shadow-[0_0_20px_rgba(59,130,246,0.2)] relative`}>
-                                    <Image src={member.image} alt={tMembers(member.nameKey)} fill className="object-cover" />
+                {executives.length > 0 && (
+                    <div className="mb-16">
+                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                            {locale === 'fr' ? 'Bureau Exécutif' : 'Executive Board'}
+                        </h3>
+                        <div className="flex flex-col md:flex-row justify-center gap-6">
+                            {executives.map((member) => (
+                                <div key={member.id} className="p-6 rounded-[1.5rem] bg-gradient-to-br from-blue-900/30 to-slate-900/30 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 shadow-2xl flex-1 max-w-sm mx-auto transform hover:scale-105 transition-all duration-300 group hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                                    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-black border-2 border-blue-400/30 flex items-center justify-center overflow-hidden group-hover:border-blue-400/80 transition-colors shadow-[0_0_20px_rgba(59,130,246,0.2)] relative">
+                                        {member.photoUrl ? (
+                                            <Image src={member.photoUrl} alt={member.name} fill className="object-cover" />
+                                        ) : (
+                                            <span className="text-2xl font-bold text-white/40">{member.name.charAt(0)}</span>
+                                        )}
+                                    </div>
+                                    <div className="text-sm text-blue-300 font-bold mb-1 tracking-widest uppercase">{member.role}</div>
+                                    <div className="text-lg font-bold text-white mb-3">{member.name}</div>
+                                    {member.description && <p className="text-xs text-gray-400 mb-3">{member.description}</p>}
+                                    <div className="flex justify-center gap-4 border-t border-white/10 pt-4">
+                                        <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
+                                        <SocialLink type="github" url={member.socialLinks.github} />
+                                    </div>
                                 </div>
-                                <div className={`text-sm text-${member.color}-300 font-bold mb-1 tracking-widest uppercase`}>{tTeam(member.role)}</div>
-                                <div className="text-lg font-bold text-white mb-3">{tMembers(member.nameKey)}</div>
-                                <div className="flex justify-center gap-4 border-t border-white/10 pt-4">
-                                    <SocialLink type="linkedin" url={member.social.linkedin} />
-                                    <SocialLink type="github" url={member.social.github} />
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Strategic Poles */}
-                <div className="mb-16">
-                    <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">{tTeam('poles_title')}</h3>
-                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {poles.map((pole) => (
-                            <div key={pole.key} className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 text-left flex items-start gap-4 group hover:-translate-y-1 hover:shadow-xl relative overflow-hidden">
-
-                                {/* Avatar Container */}
-                                <div className="flex shrink-0">
-                                    {/* First Avatar */}
-                                    <div className={`w-14 h-14 rounded-xl bg-[#020617] border border-white/10 flex items-center justify-center overflow-hidden z-20 shadow-lg ${pole.iconColor} ring-2 ring-[#020617] relative`}>
-                                        {pole.images?.[0] ? (
-                                            <Image src={pole.images[0]} alt="Lead" fill className="object-cover" />
-                                        ) : (
-                                            <svg className="w-7 h-7 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
-                                        )}
+                {Object.keys(poleGroups).length > 0 && (
+                    <div className="mb-16">
+                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                            {locale === 'fr' ? 'Pôles Stratégiques' : 'Strategic Poles'}
+                        </h3>
+                        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {Object.entries(poleGroups).map(([poleKey, poleMembers]) => (
+                                <div key={poleKey} className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 text-left flex items-start gap-4 group hover:-translate-y-1 hover:shadow-xl">
+                                    <div className="flex shrink-0">
+                                        {poleMembers.map((m, idx) => (
+                                            <div key={m.id} className={`w-14 h-14 rounded-xl bg-[#020617] border border-white/10 flex items-center justify-center overflow-hidden shadow-lg ring-2 ring-[#020617] relative ${idx > 0 ? '-ml-4 z-10' : 'z-20'}`}>
+                                                {m.photoUrl ? (
+                                                    <Image src={m.photoUrl} alt={m.name} fill className="object-cover" />
+                                                ) : (
+                                                    <span className="text-lg font-bold text-white/40">{m.name.charAt(0)}</span>
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
-
-                                    {/* Second Avatar (conditionally rendered) */}
-                                    {pole.isDual && (
-                                        <div className={`w-14 h-14 rounded-xl bg-[#020617] border border-white/10 flex items-center justify-center overflow-hidden -ml-4 z-10 shadow-lg ${pole.iconColor} ring-2 ring-[#020617] relative`}>
-                                            {pole.images?.[1] ? (
-                                                <Image src={pole.images[1]} alt="Co-Lead" fill className="object-cover" />
-                                            ) : (
-                                                <svg className="w-7 h-7 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
-                                            )}
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold mb-0.5 text-emerald-300 group-hover:brightness-125 transition-all leading-tight">
+                                            {poleMembers[0]?.role || poleKey}
+                                        </h4>
+                                        <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">
+                                            {poleMembers.length > 1 ? 'Co-Leads' : (poleMembers[0]?.title || 'Lead')}
                                         </div>
-                                    )}
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <h4 className={`text-sm font-bold mb-0.5 ${pole.color} group-hover:brightness-125 transition-all leading-tight shadow-black drop-shadow-md`}>{tTeam(pole.key)}</h4>
-                                    <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">{pole.isDual ? 'Co-Leads' : tTeam('role_lead')}</div>
-                                    <div className="text-white text-sm font-medium mb-1 truncate">{tMembers(pole.leadKey)}</div>
-                                    <p className="text-[10px] text-gray-400 mb-3 leading-tight min-h-[2.5em]">{tTeam(pole.missionKey)}</p>
-                                    <div className="flex gap-2">
-                                        {pole.isDual ? (
-                                            <>
-                                                <div className="flex gap-1 items-center">
-                                                    <span className="text-[8px] text-gray-500">1:</span>
-                                                    <SocialLink type="linkedin" url={pole.social[0]?.linkedin} />
-                                                    <SocialLink type="github" url={pole.social[0]?.github} />
-                                                </div>
-                                                <div className="w-px bg-white/10"></div>
-                                                <div className="flex gap-1 items-center">
-                                                    <span className="text-[8px] text-gray-500">2:</span>
-                                                    <SocialLink type="linkedin" url={pole.social[1]?.linkedin} />
-                                                    <SocialLink type="github" url={pole.social[1]?.github} />
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <SocialLink type="linkedin" url={pole.social[0]?.linkedin} />
-                                                <SocialLink type="github" url={pole.social[0]?.github} />
-                                            </>
+                                        <div className="text-white text-sm font-medium mb-1 truncate">
+                                            {poleMembers.map(m => m.name).join(' & ')}
+                                        </div>
+                                        {poleMembers[0]?.description && (
+                                            <p className="text-[10px] text-gray-400 mb-3 leading-tight min-h-[2.5em]">
+                                                {poleMembers[0].description}
+                                            </p>
                                         )}
+                                        <div className="flex gap-2">
+                                            {poleMembers.map((m, idx) => (
+                                                <div key={m.id} className="flex gap-1 items-center">
+                                                    {poleMembers.length > 1 && (
+                                                        <span className="text-[8px] text-gray-500">{idx + 1}:</span>
+                                                    )}
+                                                    <SocialLink type="linkedin" url={m.socialLinks.linkedin} />
+                                                    <SocialLink type="github" url={m.socialLinks.github} />
+                                                    {idx < poleMembers.length - 1 && <div className="w-px h-3 bg-white/10 mx-1" />}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Mentors */}
-                <div>
-                    <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">{tTeam('mentors_title')}</h3>
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {mentors.map((i) => (
-                            <div key={i} className="pl-2 pr-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 hover:border-white/30 transition-all cursor-default flex items-center gap-2 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-white/10 to-transparent flex items-center justify-center border border-white/10">
-                                    <svg className="w-3 h-3 text-white/50" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+                {mentors.length > 0 && (
+                    <div>
+                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                            {locale === 'fr' ? 'Nos Mentors' : 'Our Mentors'}
+                        </h3>
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {mentors.map((mentor) => (
+                                <div key={mentor.id} className="pl-2 pr-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 hover:border-white/30 transition-all cursor-default flex items-center gap-2 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-white/10 to-transparent flex items-center justify-center border border-white/10 overflow-hidden relative">
+                                        {mentor.photoUrl ? (
+                                            <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover" />
+                                        ) : (
+                                            <span className="text-[10px] font-bold text-white/50">{mentor.name.charAt(0)}</span>
+                                        )}
+                                    </div>
+                                    <span className="text-xs font-medium text-white/80">{mentor.name}</span>
                                 </div>
-                                <span className="text-xs font-medium text-white/80">{tMembers(`mentor_${i}`)}</span>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-
+                )}
             </div>
         </section>
     );

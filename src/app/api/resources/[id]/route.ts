@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import {
   getResourceById,
   updateResource,
@@ -7,6 +8,7 @@ import {
   toggleFeatureResource,
 } from '@/lib/resources/repository';
 import type { CreateResourceInput } from '@/lib/resources/types';
+import mongoose from 'mongoose';
 
 // GET /api/resources/[id] - Get single resource
 // PUT /api/resources/[id] - Update resource
@@ -17,6 +19,14 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { error: 'Resource not found' },
+        { status: 404 }
+      );
+    }
+
     const resource = await getResourceById(id);
 
     if (!resource) {
@@ -36,7 +46,7 @@ export async function GET(
   }
 }
 
-// PUT /api/resources/[id] - Update resource
+// PUT /api/resources/[id] - Update resource (owner or admin)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -52,6 +62,23 @@ export async function PUT(
     }
 
     const { id } = await params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
+
+    // Vérifier ownership ou permission admin
+    const existingResource = await getResourceById(id);
+    if (!existingResource) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
+    if (existingResource.createdBy !== userId) {
+      const permCheck = await checkUserPermission('content.edit.all');
+      if ('error' in permCheck) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
     const body: Partial<CreateResourceInput> = await request.json();
 
     const resource = await updateResource(id, body);
@@ -73,7 +100,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/resources/[id] - Delete resource
+// DELETE /api/resources/[id] - Delete resource (owner or admin)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -89,6 +116,23 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
+
+    // Vérifier ownership ou permission admin
+    const existingResource = await getResourceById(id);
+    if (!existingResource) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
+    if (existingResource.createdBy !== userId) {
+      const permCheck = await checkUserPermission('content.edit.all');
+      if ('error' in permCheck) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
     const success = await deleteResource(id);
 
     if (!success) {

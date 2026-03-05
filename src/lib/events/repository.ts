@@ -1,5 +1,6 @@
 import { connectToDatabase } from '@/lib/mongodb/client';
 import { Event, Registration } from './models';
+import { Activity } from '@/lib/activities/models';
 import { CATEGORIES as EVENT_CATEGORIES } from './categories';
 import type {
   EventWithDetails,
@@ -44,6 +45,7 @@ function transformEvent(doc: any, isRegistered: boolean = false): EventWithDetai
     isFeatured: doc.isFeatured || false,
     isRegistered,
     isPast,
+    linkedActivityId: doc.linkedActivityId,
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),
   };
@@ -159,16 +161,19 @@ export async function getFeaturedEvents(limit: number = 3): Promise<EventWithDet
 
 export async function createEvent(
   input: CreateEventInput,
-  creatorId: string
+  creatorId: string,
+  creatorName?: string
 ): Promise<EventWithDetails> {
   await connectToDatabase();
+
+  const eventDate = new Date(input.date);
 
   const event = await Event.create({
     title: input.title,
     description: input.description,
     content: input.content,
     categoryId: input.categoryId,
-    date: new Date(input.date),
+    date: eventDate,
     endDate: input.endDate ? new Date(input.endDate) : undefined,
     location: input.location,
     isOnline: input.isOnline || false,
@@ -181,6 +186,28 @@ export async function createEvent(
     registeredCount: 0,
     createdBy: creatorId,
   });
+
+  // Créer l'activité miroir côté Intranet
+  const registrationDeadline = new Date(eventDate.getTime() - 24 * 60 * 60 * 1000);
+  const mirrorActivity = await Activity.create({
+    title: input.title,
+    description: input.description,
+    date: eventDate,
+    endDate: input.endDate ? new Date(input.endDate) : undefined,
+    location: input.location,
+    isOnline: input.isOnline || false,
+    onlineLink: input.onlineLink,
+    registrationDeadline,
+    isMandatory: false,
+    isActive: true,
+    createdBy: creatorId,
+    createdByName: creatorName || 'Admin',
+    linkedEventId: event._id.toString(),
+  });
+
+  // Lier l'event à l'activité
+  event.linkedActivityId = mirrorActivity._id.toString();
+  await event.save();
 
   return transformEvent(event);
 }
@@ -207,9 +234,18 @@ export async function updateEvent(
 export async function deleteEvent(id: string): Promise<boolean> {
   await connectToDatabase();
 
+  const event = await Event.findById(id).lean();
   const result = await Event.findByIdAndDelete(id);
   // Supprimer les inscriptions
   await Registration.deleteMany({ eventId: id });
+
+  // Supprimer l'activité miroir si elle existe
+  if (event?.linkedActivityId) {
+    const { ActivityRegistration, Attendance } = await import('@/lib/activities/models');
+    await Activity.findByIdAndDelete(event.linkedActivityId);
+    await ActivityRegistration.deleteMany({ activityId: event.linkedActivityId });
+    await Attendance.deleteMany({ activityId: event.linkedActivityId });
+  }
 
   return !!result;
 }

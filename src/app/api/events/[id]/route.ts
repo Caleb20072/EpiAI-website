@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import {
   getEventById,
   updateEvent,
@@ -43,16 +44,12 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Vérifier permission admin
+    const permCheck = await checkUserPermission('dashboard.admin');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
     }
 
-    // In a real app, check if user is admin
     const body = await request.json();
     const { action, ...updates } = body;
 
@@ -93,16 +90,11 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Vérifier permission admin
+    const permCheck = await checkUserPermission('dashboard.admin');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
     }
-
-    // In a real app, check if user is admin
 
     const success = await deleteEvent(id);
 

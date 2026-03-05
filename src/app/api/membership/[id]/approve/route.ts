@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import { getApplicationById, reviewApplication } from '@/lib/membership/repository';
 import { sendWelcomeEmail } from '@/lib/email/resend';
 import type { ReviewApplicationInput } from '@/lib/membership/types';
+import { randomBytes } from 'crypto';
 
-// Configuration du mot de passe par défaut
-const DEFAULT_PASSWORD = process.env.DEFAULT_MEMBER_PASSWORD || 'EpiAI2025!';
+// Générer un mot de passe sécurisé aléatoire
+function generateSecurePassword(): string {
+  return randomBytes(12).toString('base64url').slice(0, 16) + '!A1';
+}
 
 // POST /api/membership/[id]/approve - Approuver une candidature
 export async function POST(
@@ -14,17 +17,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId: reviewerId } = await auth();
-
-    if (!reviewerId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Vérifier permission côté serveur
+    const permCheck = await checkUserPermission('membership.manage');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
     }
-
-    // Vérifier que l'utilisateur a la permission d'approuver
-    // President (9), Admin General (8), ou Chef Pole (7) peuvent approve
-    const { userId } = await auth();
-    // Note: La vérification de rôle se fait via PermissionGate dans le frontend
-    // Ici on fait confiance au middleware Clerk
+    const reviewerId = permCheck.userId;
 
     const { id } = await params;
     const body: ReviewApplicationInput = await request.json();
@@ -48,11 +46,14 @@ export async function POST(
     if (body.status === 'approved') {
       console.log('[Approve API] Creating Clerk account for:', application.email);
 
+      // Générer un mot de passe sécurisé unique
+      const generatedPassword = generateSecurePassword();
+
       // Créer le compte Clerk
       const client = await clerkClient();
       const clerkUser = await client.users.createUser({
         emailAddress: [application.email],
-        password: DEFAULT_PASSWORD,
+        password: generatedPassword,
         firstName: application.firstName,
         lastName: application.lastName,
         skipPasswordChecks: true,
@@ -73,7 +74,7 @@ export async function POST(
         const emailResult = await sendWelcomeEmail({
           email: application.email,
           firstName: application.firstName,
-          password: DEFAULT_PASSWORD,
+          password: generatedPassword,
         });
         console.log('[Approve API] Email sent successfully:', emailResult);
         emailSentSuccessfully = true;
@@ -95,7 +96,7 @@ export async function POST(
         emailSent: emailSentSuccessfully,
         credentials: emailSentSuccessfully ? null : {
           email: application.email,
-          password: DEFAULT_PASSWORD,
+          password: generatedPassword,
           note: 'Email failed to send. User must use these credentials to log in.',
         },
       });

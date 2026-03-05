@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import {
   getThreads,
   getThreadById,
@@ -85,16 +86,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PATCH /api/forum/threads - Toggle pin/lock or delete
+// PATCH /api/forum/threads - Toggle pin/lock (admin only)
 export async function PATCH(request: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Pin/Lock sont des actions admin
+    const permCheck = await checkUserPermission('dashboard.admin');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
     }
 
     const body = await request.json();
@@ -162,7 +160,16 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // In a real app, check if user is admin or thread author
+    // Vérifier: admin peut tout supprimer, sinon vérifier l'auteur
+    const permCheck = await checkUserPermission('dashboard.admin');
+    if ('error' in permCheck) {
+      // Si pas admin, vérifier si c'est l'auteur du thread
+      const thread = await getThreadById(threadId);
+      if (!thread || thread.authorId !== userId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
     const success = await deleteThread(threadId);
 
     if (!success) {

@@ -12,22 +12,28 @@ function generateSecurePassword(): string {
   const all = uppercase + lowercase + numbers + special;
   let password = '';
 
+  const { randomInt } = require('crypto');
   // Au moins une lettre majuscule
-  password += uppercase[Math.floor(Math.random() * uppercase.length)];
+  password += uppercase[randomInt(uppercase.length)];
   // Au moins une lettre minuscule
-  password += lowercase[Math.floor(Math.random() * lowercase.length)];
+  password += lowercase[randomInt(lowercase.length)];
   // Au moins un chiffre
-  password += numbers[Math.floor(Math.random() * numbers.length)];
+  password += numbers[randomInt(numbers.length)];
   // Au moins un caractère spécial
-  password += special[Math.floor(Math.random() * special.length)];
+  password += special[randomInt(special.length)];
 
   // Remplir le reste (16 caractères total)
   for (let i = 4; i < 16; i++) {
-    password += all[Math.floor(Math.random() * all.length)];
+    password += all[randomInt(all.length)];
   }
 
-  // Mélanger le mot de passe
-  return password.split('').sort(() => Math.random() - 0.5).join('');
+  // Mélanger le mot de passe avec un shuffle cryptographiquement sûr
+  const arr = password.split('');
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.join('');
 }
 
 // Vérifier si des admins existent déjà
@@ -40,8 +46,10 @@ export async function hasAnyAdmin(): Promise<boolean> {
 
     // Vérifier si un utilisateur a un rôle admin (level >= 7)
     return users.data.some((user) => {
-      const roleId = (user.publicMetadata?.roleId as number) || 0;
-      return roleId >= 7; // chef_pole and above
+      const roleLevel = Number(user.publicMetadata?.roleId) || 0;
+      const roleStr = (user.publicMetadata?.role as string) || '';
+      // Vérifier par level numérique ou par nom de rôle
+      return roleLevel >= 7 || ['president', 'admin_general', 'chef_pole'].includes(roleStr);
     });
   } catch (error) {
     console.error('[hasAnyAdmin] Error:', error);

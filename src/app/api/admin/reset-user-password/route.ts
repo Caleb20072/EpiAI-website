@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 
 // POST /api/admin/reset-user-password - Reset a user's password
 export async function POST(request: NextRequest) {
     try {
-        const { userId: adminId } = await auth();
-
-        if (!adminId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // Vérifier que l'utilisateur a la permission admin
+        const permCheck = await checkUserPermission('admin.users.manage');
+        if ('error' in permCheck) {
+            return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
         }
 
         const body = await request.json();

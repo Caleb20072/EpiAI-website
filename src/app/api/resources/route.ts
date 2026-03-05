@@ -48,10 +48,17 @@ export async function POST(request: NextRequest) {
 
     const body: CreateResourceInput = await request.json();
 
-    // Validation
-    if (!body.title || !body.description || !body.type || !body.url || !body.categoryId) {
+    // Validation: url ou fileUrl doit être fourni
+    if (!body.title || !body.description || !body.type || !body.categoryId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    if (!body.url && !body.fileUrl) {
+      return NextResponse.json(
+        { error: 'You must provide a URL, an uploaded file, or both' },
         { status: 400 }
       );
     }

@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import { getApplicationById, deleteApplication } from '@/lib/membership/repository';
 
-// GET /api/membership/[id] - Récupérer une candidature
+// GET /api/membership/[id] - Récupérer une candidature (admin only)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Vérifier permission admin
+    const permCheck = await checkUserPermission('membership.manage');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
+    }
+
     const { id } = await params;
     const application = await getApplicationById(id);
 
@@ -34,10 +41,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Vérifier permission admin
+    const permCheck = await checkUserPermission('membership.manage');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
     }
 
     const { id } = await params;

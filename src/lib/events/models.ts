@@ -18,11 +18,13 @@ const EventSchema = new mongoose.Schema({
   isPublished: { type: Boolean, default: false },
   isFeatured: { type: Boolean, default: false },
   createdBy: { type: String, required: true },
+  linkedActivityId: { type: String }, // Activité miroir côté Intranet
 }, {
   timestamps: true,
 });
 
 // Index pour la recherche
+EventSchema.index({ linkedActivityId: 1 });
 EventSchema.index({ title: 'text', description: 'text', content: 'text' });
 EventSchema.index({ date: 1, isPublished: 1 });
 EventSchema.index({ categoryId: 1, date: -1 });

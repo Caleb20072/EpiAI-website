@@ -54,7 +54,9 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
 
 export async function getDatabase() {
   const conn = await connectToDatabase();
-  return conn.connection.db;
+  const db = conn.connection.db;
+  if (!db) throw new Error('Database connection not established');
+  return db;
 }
 
 export { mongoose };

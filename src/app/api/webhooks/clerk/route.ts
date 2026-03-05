@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 import { clerkClient } from '@clerk/nextjs/server';
-import { connectToDatabase } from '@/lib/mongodb/client';
+import { getDatabase } from '@/lib/mongodb/client';
 import type { UserWebhookPayload } from '@/lib/webhooks/types';
 
 // Disable body parsing for raw body access
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         console.log(`Processing user.created event for user ${id}`);
 
         // Connect to database
-        const { db } = await connectToDatabase();
+        const db = await getDatabase();
 
         // Check if user already exists
         const existingUser = await db.collection('users').findOne({ clerkId: id });
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 
         console.log(`Processing user.updated event for user ${id}`);
 
-        const { db } = await connectToDatabase();
+        const db = await getDatabase();
 
         await db.collection('users').updateOne(
           { clerkId: id },
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
 
         console.log(`Processing user.deleted event for user ${id}`);
 
-        const { db } = await connectToDatabase();
+        const db = await getDatabase();
 
         await db.collection('users').deleteOne({ clerkId: id });
 

@@ -8,7 +8,7 @@ import { EventDetail } from '@/components/events/EventDetail';
 import { RegistrationForm } from '@/components/events/RegistrationForm';
 import { Countdown } from '@/components/events/Countdown';
 import type { EventWithDetails } from '@/lib/events/types';
-import { ArrowLeft, Calendar, Users, Clock } from 'lucide-react';
+import { ArrowLeft, Calendar, Users, Clock, ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export default function EventDetailPage() {
@@ -27,7 +27,7 @@ export default function EventDetailPage() {
   useEffect(() => {
     async function fetchEvent() {
       try {
-        const response = await fetch(`/api/events?id=${eventId}`);
+        const response = await fetch(`/api/events/${eventId}`);
         if (!response.ok) {
           throw new Error('Event not found');
         }
@@ -127,6 +127,15 @@ export default function EventDetailPage() {
             >
               Edit Event
             </Link>
+            {event.linkedActivityId && (
+              <Link
+                href={`/${locale}/intranet/${event.linkedActivityId}`}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors text-sm border border-emerald-500/30"
+              >
+                <ClipboardList className="w-4 h-4" />
+                {locale === 'fr' ? 'Gérer présence' : 'Manage Attendance'}
+              </Link>
+            )}
           </div>
         </div>
       )}

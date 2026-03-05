@@ -36,7 +36,11 @@ export type Permission =
   | 'dashboard.access'
   | 'dashboard.admin'
   | 'profile.edit'
-  | 'profile.edit.others';
+  | 'profile.edit.others'
+  | 'activities.create'
+  | 'activities.manage'
+  | 'attendance.manage'
+  | 'team.manage';
 
 // Roles disponibles
 export const ROLE_IDS = {

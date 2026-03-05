@@ -23,6 +23,9 @@ import {
   UserPlus,
   ArrowLeft,
   Plus,
+  ClipboardList,
+  UserCheck,
+  UsersRound,
 } from 'lucide-react';
 import { UserButton, useClerk, useUser } from '@clerk/nextjs';
 import { getRoleName } from '@/lib/roles/utils';
@@ -75,6 +78,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       active: pathname.startsWith(`/${locale}/events`),
     },
     {
+      label: 'Intranet',
+      href: `/${locale}/intranet`,
+      icon: ClipboardList,
+      active: pathname.startsWith(`/${locale}/intranet`),
+    },
+    {
       label: 'Profile',
       href: `/${locale}/profile`,
       icon: User,
@@ -96,6 +105,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: `/${locale}/admin/projects`,
       icon: FolderOpen,
       active: pathname.startsWith(`/${locale}/admin/projects`),
+      adminOnly: true,
+    },
+    {
+      label: 'Team',
+      href: `/${locale}/admin/team`,
+      icon: UsersRound,
+      active: pathname.startsWith(`/${locale}/admin/team`),
+      adminOnly: true,
+    },
+    {
+      label: 'Attendance',
+      href: `/${locale}/admin/attendance`,
+      icon: UserCheck,
+      active: pathname.startsWith(`/${locale}/admin/attendance`),
       adminOnly: true,
     },
     {

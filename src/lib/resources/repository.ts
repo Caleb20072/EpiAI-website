@@ -45,6 +45,7 @@ function transformResource(doc: any): ResourceWithDetails {
     fileSize: doc.fileSize,
     fileType: doc.fileType,
     thumbnailUrl: doc.thumbnailUrl,
+    isDownloadable: doc.isDownloadable || false,
     categoryId: doc.categoryId,
     categoryName: category?.name.en || 'General',
     categoryColor: category?.color || 'text-gray-400',

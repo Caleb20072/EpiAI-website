@@ -92,6 +92,14 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
                 {formatFileSize(resource.fileSize)}
               </span>
             )}
+
+            {/* Downloadable badge */}
+            {resource.isDownloadable && (
+              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400/80 text-xs border border-emerald-500/20 flex items-center gap-1">
+                <Download className="w-3 h-3" />
+                {locale === 'fr' ? 'Téléchargeable' : 'Downloadable'}
+              </span>
+            )}
           </div>
 
           {/* Tags */}
@@ -120,10 +128,12 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
                 <Eye className="w-3.5 h-3.5" />
                 {resource.viewCount}
               </span>
-              <span className="flex items-center gap-1">
-                <Download className="w-3.5 h-3.5" />
-                {resource.downloadCount}
-              </span>
+              {resource.isDownloadable && (
+                <span className="flex items-center gap-1 text-emerald-400/70">
+                  <Download className="w-3.5 h-3.5" />
+                  {resource.downloadCount}
+                </span>
+              )}
             </div>
             <span className="text-white/40">{timeAgo}</span>
           </div>

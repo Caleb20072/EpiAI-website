@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import {
   getEvents,
   createEvent,
@@ -56,7 +56,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const event = await createEvent(body, userId);
+    // Récupérer le nom du créateur pour l'activité miroir
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const creatorName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Admin';
+
+    const event = await createEvent(body, userId, creatorName);
 
     return NextResponse.json(event, { status: 201 });
   } catch (error: any) {

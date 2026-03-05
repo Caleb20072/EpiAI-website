@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import {
   getRepliesByThreadId,
   createReply,
   updateReply,
   deleteReply,
+  getReplyById,
 } from '@/lib/forum/repository';
 import type { CreateReplyInput } from '@/lib/forum/types';
 
@@ -135,7 +137,15 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // In a real app, check if user is admin or reply author
+    // Vérifier: admin ou auteur de la réponse
+    const permCheck = await checkUserPermission('dashboard.admin');
+    if ('error' in permCheck) {
+      const reply = await getReplyById(replyId);
+      if (!reply || reply.authorId !== userId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
     const success = await deleteReply(replyId);
 
     if (!success) {

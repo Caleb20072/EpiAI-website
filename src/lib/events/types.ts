@@ -31,6 +31,7 @@ export interface IEvent extends Document {
   isPublished: boolean;
   isFeatured: boolean;
   createdBy: string;
+  linkedActivityId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,6 +70,7 @@ export interface EventWithDetails {
   isFeatured: boolean;
   isRegistered?: boolean;
   isPast: boolean;
+  linkedActivityId?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -38,7 +38,7 @@ export const ROLES: Record<string, RoleDefinition> = {
     id: 'mentor',
     name: { en: 'Mentor', fr: 'Mentor' },
     level: 5,
-    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'profile.edit'],
+    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'profile.edit', 'resources.create', 'resources.manage'],
     color: 'text-indigo-400',
     icon: 'GraduationCap',
   },
@@ -46,15 +46,23 @@ export const ROLES: Record<string, RoleDefinition> = {
     id: 'mentor_senior',
     name: { en: 'Senior Mentor', fr: 'Mentor Senior' },
     level: 6,
-    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'content.edit.all', 'profile.edit'],
+    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'content.edit.all', 'profile.edit', 'resources.create', 'resources.manage'],
     color: 'text-purple-400',
     icon: 'Award',
+  },
+  logistique: {
+    id: 'logistique',
+    name: { en: 'Logistics', fr: 'Logistique' },
+    level: 7,
+    permissions: ['dashboard.access', 'dashboard.admin', 'content.create', 'content.edit.all', 'profile.edit', 'resources.create', 'resources.manage', 'activities.create', 'activities.manage'],
+    color: 'text-lime-400',
+    icon: 'Truck',
   },
   chef_pole: {
     id: 'chef_pole',
     name: { en: 'Pole Lead', fr: 'Chef de Pôle' },
     level: 7,
-    permissions: ['dashboard.access', 'dashboard.admin', 'content.create', 'content.edit.all', 'profile.edit', 'admin.roles.assign', 'membership.manage'],
+    permissions: ['dashboard.access', 'dashboard.admin', 'content.create', 'content.edit.all', 'profile.edit', 'admin.roles.assign', 'membership.manage', 'resources.create', 'resources.manage', 'activities.create', 'activities.manage'],
     color: 'text-amber-400',
     icon: 'Building2',
   },
@@ -62,7 +70,7 @@ export const ROLES: Record<string, RoleDefinition> = {
     id: 'admin_general',
     name: { en: 'General Admin', fr: 'Admin Général' },
     level: 8,
-    permissions: ['dashboard.access', 'dashboard.admin', 'admin.roles.assign', 'admin.users.manage', 'content.create', 'content.edit.all', 'profile.edit', 'profile.edit.others', 'membership.manage'],
+    permissions: ['dashboard.access', 'dashboard.admin', 'admin.roles.assign', 'admin.users.manage', 'content.create', 'content.edit.all', 'profile.edit', 'profile.edit.others', 'membership.manage', 'resources.create', 'resources.manage', 'activities.create', 'activities.manage', 'attendance.manage', 'team.manage'],
     color: 'text-orange-500',
     icon: 'Shield',
   },
@@ -70,7 +78,7 @@ export const ROLES: Record<string, RoleDefinition> = {
     id: 'president',
     name: { en: 'President', fr: 'Président' },
     level: 9,
-    permissions: ['admin.users.manage', 'admin.roles.assign', 'dashboard.access', 'dashboard.admin', 'content.create', 'content.edit.all', 'profile.edit', 'profile.edit.others', 'membership.manage'],
+    permissions: ['admin.users.manage', 'admin.roles.assign', 'dashboard.access', 'dashboard.admin', 'content.create', 'content.edit.all', 'profile.edit', 'profile.edit.others', 'membership.manage', 'resources.create', 'resources.manage', 'activities.create', 'activities.manage', 'attendance.manage', 'team.manage'],
     color: 'text-red-500',
     icon: 'Crown',
   },
@@ -83,7 +91,7 @@ export const DEFAULT_ROLE = 'nouveau_membre';
 export const ROLES_WITH_ASSIGN_PERMISSION = ['president', 'admin_general', 'chef_pole'];
 
 // Roles avec acces dashboard admin
-export const ADMIN_ROLES = ['president', 'admin_general', 'chef_pole'];
+export const ADMIN_ROLES = ['president', 'admin_general', 'chef_pole', 'logistique'];
 
 // Obtenir le role par defaut
 export function getDefaultRole(): RoleDefinition {

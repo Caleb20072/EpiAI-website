@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
+import { NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
 
 // Routes protégées (nécessitent une authentification)
@@ -47,17 +48,23 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // Exclure les fichiers statiques (assets, images, etc.)
+  // Exclure les fichiers statiques (assets, images, uploads, etc.)
   const pathname = req.nextUrl.pathname;
-  if (pathname.startsWith('/assets/') || pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot)$/)) {
+  if (
+    pathname.startsWith('/assets/') ||
+    pathname.startsWith('/uploads/') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|pdf|docx?|xlsx?|pptx?|zip|rar|gz|tar|mp4|webm|mp3|wav|csv|json|xml|txt)$/)
+  ) {
     return;
   }
 
   // Routes publiques ne nécessitent pas d'authentification
   if (isPublicRoute(req)) {
     // For routes that need i18n (page routes, not API routes)
-    if (!req.nextUrl.pathname.startsWith('/api')) {
-      return createMiddleware(routing)(req);
+    if (!pathname.startsWith('/api')) {
+      const response = createMiddleware(routing)(req);
+      response.headers.set('x-pathname', pathname);
+      return response;
     }
     return;
   }
@@ -68,9 +75,16 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // For routes that need i18n (page routes, not API routes)
-  if (!req.nextUrl.pathname.startsWith('/api')) {
-    return createMiddleware(routing)(req);
+  if (!pathname.startsWith('/api')) {
+    const response = createMiddleware(routing)(req);
+    response.headers.set('x-pathname', pathname);
+    return response;
   }
+
+  // For API routes, inject x-pathname header
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-pathname', pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }, {
   // Configurer Clerk pour inclure publicMetadata dans le session token
   signInUrl: '/sign-in',

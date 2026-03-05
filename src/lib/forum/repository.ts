@@ -244,6 +244,13 @@ export async function updateReply(
   return reply ? transformReply(reply) : null;
 }
 
+export async function getReplyById(id: string): Promise<ReplyWithAuthor | null> {
+  await connectToDatabase();
+
+  const reply = await Reply.findById(id).lean();
+  return reply ? transformReply(reply) : null;
+}
+
 export async function deleteReply(id: string): Promise<boolean> {
   await connectToDatabase();
 

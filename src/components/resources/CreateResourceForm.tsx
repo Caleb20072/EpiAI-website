@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CATEGORIES, TAGS } from '@/lib/resources/categories';
 import { cn } from '@/lib/utils/cn';
@@ -15,8 +15,13 @@ import {
   X,
   Plus,
   Loader2,
+  Link as LinkIcon,
+  File,
+  Check,
+  Download,
+  Eye,
 } from 'lucide-react';
-import { getTypeLabel } from '@/lib/resources/utils';
+import { getTypeLabel, formatFileSize } from '@/lib/resources/utils';
 
 const typeOptions = [
   { id: 'pdf', icon: FileText, label: 'PDF Document', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -37,8 +42,10 @@ export function CreateResourceForm() {
   const params = useParams();
   const router = useRouter();
   const locale = (params.locale as string) || 'en';
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
@@ -46,25 +53,114 @@ export function CreateResourceForm() {
     description: '',
     type: 'article' as 'pdf' | 'code' | 'video' | 'article' | 'course' | 'dataset',
     url: '',
+    fileUrl: '',
+    fileSize: 0,
+    fileType: '',
     categoryId: 'ia',
     tags: [] as string[],
     difficulty: 'beginner' as 'beginner' | 'intermediate' | 'advanced',
     author: '',
     duration: '',
+    isDownloadable: false,
   });
 
+  const [uploadedFileName, setUploadedFileName] = useState('');
   const [newTag, setNewTag] = useState('');
+
+  const hasUrl = formData.url.trim().length > 0;
+  const hasFile = formData.fileUrl.length > 0;
+  const hasUrlOrFile = hasUrl || hasFile;
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const response = await fetch('/api/upload/resource', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      const data = await response.json();
+
+      setFormData(prev => ({
+        ...prev,
+        fileUrl: data.fileUrl,
+        fileSize: data.fileSize,
+        fileType: data.fileType,
+      }));
+      setUploadedFileName(file.name);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setFormData(prev => ({
+      ...prev,
+      fileUrl: '',
+      fileSize: 0,
+      fileType: '',
+    }));
+    setUploadedFileName('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
+    if (!hasUrlOrFile) {
+      setError('You must provide a URL, upload a file, or both.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      const payload: Record<string, any> = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        categoryId: formData.categoryId,
+        tags: formData.tags,
+        difficulty: formData.difficulty,
+        isDownloadable: formData.isDownloadable,
+      };
+
+      if (formData.url.trim()) payload.url = formData.url.trim();
+      if (formData.fileUrl) {
+        payload.fileUrl = formData.fileUrl;
+        payload.fileSize = formData.fileSize;
+        payload.fileType = formData.fileType;
+      }
+      if (formData.author.trim()) payload.author = formData.author.trim();
+      if (formData.duration.trim()) payload.duration = formData.duration.trim();
+
+      // If no URL provided but file uploaded, use fileUrl as url fallback
+      if (!payload.url && payload.fileUrl) {
+        payload.url = payload.fileUrl;
+      }
+
       const response = await fetch('/api/resources', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -170,30 +266,133 @@ export function CreateResourceForm() {
         </div>
       </div>
 
-      {/* URL / Link */}
-      <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
-          {formData.type === 'pdf' || formData.type === 'code' || formData.type === 'dataset'
-            ? 'File URL *'
-            : 'Resource URL *'}
+      {/* Resource Source - URL and/or File Upload */}
+      <div className="space-y-4">
+        <label className="block text-sm font-medium text-white/70">
+          Resource Source *
         </label>
-        <input
-          type="url"
-          value={formData.url}
-          onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
-          placeholder={
-            formData.type === 'pdf' || formData.type === 'code' || formData.type === 'dataset'
-              ? 'https://example.com/file.pdf'
-              : 'https://example.com/article'
-          }
-          required
-        />
-        <p className="mt-1 text-xs text-white/40">
-          {formData.type === 'pdf' || formData.type === 'code' || formData.type === 'dataset'
-            ? 'Direct link to the file (Google Drive, GitHub, etc.)'
-            : 'Link to the resource (article, video, course, etc.)'}
+        <p className="text-xs text-white/40 -mt-2">
+          Provide a URL, upload a file, or both.
         </p>
+
+        {/* URL Input */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <LinkIcon className="w-4 h-4 text-white/50" />
+            <span className="text-sm text-white/60">URL Link</span>
+            {hasUrl && <Check className="w-4 h-4 text-emerald-400" />}
+          </div>
+          <input
+            type="url"
+            value={formData.url}
+            onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+            placeholder="https://example.com/resource"
+          />
+        </div>
+
+        {/* File Upload */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Upload className="w-4 h-4 text-white/50" />
+            <span className="text-sm text-white/60">Upload File</span>
+            {hasFile && <Check className="w-4 h-4 text-emerald-400" />}
+          </div>
+
+          {hasFile ? (
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+              <File className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white truncate">{uploadedFileName}</p>
+                <p className="text-xs text-white/40">{formatFileSize(formData.fileSize)}</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveFile}
+                className="p-1 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={() => !isUploading && fileInputRef.current?.click()}
+              className={cn(
+                'flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed transition-all cursor-pointer',
+                isUploading
+                  ? 'border-white/20 bg-white/5'
+                  : 'border-white/10 hover:border-white/20 hover:bg-white/5'
+              )}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-6 h-6 text-white/50 animate-spin" />
+                  <span className="text-sm text-white/50">Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-6 h-6 text-white/40" />
+                  <span className="text-sm text-white/50">Click to upload a file</span>
+                  <span className="text-xs text-white/30">Max 50MB</span>
+                </>
+              )}
+            </div>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </div>
+
+        {!hasUrlOrFile && (
+          <p className="text-xs text-amber-400/80">
+            Please provide at least a URL or upload a file.
+          </p>
+        )}
+      </div>
+
+      {/* Downloadable Toggle */}
+      <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              'p-2 rounded-lg',
+              formData.isDownloadable
+                ? 'bg-emerald-500/20 text-emerald-400'
+                : 'bg-white/10 text-white/40'
+            )}>
+              {formData.isDownloadable ? <Download className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">
+                {formData.isDownloadable ? 'Downloadable' : 'View only'}
+              </p>
+              <p className="text-xs text-white/40">
+                {formData.isDownloadable
+                  ? 'Users can download this resource'
+                  : 'Users can only view this resource (no download)'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, isDownloadable: !prev.isDownloadable }))}
+            className={cn(
+              'relative w-12 h-7 rounded-full transition-all',
+              formData.isDownloadable ? 'bg-emerald-500' : 'bg-white/20'
+            )}
+          >
+            <span
+              className={cn(
+                'absolute top-1 w-5 h-5 rounded-full bg-white transition-all',
+                formData.isDownloadable ? 'left-6' : 'left-1'
+              )}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Category */}
@@ -319,7 +518,7 @@ export function CreateResourceForm() {
       <div className="flex gap-4 pt-4">
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || isUploading}
           className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (

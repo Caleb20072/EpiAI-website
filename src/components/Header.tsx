@@ -9,14 +9,18 @@ import { motion } from 'framer-motion';
 const dashboardRoutes = [
     '/dashboard', '/admin', '/profile', '/settings',
     '/resources', '/forum', '/events', '/my-registrations',
-    '/my-resources', '/change-password',
+    '/my-resources', '/change-password', '/intranet',
 ];
 
 export default function Header() {
     const t = useTranslations('Header');
     const pathname = usePathname();
 
-    const isDashboardRoute = dashboardRoutes.some((route) => pathname.includes(route));
+    // Split pathname into segments so '/en/events' matches '/events' reliably
+    const segments = pathname.split('/');
+    const isDashboardRoute = dashboardRoutes.some((route) =>
+        segments.includes(route.replace('/', ''))
+    );
     if (isDashboardRoute) return null;
 
     const navLinks = [

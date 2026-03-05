@@ -4,7 +4,7 @@ import "../globals.css";
 import { getMessages } from 'next-intl/server';
 import Chatbot from '@/components/Chatbot';
 import { Providers } from '@/app/providers';
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,7 +47,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers locale={locale} messages={messages}>
-          <Header />
+          <HeaderWrapper />
           {children}
           <Chatbot />
         </Providers>

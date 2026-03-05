@@ -132,7 +132,7 @@ export async function DELETE(
     context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { userId } = await auth();
+        const { userId, sessionClaims } = await auth();
 
         if (!userId) {
             return NextResponse.json(
@@ -141,7 +141,7 @@ export async function DELETE(
             );
         }
 
-        // Lire le rôle depuis les JWT claims (rapide, pas d'appel Clerk API)
+        // Lire le rôle depuis les JWT claims
         const claims2 = sessionClaims as Record<string, unknown> | null;
         const roleId = (claims2?.publicMetadata as Record<string, unknown>)?.role as string || '';
 

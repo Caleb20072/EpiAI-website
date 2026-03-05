@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { DifficultyBadge } from '@/components/resources/DifficultyBadge';
+import { FileViewerModal } from '@/components/resources/FileViewerModal';
 import { formatFileSize, formatDistanceToNow, formatDate, getTypeLabel, getDifficultyInfo } from '@/lib/resources/utils';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -24,6 +25,7 @@ import {
   Edit,
   Trash2,
   Share2,
+  Check,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ResourceWithDetails } from '@/lib/resources/types';
@@ -49,6 +51,7 @@ export default function ResourceDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showViewer, setShowViewer] = useState(false);
 
   useEffect(() => {
     async function fetchResource() {
@@ -69,18 +72,23 @@ export default function ResourceDetailPage() {
     fetchResource();
   }, [resourceId]);
 
-  const handleDownload = async () => {
-    if (!resource) return;
+  // Check if url is a real external link (not a local uploaded file path)
+  const externalUrl = resource?.url && !resource.url.startsWith('/uploads/') ? resource.url : null;
+  const hasUploadedFile = !!(resource?.fileUrl || resource?.url?.startsWith('/uploads/'));
 
-    // Increment download count
-    try {
-      await fetch(`/api/resources/${resourceId}/download`, { method: 'POST' });
-    } catch (error) {
-      console.error('Error incrementing download count:', error);
-    }
+  const handleDownload = () => {
+    if (!resource || !resource.isDownloadable) return;
+    // Route through the serve API with download=true (auth-protected, tracks count)
+    window.open(`/api/resources/${resourceId}/serve?download=true`, '_blank');
+  };
 
-    // Open the file URL
-    window.open(resource.fileUrl || resource.url, '_blank');
+  const handleOpenLink = () => {
+    if (!externalUrl) return;
+    window.open(externalUrl, '_blank');
+  };
+
+  const handleViewFile = () => {
+    setShowViewer(true);
   };
 
   const handleDelete = async () => {
@@ -104,16 +112,60 @@ export default function ResourceDetailPage() {
     }
   };
 
-  const handleShare = () => {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    // Try native share first (mobile)
     if (navigator.share) {
-      navigator.share({
-        title: resource?.title,
-        text: resource?.description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      try {
+        await navigator.share({
+          title: resource?.title,
+          text: resource?.description,
+          url,
+        });
+        return;
+      } catch {
+        // User cancelled or share failed, fall through to clipboard
+      }
+    }
+
+    // Clipboard copy with multiple fallbacks
+    let copied = false;
+
+    // Try modern clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(url);
+        copied = true;
+      } catch {
+        // Fall through to legacy fallback
+      }
+    }
+
+    // Legacy fallback for HTTP or unsupported contexts
+    if (!copied) {
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '-9999px';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        copied = document.execCommand('copy');
+      } catch {
+        copied = false;
+      }
+      document.body.removeChild(textarea);
+    }
+
+    if (copied) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -146,9 +198,21 @@ export default function ResourceDetailPage() {
   const TypeIcon = iconComponents[resource.type] || FileText;
   const difficultyInfo = getDifficultyInfo(resource.difficulty, locale as 'en' | 'fr');
   const canEdit = userId === resource.createdBy || hasPermission('resources.manage');
+  const fileExtension = (resource.fileUrl || resource.url || '').split('.').pop()?.toLowerCase();
 
   return (
     <div className="space-y-6">
+      {/* Secure file viewer modal */}
+      {showViewer && (
+        <FileViewerModal
+          resourceId={resourceId}
+          fileName={resource.title}
+          fileType={resource.fileType}
+          fileExtension={fileExtension}
+          isDownloadable={resource.isDownloadable}
+          onClose={() => setShowViewer(false)}
+        />
+      )}
       {/* Back Link */}
       <Link
         href={`/${locale}/resources`}
@@ -225,20 +289,58 @@ export default function ResourceDetailPage() {
           {/* Action Card */}
           <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
             <div className="space-y-4">
-              <button
-                onClick={handleDownload}
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
-              >
-                <Download className="w-5 h-5" />
-                {resource.fileUrl ? t('downloadFile') : t('openLink')}
-              </button>
+              {externalUrl && (
+                <button
+                  onClick={handleOpenLink}
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  {t('openLink')}
+                </button>
+              )}
+
+              {/* View File — visible si fichier uploadé (downloadable ou non) */}
+              {hasUploadedFile && (
+                <button
+                  onClick={handleViewFile}
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
+                >
+                  <Eye className="w-5 h-5" />
+                  {locale === 'fr' ? 'Voir le fichier' : 'View File'}
+                </button>
+              )}
+
+              {/* Download — uniquement si isDownloadable */}
+              {resource.isDownloadable && (hasUploadedFile || externalUrl) && (
+                <button
+                  onClick={handleDownload}
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 font-semibold hover:bg-emerald-500/30 border border-emerald-500/30 transition-all"
+                >
+                  <Download className="w-5 h-5" />
+                  {t('downloadFile')}
+                </button>
+              )}
 
               <button
                 onClick={handleShare}
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-all"
+                className={cn(
+                  'w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-all',
+                  copied
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                )}
               >
-                <Share2 className="w-5 h-5" />
-                {t('share')}
+                {copied ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    {locale === 'fr' ? 'Lien copié !' : 'Link copied!'}
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-5 h-5" />
+                    {t('share')}
+                  </>
+                )}
               </button>
 
               {canEdit && (
@@ -274,13 +376,15 @@ export default function ResourceDetailPage() {
                 </span>
                 <span className="text-white font-medium">{resource.viewCount}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/60 flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  {t('downloads')}
-                </span>
-                <span className="text-white font-medium">{resource.downloadCount}</span>
-              </div>
+              {resource.isDownloadable && (
+                <div className="flex items-center justify-between">
+                  <span className="text-white/60 flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    {t('downloads')}
+                  </span>
+                  <span className="text-white font-medium">{resource.downloadCount}</span>
+                </div>
+              )}
               {resource.fileSize && (
                 <div className="flex items-center justify-between">
                   <span className="text-white/60">{t('fileSize')}</span>
