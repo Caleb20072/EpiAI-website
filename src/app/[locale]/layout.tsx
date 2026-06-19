@@ -1,28 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { getMessages } from 'next-intl/server';
 import Chatbot from '@/components/Chatbot';
 import { Providers } from '@/app/providers';
 import HeaderWrapper from '@/components/HeaderWrapper';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "EPI'AI",
   description: "Association Étudiante",
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
-  }
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/assets/epiai-logo.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: '/assets/epiai-logo.png',
+  },
 };
 
 export const viewport = {
@@ -43,12 +35,16 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased font-sans">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-lg"
+        >
+          {locale === 'fr' ? 'Aller au contenu' : 'Skip to content'}
+        </a>
         <Providers locale={locale} messages={messages}>
           <HeaderWrapper />
-          {children}
+          <div id="main-content">{children}</div>
           <Chatbot />
         </Providers>
       </body>

@@ -4,37 +4,38 @@ import { UserProfile } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, X } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 
 export default function SettingsPage() {
     const params = useParams();
-    const locale = (params.locale as string) || 'en';
+    const locale = (params.locale as string) || 'fr';
+    const t = useTranslations('Dashboard');
 
     return (
         <div className="max-w-6xl mx-auto">
-            <div className="mb-8 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Link
-                        href="/dashboard"
-                        className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                        <span>Back</span>
-                    </Link>
-                    <div>
-                        <h1 className="text-3xl font-bold text-white mb-1">Settings</h1>
-                        <p className="text-white/60">Manage your account settings and preferences</p>
-                    </div>
+            <div className="sticky top-0 z-20 mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 py-4 bg-zinc-950/95 backdrop-blur-xl border-b border-white/10 -mt-4 sm:-mt-0">
+                <Link
+                    href={`/${locale}/dashboard`}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-all text-sm font-medium min-h-[44px]"
+                >
+                    <ArrowLeft className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{locale === 'fr' ? 'Retour au dashboard' : 'Back to dashboard'}</span>
+                </Link>
+                <div className="hidden sm:block text-center flex-1 min-w-0">
+                    <h1 className="text-xl font-bold text-white truncate">{t('settings')}</h1>
+                    <p className="text-white/60 text-sm truncate">{t('overview')}</p>
                 </div>
                 <Link
-                    href="/dashboard"
-                    className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all"
-                    aria-label="Close settings"
+                    href={`/${locale}/dashboard`}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all text-sm font-medium min-h-[44px] shrink-0"
+                    aria-label={locale === 'fr' ? 'Fermer les paramètres' : 'Close settings'}
                 >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5" />
+                    <span className="hidden sm:inline">{locale === 'fr' ? 'Fermer' : 'Close'}</span>
                 </Link>
             </div>
 
-            <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+            <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6">
                 <UserProfile
                     appearance={{
                         elements: {

@@ -21,11 +21,12 @@ const ROLE_LEVELS: Record<string, number> = {
   president: 9,
   admin_general: 8,
   chef_pole: 7,
-  mentor_senior: 6,
-  mentor: 5,
-  chef_equipe: 4,
-  membre_equipe: 3,
-  membre: 2,
+  logistique: 6,
+  mentor_senior: 5,
+  mentor: 4,
+  chef_equipe: 3,
+  membre_equipe: 2,
+  membre: 1,
   nouveau_membre: 1,
 };
 

@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.repository != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+        continue-on-error: true
+
+      - name: Deploy skipped notice
+        if: failure()
+        run: |
+          echo "Vercel deploy skipped — set VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID secrets."

@@ -68,6 +68,7 @@ export default function AdminPage({ params }: AdminPageProps) {
   // Edit Modal State
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newRole, setNewRole] = useState<string>('');
+  const [newStatus, setNewStatus] = useState<string>('active');
   const [isSaving, setIsSaving] = useState(false);
 
   const roles = getRolesOrderedByLevel();
@@ -130,43 +131,75 @@ export default function AdminPage({ params }: AdminPageProps) {
 
   function openEditModal(user: User) {
     setEditingUser(user);
-    setNewRole(user.role);
+    setNewRole(user.role === 'nouveau_membre' ? 'membre' : user.role);
+    setNewStatus(user.status);
   }
 
   function closeEditModal() {
     setEditingUser(null);
     setNewRole('');
+    setNewStatus('active');
     setIsSaving(false);
   }
 
-  async function handleSaveRole() {
+  async function handleSaveUser() {
     if (!editingUser) return;
 
     try {
       setIsSaving(true);
-      const response = await fetch(`/api/admin/users/${editingUser.id}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ roleId: newRole }),
-      });
 
-      if (response.ok) {
-        // Update local state
-        setUsers(users.map(u =>
-          u.id === editingUser.id ? { ...u, role: newRole } : u
-        ));
+      const requests: Promise<Response>[] = [];
+
+      const normalizedEditingRole = editingUser.role === 'nouveau_membre' ? 'membre' : editingUser.role;
+      const roleChanged = newRole !== normalizedEditingRole;
+      const statusChanged = newStatus !== editingUser.status;
+
+      if (!roleChanged && !statusChanged) {
         closeEditModal();
-        // Refresh full data to be sure
-        fetchData();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to update user role');
+        return;
       }
+
+      if (roleChanged) {
+        requests.push(
+          fetch(`/api/admin/users/${editingUser.id}/role`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roleId: newRole }),
+          })
+        );
+      }
+
+      if (statusChanged) {
+        requests.push(
+          fetch(`/api/admin/users/${editingUser.id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ memberStatus: newStatus }),
+          })
+        );
+      }
+
+      if (requests.length === 0) {
+        closeEditModal();
+        return;
+      }
+
+      const results = await Promise.all(requests);
+      const failed = results.find((r) => !r.ok);
+      if (failed) {
+        const error = await failed.json();
+        alert(error.error || 'Failed to update user');
+        return;
+      }
+
+      setUsers(users.map(u =>
+        u.id === editingUser.id ? { ...u, role: newRole, status: newStatus } : u
+      ));
+      closeEditModal();
+      fetchData();
     } catch (error) {
-      console.error('Error updating role:', error);
-      alert('An error occurred while updating the role');
+      console.error('Error updating user:', error);
+      alert('An error occurred while updating the user');
     } finally {
       setIsSaving(false);
     }
@@ -193,7 +226,6 @@ export default function AdminPage({ params }: AdminPageProps) {
       chef_equipe: Briefcase,
       membre_equipe: UserCog,
       membre: Users,
-      nouveau_membre: Users,
     };
     return icons[roleId] || Users;
   };
@@ -208,7 +240,6 @@ export default function AdminPage({ params }: AdminPageProps) {
       chef_equipe: 'text-teal-400 bg-teal-400/10 border-teal-400/20',
       membre_equipe: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20',
       membre: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
-      nouveau_membre: 'text-gray-400 bg-gray-400/10 border-gray-400/20',
     };
     return colors[roleId] || 'text-gray-400 bg-gray-400/10 border-gray-400/20';
   };
@@ -399,7 +430,11 @@ export default function AdminPage({ params }: AdminPageProps) {
                             ) : (
                               <Clock className="w-3 h-3" />
                             )}
-                            {user.status}
+                            {user.status === 'active'
+                              ? (locale === 'fr' ? 'Actif' : 'Active')
+                              : user.status === 'pending'
+                                ? (locale === 'fr' ? 'En essai' : 'Trial')
+                                : user.status}
                           </span>
                         </td>
                         <td className="py-4">
@@ -458,6 +493,27 @@ export default function AdminPage({ params }: AdminPageProps) {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-white/60 mb-2">
+                    {locale === 'fr' ? 'Statut adhésion' : 'Membership status'}
+                  </label>
+                  <select
+                    value={newStatus}
+                    onChange={(e) => setNewStatus(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all mb-4"
+                  >
+                    <option value="pending" className="bg-zinc-900">
+                      {locale === 'fr' ? 'En essai' : 'Trial'}
+                    </option>
+                    <option value="active" className="bg-zinc-900">
+                      {locale === 'fr' ? 'Actif (membre validé)' : 'Active (validated)'}
+                    </option>
+                    <option value="approved" className="bg-zinc-900">
+                      {locale === 'fr' ? 'Approuvé' : 'Approved'}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-white/60 mb-2">Rôle</label>
                   <select
                     value={newRole}
@@ -480,8 +536,8 @@ export default function AdminPage({ params }: AdminPageProps) {
                     Annuler
                   </button>
                   <button
-                    onClick={handleSaveRole}
-                    disabled={isSaving || newRole === editingUser.role}
+                    onClick={handleSaveUser}
+                    disabled={isSaving || (newRole === editingUser.role && newStatus === editingUser.status)}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSaving ? (

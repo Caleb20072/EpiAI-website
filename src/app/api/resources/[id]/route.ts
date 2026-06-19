@@ -8,7 +8,6 @@ import {
   toggleFeatureResource,
 } from '@/lib/resources/repository';
 import type { CreateResourceInput } from '@/lib/resources/types';
-import mongoose from 'mongoose';
 
 // GET /api/resources/[id] - Get single resource
 // PUT /api/resources/[id] - Update resource
@@ -18,14 +17,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { error: 'Resource not found' },
-        { status: 404 }
-      );
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { id } = await params;
 
     const resource = await getResourceById(id);
 
@@ -62,10 +59,6 @@ export async function PUT(
     }
 
     const { id } = await params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
-    }
 
     // Vérifier ownership ou permission admin
     const existingResource = await getResourceById(id);
@@ -116,10 +109,6 @@ export async function DELETE(
     }
 
     const { id } = await params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
-    }
 
     // Vérifier ownership ou permission admin
     const existingResource = await getResourceById(id);

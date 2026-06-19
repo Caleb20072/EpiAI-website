@@ -1,5 +1,3 @@
-import { Document } from 'mongoose';
-
 // Catégorie d'événement
 export interface ICategory {
   id: string;
@@ -14,7 +12,7 @@ export interface ICategory {
 }
 
 // Événement (Document MongoDB)
-export interface IEvent extends Document {
+export interface IEvent {
   title: string;
   description: string;
   content: string;
@@ -37,7 +35,7 @@ export interface IEvent extends Document {
 }
 
 // Inscription à un événement
-export interface IEventRegistration extends Document {
+export interface IEventRegistration {
   eventId: string;
   userId: string;
   userName: string;

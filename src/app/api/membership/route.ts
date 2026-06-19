@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createApplication, hasPendingApplication, getApplications, getApplicationStats } from '@/lib/membership/repository';
 import type { CreateMembershipInput } from '@/lib/membership/types';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 // POST /api/membership - Créer une candidature
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const limited = rateLimit(`membership:${ip}`, 5, 60_000);
+    if (!limited.ok) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(limited.retryAfter) } }
+      );
+    }
+
     const body: CreateMembershipInput = await request.json();
 
     // Validation
@@ -25,6 +35,13 @@ export async function POST(request: NextRequest) {
     }
 
     const application = await createApplication(body);
+
+    try {
+      const { sendApplicationReceivedEmail } = await import('@/lib/email/resend');
+      await sendApplicationReceivedEmail(body.email, body.firstName);
+    } catch (emailErr) {
+      console.error('Application received email failed:', emailErr);
+    }
 
     return NextResponse.json(application, { status: 201 });
   } catch (error: any) {

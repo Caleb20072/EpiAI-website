@@ -52,7 +52,6 @@ export const ROLE_IDS = {
   CHEF_EQUIPE: 'chef_equipe',
   MEMBRE_EQUIPE: 'membre_equipe',
   MEMBRE: 'membre',
-  NOUVEAU_MEMBRE: 'nouveau_membre',
 } as const;
 
 export type RoleId = typeof ROLE_IDS[keyof typeof ROLE_IDS];

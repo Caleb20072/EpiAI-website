@@ -3,7 +3,7 @@ export interface ITeamMember {
   name: string;
   role: string;
   title?: string;
-  section: 'executive' | 'pole' | 'mentor';
+  section: 'executive' | 'referent' | 'pole' | 'mentor';
   poleKey?: string;
   description?: string;
   photoUrl?: string;
@@ -22,7 +22,7 @@ export interface CreateTeamMemberInput {
   name: string;
   role: string;
   title?: string;
-  section: 'executive' | 'pole' | 'mentor';
+  section: 'executive' | 'referent' | 'pole' | 'mentor';
   poleKey?: string;
   description?: string;
   photoUrl?: string;

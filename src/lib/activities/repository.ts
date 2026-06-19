@@ -1,6 +1,4 @@
-import { connectToDatabase } from '@/lib/mongodb/client';
-import { Activity, ActivityRegistration, Attendance } from './models';
-import { Event } from '@/lib/events/models';
+import { prisma } from '@/lib/prisma';
 import type {
   IActivity,
   IActivityRegistration,
@@ -23,7 +21,7 @@ function transformActivity(doc: any, registeredCount: number = 0, isRegistered: 
   const canRegister = deadline > now && !isPast;
 
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     title: doc.title,
     description: doc.description,
     date: doc.date.toISOString(),
@@ -48,7 +46,7 @@ function transformActivity(doc: any, registeredCount: number = 0, isRegistered: 
 
 function transformRegistration(doc: any): IActivityRegistration {
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     activityId: doc.activityId,
     userId: doc.userId,
     userName: doc.userName,
@@ -61,7 +59,7 @@ function transformRegistration(doc: any): IActivityRegistration {
 
 function transformAttendance(doc: any): IAttendance {
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     activityId: doc.activityId,
     userId: doc.userId,
     userName: doc.userName,
@@ -82,48 +80,55 @@ export async function getActivities(
   userId?: string,
   showPast: boolean = false,
 ): Promise<PaginatedResponse<IActivity>> {
-  await connectToDatabase();
-
-  const query: any = { isActive: true };
+  const where: any = { isActive: true };
   const now = new Date();
 
   if (!showPast) {
-    query.date = { $gte: now };
+    where.date = { gte: now };
   }
 
-  const sort: any = showPast ? { date: -1 } : { date: 1 };
   const skip = (pagination.page - 1) * pagination.limit;
 
   const [activities, total] = await Promise.all([
-    Activity.find(query).sort(sort).skip(skip).limit(pagination.limit).lean(),
-    Activity.countDocuments(query),
+    prisma.activity.findMany({
+      where,
+      orderBy: { date: showPast ? 'desc' : 'asc' },
+      skip,
+      take: pagination.limit,
+    }),
+    prisma.activity.count({ where }),
   ]);
 
-  // Compter les inscriptions et vérifier si l'utilisateur est inscrit
-  const activityIds = activities.map((a: any) => a._id.toString());
+  const activityIds = activities.map((a: any) => a.id);
 
-  const [registrationCounts, userRegistrations] = await Promise.all([
-    ActivityRegistration.aggregate([
-      { $match: { activityId: { $in: activityIds } } },
-      { $group: { _id: '$activityId', count: { $sum: 1 } } },
-    ]),
-    userId
-      ? ActivityRegistration.find({
-          activityId: { $in: activityIds },
-          userId,
-        }).lean()
-      : Promise.resolve([]),
-  ]);
+  const [registrationCounts, userRegistrations] = activityIds.length
+    ? await Promise.all([
+        prisma.activityRegistration.groupBy({
+          by: ['activityId'],
+          where: { activityId: { in: activityIds } },
+          _count: { _all: true },
+        }),
+        userId
+          ? prisma.activityRegistration.findMany({
+              where: {
+                activityId: { in: activityIds },
+                userId,
+              },
+              select: { activityId: true },
+            })
+          : Promise.resolve([]),
+      ])
+    : [[], []];
 
-  const countMap = new Map(registrationCounts.map((r: any) => [r._id, r.count]));
+  const countMap = new Map(registrationCounts.map((r: any) => [r.activityId, r._count._all]));
   const userRegSet = new Set(userRegistrations.map((r: any) => r.activityId));
 
   return {
     data: activities.map((a: any) =>
       transformActivity(
         a,
-        countMap.get(a._id.toString()) || 0,
-        userRegSet.has(a._id.toString())
+        countMap.get(a.id) || 0,
+        userRegSet.has(a.id)
       )
     ),
     total,
@@ -134,15 +139,21 @@ export async function getActivities(
 }
 
 export async function getActivityById(id: string, userId?: string): Promise<IActivity | null> {
-  await connectToDatabase();
-
-  const activity = await Activity.findById(id).lean();
+  const activity = await prisma.activity.findUnique({ where: { id } });
   if (!activity) return null;
 
   const [registeredCount, userReg] = await Promise.all([
-    ActivityRegistration.countDocuments({ activityId: id }),
+    prisma.activityRegistration.count({ where: { activityId: id } }),
     userId
-      ? ActivityRegistration.findOne({ activityId: id, userId }).lean()
+      ? prisma.activityRegistration.findUnique({
+          where: {
+            activityId_userId: {
+              activityId: id,
+              userId,
+            },
+          },
+          select: { id: true },
+        })
       : Promise.resolve(null),
   ]);
 
@@ -154,49 +165,52 @@ export async function createActivity(
   creatorId: string,
   creatorName: string
 ): Promise<IActivity> {
-  await connectToDatabase();
-
   const activityDate = new Date(input.date);
-  // Deadline d'inscription = 24h avant l'activité
   const registrationDeadline = new Date(activityDate.getTime() - 24 * 60 * 60 * 1000);
 
-  const activity = await Activity.create({
-    title: input.title,
-    description: input.description,
-    date: activityDate,
-    endDate: input.endDate ? new Date(input.endDate) : undefined,
-    location: input.location,
-    isOnline: input.isOnline || false,
-    onlineLink: input.onlineLink,
-    registrationDeadline,
-    isMandatory: input.isMandatory ?? true,
-    isActive: true,
-    createdBy: creatorId,
-    createdByName: creatorName,
-  });
+  const activity = await prisma.$transaction(async tx => {
+    const createdActivity = await tx.activity.create({
+      data: {
+        title: input.title,
+        description: input.description,
+        date: activityDate,
+        endDate: input.endDate ? new Date(input.endDate) : undefined,
+        location: input.location,
+        isOnline: input.isOnline || false,
+        onlineLink: input.onlineLink,
+        registrationDeadline,
+        isMandatory: input.isMandatory ?? true,
+        isActive: true,
+        createdBy: creatorId,
+        createdByName: creatorName,
+      },
+    });
 
-  // Créer l'event miroir côté Events
-  const mirrorEvent = await Event.create({
-    title: input.title,
-    description: input.description,
-    content: input.description,
-    categoryId: 'meetup',
-    date: activityDate,
-    endDate: input.endDate ? new Date(input.endDate) : undefined,
-    location: input.location,
-    isOnline: input.isOnline || false,
-    onlineLink: input.onlineLink,
-    capacity: 9999,
-    registeredCount: 0,
-    isPublished: true,
-    isFeatured: false,
-    createdBy: creatorId,
-    linkedActivityId: activity._id.toString(),
-  });
+    const mirrorEvent = await tx.event.create({
+      data: {
+        title: input.title,
+        description: input.description,
+        content: input.description,
+        categoryId: 'meetup',
+        date: activityDate,
+        endDate: input.endDate ? new Date(input.endDate) : undefined,
+        location: input.location,
+        isOnline: input.isOnline || false,
+        onlineLink: input.onlineLink,
+        capacity: 9999,
+        registeredCount: 0,
+        isPublished: true,
+        isFeatured: false,
+        createdBy: creatorId,
+        linkedActivityId: createdActivity.id,
+      },
+    });
 
-  // Lier l'activité à l'event
-  activity.linkedEventId = mirrorEvent._id.toString();
-  await activity.save();
+    return tx.activity.update({
+      where: { id: createdActivity.id },
+      data: { linkedEventId: mirrorEvent.id },
+    });
+  });
 
   return transformActivity(activity, 0, false);
 }
@@ -205,44 +219,41 @@ export async function updateActivity(
   id: string,
   updates: Partial<CreateActivityInput>
 ): Promise<IActivity | null> {
-  await connectToDatabase();
+  const existing = await prisma.activity.findUnique({ where: { id }, select: { id: true } });
+  if (!existing) return null;
 
   const updateData: any = { ...updates };
   if (updates.date) {
     updateData.date = new Date(updates.date);
-    // Recalculer la deadline
     updateData.registrationDeadline = new Date(new Date(updates.date).getTime() - 24 * 60 * 60 * 1000);
   }
   if (updates.endDate) updateData.endDate = new Date(updates.endDate);
 
-  const activity = await Activity.findByIdAndUpdate(
-    id,
-    { $set: updateData },
-    { new: true }
-  ).lean();
+  const activity = await prisma.activity.update({
+    where: { id },
+    data: updateData,
+  });
 
-  if (!activity) return null;
-
-  const registeredCount = await ActivityRegistration.countDocuments({ activityId: id });
+  const registeredCount = await prisma.activityRegistration.count({ where: { activityId: id } });
   return transformActivity(activity, registeredCount, false);
 }
 
 export async function deleteActivity(id: string): Promise<boolean> {
-  await connectToDatabase();
+  const activity = await prisma.activity.findUnique({ where: { id } });
+  if (!activity) return false;
 
-  const activity = await Activity.findById(id).lean();
-  const result = await Activity.findByIdAndDelete(id);
-  await ActivityRegistration.deleteMany({ activityId: id });
-  await Attendance.deleteMany({ activityId: id });
+  await prisma.$transaction(async tx => {
+    await tx.activity.delete({ where: { id } });
+    await tx.activityRegistration.deleteMany({ where: { activityId: id } });
+    await tx.attendance.deleteMany({ where: { activityId: id } });
 
-  // Supprimer l'event miroir s'il existe
-  if (activity?.linkedEventId) {
-    await Event.findByIdAndDelete(activity.linkedEventId);
-    const { Registration } = await import('@/lib/events/models');
-    await Registration.deleteMany({ eventId: activity.linkedEventId });
-  }
+    if (activity.linkedEventId) {
+      await tx.event.deleteMany({ where: { id: activity.linkedEventId } });
+      await tx.eventRegistration.deleteMany({ where: { eventId: activity.linkedEventId } });
+    }
+  });
 
-  return !!result;
+  return true;
 }
 
 // === REGISTRATIONS ===
@@ -254,13 +265,10 @@ export async function registerForActivity(
   userEmail: string,
   forcedBy?: string
 ): Promise<{ success: boolean; error?: string }> {
-  await connectToDatabase();
-
-  const activity = await Activity.findById(activityId);
+  const activity = await prisma.activity.findUnique({ where: { id: activityId } });
   if (!activity) return { success: false, error: 'Activity not found' };
   if (!activity.isActive) return { success: false, error: 'Activity is not active' };
 
-  // Vérifier la deadline (sauf si inscription forcée par admin)
   if (!forcedBy) {
     const now = new Date();
     if (new Date(activity.registrationDeadline) <= now) {
@@ -271,18 +279,26 @@ export async function registerForActivity(
     }
   }
 
-  // Vérifier inscription existante
-  const existing = await ActivityRegistration.findOne({ activityId, userId }).lean();
+  const existing = await prisma.activityRegistration.findUnique({
+    where: {
+      activityId_userId: {
+        activityId,
+        userId,
+      },
+    },
+  });
   if (existing) return { success: false, error: 'Already registered' };
 
-  await ActivityRegistration.create({
-    activityId,
-    userId,
-    userName,
-    userEmail,
-    registeredAt: new Date(),
-    registeredBy: forcedBy || undefined,
-    isForcedRegistration: !!forcedBy,
+  await prisma.activityRegistration.create({
+    data: {
+      activityId,
+      userId,
+      userName,
+      userEmail,
+      registeredAt: new Date(),
+      registeredBy: forcedBy || undefined,
+      isForcedRegistration: !!forcedBy,
+    },
   });
 
   return { success: true };
@@ -292,29 +308,25 @@ export async function unregisterFromActivity(
   activityId: string,
   userId: string
 ): Promise<{ success: boolean; error?: string }> {
-  await connectToDatabase();
-
-  const activity = await Activity.findById(activityId);
+  const activity = await prisma.activity.findUnique({ where: { id: activityId } });
   if (!activity) return { success: false, error: 'Activity not found' };
 
-  // Vérifier la deadline
   const now = new Date();
   if (new Date(activity.registrationDeadline) <= now) {
     return { success: false, error: 'Cannot unregister after deadline' };
   }
 
-  const result = await ActivityRegistration.findOneAndDelete({ activityId, userId });
-  if (!result) return { success: false, error: 'Registration not found' };
+  const result = await prisma.activityRegistration.deleteMany({ where: { activityId, userId } });
+  if (result.count === 0) return { success: false, error: 'Registration not found' };
 
   return { success: true };
 }
 
 export async function getActivityRegistrations(activityId: string): Promise<IActivityRegistration[]> {
-  await connectToDatabase();
-
-  const registrations = await ActivityRegistration.find({ activityId })
-    .sort({ registeredAt: -1 })
-    .lean();
+  const registrations = await prisma.activityRegistration.findMany({
+    where: { activityId },
+    orderBy: { registeredAt: 'desc' },
+  });
 
   return registrations.map(transformRegistration);
 }
@@ -327,23 +339,29 @@ export async function markAttendance(
   adminId: string,
   adminName: string
 ): Promise<{ success: boolean; error?: string }> {
-  await connectToDatabase();
-
-  const activity = await Activity.findById(activityId);
+  const activity = await prisma.activity.findUnique({ where: { id: activityId }, select: { id: true } });
   if (!activity) return { success: false, error: 'Activity not found' };
 
-  // Vérifier si l'utilisateur était inscrit
-  const registration = await ActivityRegistration.findOne({
-    activityId,
-    userId: input.userId,
-  }).lean();
+  const registration = await prisma.activityRegistration.findUnique({
+    where: {
+      activityId_userId: {
+        activityId,
+        userId: input.userId,
+      },
+    },
+    select: { id: true },
+  });
 
   const wasRegistered = !!registration;
 
-  // Upsert l'attendance
-  await Attendance.findOneAndUpdate(
-    { activityId, userId: input.userId },
-    {
+  await prisma.attendance.upsert({
+    where: {
+      activityId_userId: {
+        activityId,
+        userId: input.userId,
+      },
+    },
+    create: {
       activityId,
       userId: input.userId,
       userName: input.userName,
@@ -355,8 +373,17 @@ export async function markAttendance(
       markedAt: new Date(),
       notes: input.notes,
     },
-    { upsert: true, new: true }
-  );
+    update: {
+      userName: input.userName,
+      userEmail: input.userEmail,
+      isPresent: input.isPresent,
+      wasRegistered,
+      markedBy: adminId,
+      markedByName: adminName,
+      markedAt: new Date(),
+      notes: input.notes,
+    },
+  });
 
   return { success: true };
 }
@@ -367,8 +394,6 @@ export async function bulkMarkAttendance(
   adminId: string,
   adminName: string
 ): Promise<{ success: number; failed: number }> {
-  await connectToDatabase();
-
   let success = 0;
   let failed = 0;
 
@@ -382,9 +407,7 @@ export async function bulkMarkAttendance(
 }
 
 export async function getActivityAttendance(activityId: string): Promise<AttendanceReport> {
-  await connectToDatabase();
-
-  const activity = await Activity.findById(activityId).lean();
+  const activity = await prisma.activity.findUnique({ where: { id: activityId } });
   if (!activity) {
     return {
       activityId,
@@ -397,7 +420,10 @@ export async function getActivityAttendance(activityId: string): Promise<Attenda
     };
   }
 
-  const attendances = await Attendance.find({ activityId }).sort({ userName: 1 }).lean();
+  const attendances = await prisma.attendance.findMany({
+    where: { activityId },
+    orderBy: { userName: 'asc' },
+  });
 
   const presentList = attendances.filter((a: any) => a.isPresent).map(transformAttendance);
   const absentList = attendances.filter((a: any) => !a.isPresent).map(transformAttendance);
@@ -414,15 +440,17 @@ export async function getActivityAttendance(activityId: string): Promise<Attenda
 }
 
 export async function getMemberAttendanceSummary(userId: string): Promise<MemberAttendanceSummary | null> {
-  await connectToDatabase();
-
-  const attendances = await Attendance.find({ userId }).sort({ createdAt: -1 }).lean();
+  const attendances = await prisma.attendance.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+  });
   if (attendances.length === 0) return null;
 
-  // Récupérer les titres d'activités
   const activityIds = [...new Set(attendances.map((a: any) => a.activityId))];
-  const activities = await Activity.find({ _id: { $in: activityIds } }).lean();
-  const activityMap = new Map(activities.map((a: any) => [a._id.toString(), a]));
+  const activities = activityIds.length
+    ? await prisma.activity.findMany({ where: { id: { in: activityIds } } })
+    : [];
+  const activityMap = new Map(activities.map((a: any) => [a.id, a]));
 
   const first = attendances[0] as any;
   const totalPresent = attendances.filter((a: any) => a.isPresent).length;
@@ -449,30 +477,44 @@ export async function getMemberAttendanceSummary(userId: string): Promise<Member
 }
 
 export async function getAllMembersAttendanceSummary(): Promise<MemberAttendanceSummary[]> {
-  await connectToDatabase();
-
-  // Agréger par userId
-  const stats = await Attendance.aggregate([
+  const attendances = await prisma.attendance.findMany();
+  const summaryMap = new Map<
+    string,
     {
-      $group: {
-        _id: '$userId',
-        userName: { $first: '$userName' },
-        userEmail: { $first: '$userEmail' },
-        totalPresent: { $sum: { $cond: ['$isPresent', 1, 0] } },
-        totalAbsent: { $sum: { $cond: ['$isPresent', 0, 1] } },
-        total: { $sum: 1 },
-      },
-    },
-    { $sort: { totalAbsent: -1 } },
-  ]);
+      userId: string;
+      userName: string;
+      userEmail: string;
+      totalPresent: number;
+      totalAbsent: number;
+      total: number;
+    }
+  >();
 
-  return stats.map((s: any) => ({
-    userId: s._id,
-    userName: s.userName,
-    userEmail: s.userEmail,
-    totalPresent: s.totalPresent,
-    totalAbsent: s.totalAbsent,
-    attendanceRate: s.total > 0 ? (s.totalPresent / s.total) * 100 : 0,
-    details: [],
-  }));
+  for (const attendance of attendances) {
+    const current = summaryMap.get(attendance.userId) || {
+      userId: attendance.userId,
+      userName: attendance.userName,
+      userEmail: attendance.userEmail,
+      totalPresent: 0,
+      totalAbsent: 0,
+      total: 0,
+    };
+
+    if (attendance.isPresent) current.totalPresent += 1;
+    else current.totalAbsent += 1;
+    current.total += 1;
+    summaryMap.set(attendance.userId, current);
+  }
+
+  return Array.from(summaryMap.values())
+    .sort((a, b) => b.totalAbsent - a.totalAbsent)
+    .map(s => ({
+      userId: s.userId,
+      userName: s.userName,
+      userEmail: s.userEmail,
+      totalPresent: s.totalPresent,
+      totalAbsent: s.totalAbsent,
+      attendanceRate: s.total > 0 ? (s.totalPresent / s.total) * 100 : 0,
+      details: [],
+    }));
 }

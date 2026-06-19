@@ -46,7 +46,7 @@ export function BulkInviteForm() {
 
     const validRoles = [
       'president', 'admin_general', 'chef_pole', 'mentor_senior',
-      'mentor', 'chef_equipe', 'membre_equipe', 'membre', 'nouveau_membre'
+      'mentor', 'chef_equipe', 'membre_equipe', 'membre'
     ];
     if (!validRoles.includes(row.role?.toLowerCase())) {
       errors.push(`Invalid role: ${row.role}`);

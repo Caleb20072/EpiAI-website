@@ -1,29 +1,29 @@
-import { useTranslations } from 'next-intl';
-import Header from '@/components/Header';
 import Image from 'next/image';
+import { getLocale } from 'next-intl/server';
+import Footer from '@/components/Footer';
+import TeamSection from '@/components/TeamSection';
+import { getTeamMembersForDisplay } from '@/lib/team/repository';
 
-export default function Team() {
-  const t = useTranslations('Header');
+export default async function TeamPage() {
+  const locale = (await getLocale()) as 'fr' | 'en';
+  const teamMembers = await getTeamMembersForDisplay();
 
   return (
-    <div className="relative min-h-screen text-white font-[family-name:var(--font-geist-sans)]">
+    <div className="relative min-h-screen text-white font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
       <div className="absolute inset-0 -z-10 bg-gray-900">
         <Image
           src="/assets/hero-bg.jpg"
-          alt="Background"
+          alt=""
           fill
           quality={100}
           className="object-cover brightness-[0.4]"
           priority
         />
       </div>
-      <Header />
-      <main className="pt-32 px-4 max-w-7xl mx-auto flex flex-col items-center">
-        <h1 className="text-4xl font-bold mb-8">{t('team')}</h1>
-        <div className="p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
-          <p className="text-xl text-gray-300">Content coming soon...</p>
-        </div>
+      <main className="pt-20">
+        <TeamSection initialMembers={teamMembers} locale={locale} />
       </main>
+      <Footer />
     </div>
   );
 }

@@ -13,7 +13,8 @@ import {
 } from 'stream-chat-react';
 import type { Channel as StreamChannel } from 'stream-chat';
 import { ChannelSidebar } from './ChannelSidebar';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Menu } from 'lucide-react';
+import { cn } from '@/lib/utils/cn';
 import 'stream-chat-react/dist/css/v2/index.css';
 import '@/styles/stream-chat-custom.css';
 
@@ -25,14 +26,11 @@ interface TokenData {
     apiKey: string;
 }
 
-/**
- * Inner component — only rendered when we have a guaranteed valid userId.
- * Waits for the Stream WS connection to be established before calling channel.watch().
- */
 function ChatClient({ tokenData }: { tokenData: TokenData }) {
     const [activeChannelId, setActiveChannelId] = useState<string>('general');
     const [activeChannel, setActiveChannel] = useState<StreamChannel | undefined>();
     const [connected, setConnected] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const client = useCreateChatClient({
         apiKey: tokenData.apiKey,
@@ -44,26 +42,21 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
         },
     });
 
-    // Wait for WebSocket connection before doing anything
     useEffect(() => {
         if (!client) return;
 
         const checkConnected = () => {
-            // Stream stores connection status on the client
             if ((client as any).wsConnection?.isConnected?.() || client.userID) {
                 setConnected(true);
             }
         };
 
-        // Check immediately (may already be connected)
         checkConnected();
 
-        // Listen for connection events
         const handler = client.on('connection.changed', (event: any) => {
             if (event.online) setConnected(true);
         });
 
-        // Also listen for user connected
         const userHandler = client.on('health.check', () => {
             setConnected(true);
         });
@@ -74,7 +67,6 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
         };
     }, [client]);
 
-    // Watch the active channel only after WS is connected
     useEffect(() => {
         if (!client || !connected) return;
 
@@ -94,6 +86,11 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
         };
     }, [client, connected, activeChannelId]);
 
+    const handleChannelSelect = (id: string) => {
+        setActiveChannelId(id);
+        setSidebarOpen(false);
+    };
+
     if (!client || !connected) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -107,32 +104,59 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
 
     return (
         <Chat client={client} theme="str-chat__theme-dark">
-            <div className="flex h-full">
+            <div className="flex h-full relative min-w-0">
+                {sidebarOpen && (
+                    <button
+                        type="button"
+                        className="lg:hidden fixed inset-0 bg-black/60 z-30"
+                        aria-label="Fermer les canaux"
+                        onClick={() => setSidebarOpen(false)}
+                    />
+                )}
+
                 <ChannelSidebar
                     client={client}
                     userId={tokenData.userId}
                     activeChannelId={activeChannelId}
-                    onChannelSelect={setActiveChannelId}
+                    onChannelSelect={handleChannelSelect}
+                    className={cn(
+                        'z-40 transition-transform duration-300 ease-out',
+                        'fixed inset-y-0 left-0 lg:relative lg:translate-x-0',
+                        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                    )}
                 />
-                <div className="flex-1 overflow-hidden">
-                    <Channel channel={activeChannel}>
-                        <Window>
-                            <ChannelHeader />
-                            <MessageList />
-                            <MessageInput focus />
-                        </Window>
-                        <Thread />
-                    </Channel>
+
+                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                    <div className="lg:hidden shrink-0 flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-black/40">
+                        <button
+                            type="button"
+                            onClick={() => setSidebarOpen(true)}
+                            className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/15 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            aria-label="Ouvrir les canaux"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </button>
+                        <span className="text-sm font-medium text-white/80 truncate">
+                            {activeChannelId.replace(/-/g, ' ')}
+                        </span>
+                    </div>
+
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                        <Channel channel={activeChannel}>
+                            <Window>
+                                <ChannelHeader />
+                                <MessageList />
+                                <MessageInput focus />
+                            </Window>
+                            <Thread />
+                        </Channel>
+                    </div>
                 </div>
             </div>
         </Chat>
     );
 }
 
-/**
- * Outer component — fetches the Stream token, then mounts ChatClient
- * only when we have a valid non-empty userId.
- */
 export function ChatPage() {
     const [tokenData, setTokenData] = useState<TokenData | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -176,7 +200,7 @@ export function ChatPage() {
 
     if (error) {
         return (
-            <div className="flex flex-col items-center justify-center h-[70vh] text-center px-4">
+            <div className="flex flex-col items-center justify-center min-h-[50dvh] text-center px-4">
                 <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
                     <span className="text-3xl">⚠️</span>
                 </div>
@@ -184,7 +208,7 @@ export function ChatPage() {
                 <p className="text-white/60 max-w-md text-sm mb-4">{error}</p>
                 <button
                     onClick={() => { setError(null); setTokenData(null); }}
-                    className="px-4 py-2 rounded-xl bg-white/10 text-white text-sm hover:bg-white/20 transition-colors"
+                    className="px-4 py-3 rounded-xl bg-white/10 text-white text-sm hover:bg-white/20 transition-colors min-h-[44px]"
                 >
                     Réessayer
                 </button>
@@ -194,7 +218,7 @@ export function ChatPage() {
 
     if (!tokenData) {
         return (
-            <div className="flex items-center justify-center h-[70vh]">
+            <div className="flex items-center justify-center min-h-[50dvh]">
                 <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
                     <p className="text-white/40 text-sm">Connexion au chat...</p>
@@ -204,7 +228,7 @@ export function ChatPage() {
     }
 
     return (
-        <div className="chat-wrapper h-[calc(100vh-140px)] min-h-[500px] rounded-2xl overflow-hidden border border-white/10">
+        <div className="chat-wrapper h-[calc(100dvh-11rem)] lg:h-[calc(100vh-140px)] min-h-[320px] rounded-2xl overflow-hidden border border-white/10">
             <ChatClient tokenData={tokenData} />
         </div>
     );

@@ -1,5 +1,3 @@
-import { Document } from 'mongoose';
-
 // Catégorie
 export interface ICategory {
   id: string;
@@ -26,7 +24,7 @@ export interface ITag {
 }
 
 // Thread (Discussion)
-export interface IThread extends Document {
+export interface IThread {
   title: string;
   content: string;
   authorId: string;
@@ -42,7 +40,7 @@ export interface IThread extends Document {
 }
 
 // Reply (Réponse)
-export interface IReply extends Document {
+export interface IReply {
   threadId: string;
   authorId: string;
   authorName: string;

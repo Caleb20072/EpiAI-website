@@ -3,7 +3,7 @@
 import { useAuth as useClerkAuth } from '@clerk/nextjs';
 import { useMemo, useEffect, useState } from 'react';
 import { ROLES, isValidRole } from '@/lib/roles/definitions';
-import { hasPermission, isAdminRole } from '@/lib/roles/utils';
+import { hasPermission, isAdminRole, normalizeRoleSlug } from '@/lib/roles/utils';
 import type { Permission, RoleLevel } from '@/lib/roles/types';
 
 interface UseAuthReturn {
@@ -50,8 +50,8 @@ export function useAuth() {
     fetchMetadata();
   }, [isSignedIn, userId]);
 
-  // Use 'role' (string) first, then fall back to 'roleId' as string
-  const roleId = (metadata?.role as string | undefined) || String(metadata?.roleId || '');
+  const rawRole = (metadata?.role as string | undefined) || String(metadata?.roleId || '');
+  const roleId = normalizeRoleSlug(rawRole) || (isValidRole(rawRole) ? rawRole : undefined);
 
   const role = roleId && isValidRole(roleId) ? ROLES[roleId] : undefined;
   const roleLevel = role?.level ?? 0;
@@ -73,7 +73,7 @@ export function useAuth() {
     roleName: role?.name ?? { en: 'Member', fr: 'Membre' },
     permissions,
     hasPermission: hasPermissionFn,
-    isAdmin: isAdminRole(roleId ?? ''),
+    isAdmin: roleId ? isAdminRole(roleId) : false,
     isPresident: roleId === 'president',
     canAssignRoles: roleId === 'president' || roleId === 'admin_general' || roleId === 'chef_pole',
     isLoading,

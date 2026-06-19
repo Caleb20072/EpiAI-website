@@ -3,7 +3,9 @@
 import { useAuth } from '@/hooks/useAuth';
 import { getRoleName, getRoleColor, getRoleLevel } from '@/lib/roles/utils';
 import { useParams } from 'next/navigation';
-import { UserButton, useUser, UserProfile } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
+import { userButtonProps } from '@/lib/clerk/user-button';
+import { Link } from '@/i18n/routing';
 import { routing } from '@/i18n/routing';
 import {
   User,
@@ -14,7 +16,7 @@ import {
   Users,
   BadgeCheck,
   Camera,
-  X as CloseIcon,
+  Settings,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -25,7 +27,6 @@ export default function ProfilePage() {
   const { user, isLoaded } = useUser();
   const [memberData, setMemberData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const roleName = roleId ? getRoleName(roleId, locale as 'en' | 'fr') : 'Member';
   const roleColor = roleId ? getRoleColor(roleId) : 'text-gray-400';
@@ -74,43 +75,7 @@ export default function ProfilePage() {
   }) : 'N/A';
 
   return (
-    <>
-      {/* Profile Modal */}
-      {showProfileModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="relative bg-zinc-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-auto">
-            <button
-              onClick={() => setShowProfileModal(false)}
-              className="absolute top-4 right-4 z-10 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all"
-            >
-              <CloseIcon className="w-5 h-5" />
-            </button>
-            <UserProfile
-              routing="hash"
-              appearance={{
-                elements: {
-                  rootBox: 'w-full',
-                  card: 'bg-transparent shadow-none',
-                  navbar: 'bg-white/5 rounded-xl',
-                  navbarButton: 'text-white/70 hover:text-white hover:bg-white/10 rounded-lg',
-                  navbarButtonActive: 'bg-white/10 text-white',
-                  pageScrollBox: 'bg-transparent',
-                  page: 'bg-transparent',
-                  profileSection: 'bg-white/5 border border-white/10 rounded-xl',
-                  profileSectionPrimaryButton: 'bg-white text-black hover:bg-white/90 rounded-lg',
-                  formButtonPrimary: 'bg-white text-black hover:bg-white/90 rounded-lg',
-                  formFieldLabel: 'text-white/70',
-                  formFieldInput: 'bg-white/5 border-white/20 text-white placeholder:text-white/40 rounded-lg',
-                  headerTitle: 'text-white',
-                  headerSubtitle: 'text-white/60',
-                },
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
@@ -121,7 +86,7 @@ export default function ProfilePage() {
 
         {/* Profile Card */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-          <div className="flex items-start gap-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
             <div className="relative group">
               {user?.imageUrl ? (
@@ -137,19 +102,21 @@ export default function ProfilePage() {
               )}
 
               {/* Change Photo Button */}
-              <button
-                onClick={() => setShowProfileModal(true)}
+              <Link
+                href={`/${locale}/settings`}
                 className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"
               >
                 <div className="text-center">
                   <Camera className="w-6 h-6 text-white mx-auto mb-1" />
-                  <span className="text-white text-xs font-medium">Change</span>
+                  <span className="text-white text-xs font-medium">
+                    {locale === 'fr' ? 'Modifier' : 'Edit'}
+                  </span>
                 </div>
-              </button>
+              </Link>
 
               <div className="absolute -bottom-2 -right-2">
                 <UserButton
-                  afterSignOutUrl={`/${locale}`}
+                  {...userButtonProps(locale)}
                   appearance={{
                     elements: {
                       avatarBox: 'w-10 h-10 rounded-full border-2 border-zinc-900',
@@ -264,7 +231,14 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
+        <Link
+          href={`/${locale}/settings`}
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-all text-sm font-medium"
+        >
+          <Settings className="w-4 h-4" />
+          {locale === 'fr' ? 'Gérer mon compte Clerk' : 'Manage Clerk account'}
+        </Link>
       </div>
-    </>
   );
 }

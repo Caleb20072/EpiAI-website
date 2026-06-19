@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getLocale } from 'next-intl/server';
 import HeroSection from '@/components/HeroSection';
 import ProblemSection from '@/components/ProblemSection';
 import MissionSection from '@/components/MissionSection';
@@ -8,8 +9,12 @@ import TeamSection from '@/components/TeamSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import JoinSection from '@/components/JoinSection';
 import Footer from '@/components/Footer';
+import { getTeamMembersForDisplay } from '@/lib/team/repository';
 
-export default function Home() {
+export default async function Home() {
+  const locale = (await getLocale()) as 'fr' | 'en';
+  const teamMembers = await getTeamMembersForDisplay();
+
   return (
     <div className="relative font-[family-name:var(--font-geist-sans)] text-white overflow-x-hidden scroll-smooth">
       {/* Background Image */}
@@ -30,7 +35,7 @@ export default function Home() {
         <MissionSection />
         <ExpertiseSection />
         <ImpactSection />
-        <TeamSection />
+        <TeamSection initialMembers={teamMembers} locale={locale} />
         <ProjectsSection />
         <JoinSection />
       </main>

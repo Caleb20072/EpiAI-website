@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
 import { getApplicationById, reviewApplication } from '@/lib/membership/repository';
-import { sendWelcomeEmail } from '@/lib/email/resend';
+import { sendWelcomeEmail, sendMembershipRejectedEmail } from '@/lib/email/resend';
+import { upsertUserFromClerk } from '@/lib/users/repository';
+import { prisma } from '@/lib/prisma';
+import { notifyUser } from '@/lib/notifications/service';
 import type { ReviewApplicationInput } from '@/lib/membership/types';
 import { randomBytes } from 'crypto';
 
@@ -58,14 +61,29 @@ export async function POST(
         lastName: application.lastName,
         skipPasswordChecks: true,
         publicMetadata: {
-          roleId: 1, // nouveau_membre par défaut
-          role: 'nouveau_membre',
+          roleId: 1,
+          role: 'membre',
           approvedAt: new Date().toISOString(),
           mustResetPassword: true,
         },
       });
 
       console.log('[Approve API] Clerk account created:', clerkUser.id);
+
+      await upsertUserFromClerk({
+        clerkId: clerkUser.id,
+        email: application.email,
+        firstName: application.firstName,
+        lastName: application.lastName,
+        role: 'membre',
+        roleLevel: 1,
+      });
+
+      await prisma.user.update({
+        where: { clerkId: clerkUser.id },
+        data: { memberStatus: 'pending' },
+      }).catch(() => {});
+
       console.log('[Approve API] Sending welcome email to:', application.email);
 
       // Envoyer l'email de bienvenu
@@ -87,6 +105,14 @@ export async function POST(
       // Mettre à jour le statut
       await reviewApplication(id, body, reviewerId);
 
+      await notifyUser({
+        clerkId: clerkUser.id,
+        type: 'membership',
+        title: 'Bienvenue chez Epi\'AI',
+        message: 'Ta candidature a été approuvée. Explore le dashboard !',
+        link: '/dashboard',
+      });
+
       console.log('[Approve API] Application approved successfully');
 
       return NextResponse.json({
@@ -101,8 +127,13 @@ export async function POST(
         },
       });
     } else {
-      // Rejeter la candidature
       await reviewApplication(id, body, reviewerId);
+
+      try {
+        await sendMembershipRejectedEmail(application.email, application.firstName);
+      } catch (emailErr) {
+        console.error('Rejection email failed:', emailErr);
+      }
 
       return NextResponse.json({
         success: true,

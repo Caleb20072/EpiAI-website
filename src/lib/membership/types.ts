@@ -1,8 +1,6 @@
-import { Document } from 'mongoose';
-
 export type MembershipStatus = 'pending' | 'approved' | 'rejected';
 
-export interface IMembershipApplication extends Document {
+export interface IMembershipApplication {
   firstName: string;
   lastName: string;
   email: string;

@@ -1,5 +1,5 @@
-import { connectToDatabase } from '@/lib/mongodb/client';
-import { Thread, Reply } from './models';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { CATEGORIES as FORUM_CATEGORIES, TAGS as FORUM_TAGS } from './categories';
 import type {
   ThreadWithAuthor,
@@ -19,7 +19,7 @@ export { CATEGORIES, TAGS } from './categories';
 function transformThread(doc: any): ThreadWithAuthor {
   const category = FORUM_CATEGORIES.find(c => c.id === doc.categoryId);
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     title: doc.title,
     content: doc.content,
     authorId: doc.authorId,
@@ -40,7 +40,7 @@ function transformThread(doc: any): ThreadWithAuthor {
 // Helper pour transformer une réponse
 function transformReply(doc: any): ReplyWithAuthor {
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     threadId: doc.threadId,
     authorId: doc.authorId,
     authorName: doc.authorName,
@@ -57,35 +57,43 @@ export async function getThreads(
   filters: ThreadFilters = {},
   pagination: PaginationParams = { page: 1, limit: 10 }
 ): Promise<PaginatedResponse<ThreadWithAuthor>> {
-  await connectToDatabase();
-
-  const query: any = {};
+  const query: Prisma.ThreadWhereInput = {};
 
   if (filters.categoryId) {
     query.categoryId = filters.categoryId;
   }
 
   if (filters.tag) {
-    query.tags = filters.tag;
+    query.tags = { has: filters.tag };
   }
 
   if (filters.search) {
-    query.$text = { $search: filters.search };
+    query.OR = [
+      { title: { contains: filters.search, mode: 'insensitive' } },
+      { content: { contains: filters.search, mode: 'insensitive' } },
+      { authorName: { contains: filters.search, mode: 'insensitive' } },
+      { tags: { hasSome: [filters.search] } },
+    ];
   }
 
   // Tri
-  let sort: any = { isPinned: -1, createdAt: -1 };
+  let sort: Prisma.ThreadOrderByWithRelationInput[] = [{ isPinned: 'desc' }, { createdAt: 'desc' }];
   if (filters.sort === 'oldest') {
-    sort = { isPinned: -1, createdAt: 1 };
+    sort = [{ isPinned: 'desc' }, { createdAt: 'asc' }];
   } else if (filters.sort === 'popular') {
-    sort = { isPinned: -1, views: -1 };
+    sort = [{ isPinned: 'desc' }, { views: 'desc' }];
   }
 
   const skip = (pagination.page - 1) * pagination.limit;
 
   const [threads, total] = await Promise.all([
-    Thread.find(query).sort(sort).skip(skip).limit(pagination.limit).lean(),
-    Thread.countDocuments(query),
+    prisma.thread.findMany({
+      where: query,
+      orderBy: sort,
+      skip,
+      take: pagination.limit,
+    }),
+    prisma.thread.count({ where: query }),
   ]);
 
   return {
@@ -98,13 +106,14 @@ export async function getThreads(
 }
 
 export async function getThreadById(id: string): Promise<ThreadWithAuthor | null> {
-  await connectToDatabase();
-
-  const thread = await Thread.findById(id).lean();
+  const thread = await prisma.thread.findUnique({ where: { id } });
   if (!thread) return null;
 
   // Incrémenter les vues
-  await Thread.findByIdAndUpdate(id, { $inc: { views: 1 } });
+  await prisma.thread.update({
+    where: { id },
+    data: { views: { increment: 1 } },
+  });
 
   return transformThread(thread);
 }
@@ -114,19 +123,19 @@ export async function createThread(
   authorId: string,
   authorName: string
 ): Promise<ThreadWithAuthor> {
-  await connectToDatabase();
-
-  const thread = await Thread.create({
-    title: input.title,
-    content: input.content,
-    authorId,
-    authorName,
-    categoryId: input.categoryId,
-    tags: input.tags,
-    views: 0,
-    isPinned: false,
-    isLocked: false,
-    replyCount: 0,
+  const thread = await prisma.thread.create({
+    data: {
+      title: input.title,
+      content: input.content,
+      authorId,
+      authorName,
+      categoryId: input.categoryId,
+      tags: input.tags,
+      views: 0,
+      isPinned: false,
+      isLocked: false,
+      replyCount: 0,
+    },
   });
 
   return transformThread(thread);
@@ -136,49 +145,54 @@ export async function updateThread(
   id: string,
   updates: Partial<CreateThreadInput>
 ): Promise<ThreadWithAuthor | null> {
-  await connectToDatabase();
+  const result = await prisma.thread.updateMany({
+    where: { id },
+    data: updates,
+  });
 
-  const thread = await Thread.findByIdAndUpdate(
-    id,
-    { $set: updates },
-    { new: true }
-  ).lean();
+  if (result.count === 0) return null;
 
-  return thread ? transformThread(thread) : null;
+  const thread = await prisma.thread.findUnique({ where: { id } });
+  if (!thread) return null;
+
+  return transformThread(thread);
 }
 
 export async function deleteThread(id: string): Promise<boolean> {
-  await connectToDatabase();
+  const thread = await prisma.thread.findUnique({ where: { id }, select: { id: true } });
+  if (!thread) return false;
 
-  const result = await Thread.findByIdAndDelete(id);
   // Supprimer aussi les réponses associées
-  await Reply.deleteMany({ threadId: id });
+  await prisma.$transaction([
+    prisma.reply.deleteMany({ where: { threadId: id } }),
+    prisma.thread.delete({ where: { id } }),
+  ]);
 
-  return !!result;
+  return true;
 }
 
 export async function togglePinThread(id: string): Promise<ThreadWithAuthor | null> {
-  await connectToDatabase();
-
-  const thread = await Thread.findById(id);
+  const thread = await prisma.thread.findUnique({ where: { id } });
   if (!thread) return null;
 
-  thread.isPinned = !thread.isPinned;
-  await thread.save();
+  const updated = await prisma.thread.update({
+    where: { id },
+    data: { isPinned: !thread.isPinned },
+  });
 
-  return transformThread(thread);
+  return transformThread(updated);
 }
 
 export async function toggleLockThread(id: string): Promise<ThreadWithAuthor | null> {
-  await connectToDatabase();
-
-  const thread = await Thread.findById(id);
+  const thread = await prisma.thread.findUnique({ where: { id } });
   if (!thread) return null;
 
-  thread.isLocked = !thread.isLocked;
-  await thread.save();
+  const updated = await prisma.thread.update({
+    where: { id },
+    data: { isLocked: !thread.isLocked },
+  });
 
-  return transformThread(thread);
+  return transformThread(updated);
 }
 
 // === REPLIES ===
@@ -187,13 +201,16 @@ export async function getRepliesByThreadId(
   threadId: string,
   pagination: PaginationParams = { page: 1, limit: 20 }
 ): Promise<PaginatedResponse<ReplyWithAuthor>> {
-  await connectToDatabase();
-
   const skip = (pagination.page - 1) * pagination.limit;
 
   const [replies, total] = await Promise.all([
-    Reply.find({ threadId }).sort({ createdAt: 1 }).skip(skip).limit(pagination.limit).lean(),
-    Reply.countDocuments({ threadId }),
+    prisma.reply.findMany({
+      where: { threadId },
+      orderBy: { createdAt: 'asc' },
+      skip,
+      take: pagination.limit,
+    }),
+    prisma.reply.count({ where: { threadId } }),
   ]);
 
   return {
@@ -211,18 +228,21 @@ export async function createReply(
   authorId: string,
   authorName: string
 ): Promise<ReplyWithAuthor> {
-  await connectToDatabase();
-
-  const [reply] = await Promise.all([
-    Reply.create({
-      threadId,
-      authorId,
-      authorName,
-      content: input.content,
+  const [reply] = await prisma.$transaction([
+    prisma.reply.create({
+      data: {
+        threadId,
+        authorId,
+        authorName,
+        content: input.content,
+      },
     }),
-    Thread.findByIdAndUpdate(threadId, {
-      $inc: { replyCount: 1 },
-      updatedAt: new Date(),
+    prisma.thread.update({
+      where: { id: threadId },
+      data: {
+        replyCount: { increment: 1 },
+        updatedAt: new Date(),
+      },
     }),
   ]);
 
@@ -233,33 +253,37 @@ export async function updateReply(
   id: string,
   content: string
 ): Promise<ReplyWithAuthor | null> {
-  await connectToDatabase();
+  const result = await prisma.reply.updateMany({
+    where: { id },
+    data: { content, isEdited: true, updatedAt: new Date() },
+  });
 
-  const reply = await Reply.findByIdAndUpdate(
-    id,
-    { content, isEdited: true, updatedAt: new Date() },
-    { new: true }
-  ).lean();
+  if (result.count === 0) return null;
 
-  return reply ? transformReply(reply) : null;
+  const reply = await prisma.reply.findUnique({ where: { id } });
+  if (!reply) return null;
+
+  return transformReply(reply);
 }
 
 export async function getReplyById(id: string): Promise<ReplyWithAuthor | null> {
-  await connectToDatabase();
-
-  const reply = await Reply.findById(id).lean();
+  const reply = await prisma.reply.findUnique({ where: { id } });
   return reply ? transformReply(reply) : null;
 }
 
 export async function deleteReply(id: string): Promise<boolean> {
-  await connectToDatabase();
-
-  const reply = await Reply.findByIdAndDelete(id);
+  const reply = await prisma.reply.findUnique({ where: { id } });
   if (reply) {
-    // Décrémenter le compteur de réponses
-    await Thread.findByIdAndUpdate(reply.threadId, {
-      $inc: { replyCount: -1 },
-    });
+    await prisma.$transaction([
+      prisma.reply.delete({ where: { id } }),
+      // Décrémenter le compteur de réponses
+      prisma.thread.updateMany({
+        where: { id: reply.threadId },
+        data: {
+          replyCount: { decrement: 1 },
+        },
+      }),
+    ]);
   }
 
   return !!reply;
@@ -268,26 +292,22 @@ export async function deleteReply(id: string): Promise<boolean> {
 // === STATS ===
 
 export async function getForumStats() {
-  await connectToDatabase();
-
-  const [totalThreads, totalReplies, categoryStats] = await Promise.all([
-    Thread.countDocuments(),
-    Reply.countDocuments(),
-    Thread.aggregate([
-      {
-        $group: {
-          _id: '$categoryId',
-          count: { $sum: 1 },
-        },
+  const [totalThreads, totalReplies, categoryStatsRaw] = await Promise.all([
+    prisma.thread.count(),
+    prisma.reply.count(),
+    prisma.thread.groupBy({
+      by: ['categoryId'],
+      _count: {
+        _all: true,
       },
-    ]),
+    }),
   ]);
 
   return {
     totalThreads,
     totalReplies,
-    categoryStats: categoryStats.reduce((acc: Record<string, number>, item: any) => {
-      acc[item._id] = item.count;
+    categoryStats: categoryStatsRaw.reduce((acc: Record<string, number>, item) => {
+      acc[item.categoryId] = item._count._all;
       return acc;
     }, {}),
   };

@@ -26,9 +26,17 @@ import {
   ClipboardList,
   UserCheck,
   UsersRound,
+  MessagesSquare,
+  BookOpen,
 } from 'lucide-react';
 import { UserButton, useClerk, useUser } from '@clerk/nextjs';
+import { userButtonProps } from '@/lib/clerk/user-button';
 import { getRoleName } from '@/lib/roles/utils';
+import GlobalSearch from '@/components/dashboard/GlobalSearch';
+import NotificationBell from '@/components/dashboard/NotificationBell';
+import OnboardingWizard from '@/components/dashboard/OnboardingWizard';
+import ThemeToggle from '@/components/ThemeToggle';
+import MobileBottomNav from '@/components/dashboard/MobileBottomNav';
 import { cn } from '@/lib/utils/cn';
 
 interface DashboardLayoutProps {
@@ -47,6 +55,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   usePasswordResetCheck();
 
+  const t = useTranslations('Navigation');
+
   const handleSignOut = async () => {
     await signOut();
     router.push(`/${locale}`);
@@ -54,75 +64,93 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const navItems = [
     {
-      label: 'Dashboard',
+      label: t('dashboard'),
       href: `/${locale}/dashboard`,
       icon: LayoutDashboard,
       active: pathname === `/${locale}/dashboard`,
     },
     {
-      label: 'Resources',
+      label: t('resources'),
       href: `/${locale}/resources`,
       icon: FolderOpen,
       active: pathname.startsWith(`/${locale}/resources`),
     },
     {
-      label: 'Forum',
+      label: t('forum'),
       href: `/${locale}/forum`,
       icon: MessageSquare,
       active: pathname.startsWith(`/${locale}/forum`),
     },
     {
-      label: 'Events',
+      label: t('chat'),
+      href: `/${locale}/chat`,
+      icon: MessagesSquare,
+      active: pathname.startsWith(`/${locale}/chat`),
+    },
+    {
+      label: t('events'),
       href: `/${locale}/events`,
       icon: Calendar,
       active: pathname.startsWith(`/${locale}/events`),
     },
     {
-      label: 'Intranet',
+      label: t('intranet'),
       href: `/${locale}/intranet`,
       icon: ClipboardList,
       active: pathname.startsWith(`/${locale}/intranet`),
     },
     {
-      label: 'Profile',
+      label: t('profile'),
       href: `/${locale}/profile`,
       icon: User,
       active: pathname === `/${locale}/profile`,
     },
+    {
+      label: t('myAttendance'),
+      href: `/${locale}/attendance`,
+      icon: UserCheck,
+      active: pathname.startsWith(`/${locale}/attendance`),
+    },
   ];
 
-  // Admin items
   const adminItems = [
     {
-      label: 'Membership',
+      label: t('membership'),
       href: `/${locale}/admin/membership`,
       icon: UserPlus,
       active: pathname.startsWith(`/${locale}/admin/membership`),
       adminOnly: true,
     },
     {
-      label: 'Projects',
+      label: t('projects'),
       href: `/${locale}/admin/projects`,
       icon: FolderOpen,
       active: pathname.startsWith(`/${locale}/admin/projects`),
       adminOnly: true,
     },
     {
-      label: 'Team',
+      label: t('team'),
       href: `/${locale}/admin/team`,
       icon: UsersRound,
       active: pathname.startsWith(`/${locale}/admin/team`),
       adminOnly: true,
     },
     {
-      label: 'Attendance',
+      label: t('attendance'),
       href: `/${locale}/admin/attendance`,
       icon: UserCheck,
       active: pathname.startsWith(`/${locale}/admin/attendance`),
       adminOnly: true,
     },
     {
-      label: 'Admin',
+      label: t('blogAdmin'),
+      href: `/${locale}/admin/blog`,
+      icon: BookOpen,
+      active: pathname.startsWith(`/${locale}/admin/blog`),
+      adminOnly: true,
+    },
+    {
+      label: t('admin'),
       href: `/${locale}/admin`,
       icon: Users,
       active: pathname === `/${locale}/admin`,
@@ -137,7 +165,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="min-h-screen flex items-center justify-center bg-zinc-950">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full mx-auto mb-4" />
-            <p className="text-white/60">Loading...</p>
+            <p className="text-white/60">{t('loading')}</p>
           </div>
         </div>
       }
@@ -199,7 +227,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <>
                   <div className="pt-4 pb-2">
                     <p className="px-4 text-xs font-semibold text-white/40 uppercase tracking-wider">
-                      Admin
+                      {t('adminSection')}
                     </p>
                   </div>
                   {adminItems.map((item) => {
@@ -230,7 +258,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition-all no-underline shadow-lg"
                       >
                         <Plus className="w-5 h-5" />
-                        <span>NEW PROJECT</span>
+                        <span>{t('newProject')}</span>
                       </a>
                     </div>
                   )}
@@ -242,7 +270,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="p-4 border-t border-white/10">
               <div className="flex items-center gap-3 mb-3">
                 <UserButton
-                  afterSignOutUrl={`/${locale}`}
+                  {...userButtonProps(locale)}
                   appearance={{
                     elements: {
                       avatarBox: 'w-10 h-10 rounded-full',
@@ -267,14 +295,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-blue-600/10 text-blue-400 hover:text-white hover:bg-blue-600 transition-all text-sm font-medium border border-blue-600/20 hover:border-blue-600"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Back to Home
+                  {t('backHome')}
                 </Link>
                 <button
                   onClick={handleSignOut}
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
                 >
                   <LogOut className="w-4 h-4" />
-                  Sign Out
+                  {t('signOut')}
                 </button>
               </div>
             </div>
@@ -293,7 +321,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
             <span className="text-white font-bold">EPI&apos;AI</span>
             <UserButton
-              afterSignOutUrl={`/${locale}`}
+              {...userButtonProps(locale)}
               appearance={{
                 elements: {
                   avatarBox: 'w-8 h-8 rounded-full',
@@ -303,10 +331,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </header>
 
           {/* Page Content */}
-          <main className="p-6 lg:p-8">
+          <main className="p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
+            <div className="flex flex-wrap items-center justify-end gap-2 mb-4 sm:mb-6">
+              <GlobalSearch />
+              <NotificationBell />
+              <ThemeToggle />
+            </div>
             {children}
           </main>
         </div>
+        <OnboardingWizard />
+        <MobileBottomNav />
       </div>
     </ProtectedRoute>
   );

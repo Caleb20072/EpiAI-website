@@ -105,7 +105,7 @@ export default function AdminProjectsPage() {
                     </div>
                     {/* Direct link - guaranteed to work */}
                     <a
-                        href="/en/admin/projects/new"
+                        href={`/${locale}/admin/projects/new`}
                         style={{
                             display: 'flex',
                             alignItems: 'center',

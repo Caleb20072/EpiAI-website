@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { connectToDatabase } from '@/lib/mongodb/client';
-import { Resource } from '@/lib/resources/models';
+import { prisma } from '@/lib/prisma';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -28,8 +27,7 @@ export async function GET(
         const { searchParams } = new URL(request.url);
         const forceDownload = searchParams.get('download') === 'true';
 
-        await connectToDatabase();
-        const resource = await Resource.findById(id);
+        const resource = await prisma.resource.findUnique({ where: { id } });
 
         if (!resource) {
             return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
@@ -41,7 +39,7 @@ export async function GET(
         }
 
         // Determine which file path to use
-        const fileRelativePath: string | undefined = resource.fileUrl || resource.url;
+        const fileRelativePath = resource.fileUrl || resource.url || undefined;
 
         if (!fileRelativePath || !fileRelativePath.startsWith('/uploads/')) {
             return NextResponse.json({ error: 'No file available for this resource' }, { status: 404 });
@@ -62,9 +60,15 @@ export async function GET(
 
         // Increment view or download count
         if (forceDownload) {
-            await Resource.findByIdAndUpdate(id, { $inc: { downloadCount: 1 } });
+            await prisma.resource.update({
+                where: { id },
+                data: { downloadCount: { increment: 1 } },
+            });
         } else {
-            await Resource.findByIdAndUpdate(id, { $inc: { viewCount: 1 } });
+            await prisma.resource.update({
+                where: { id },
+                data: { viewCount: { increment: 1 } },
+            });
         }
 
         const disposition = forceDownload

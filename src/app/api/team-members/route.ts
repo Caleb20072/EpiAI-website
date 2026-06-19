@@ -3,6 +3,7 @@ import { checkUserPermission } from '@/lib/auth/checkPermission';
 import {
   getActiveTeamMembers,
   getAllTeamMembers,
+  getTeamMembersForDisplay,
   createTeamMember,
 } from '@/lib/team/repository';
 import type { CreateTeamMemberInput } from '@/lib/team/types';
@@ -26,8 +27,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(members);
     }
 
-    // Public: uniquement les membres actifs
-    const members = await getActiveTeamMembers();
+    // Public: actifs en base, ou données par défaut si vide
+    const members = await getTeamMembersForDisplay();
     return NextResponse.json(members);
   } catch (error: any) {
     console.error('Error fetching team members:', error);

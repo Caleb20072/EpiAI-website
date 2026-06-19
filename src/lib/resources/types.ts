@@ -1,5 +1,3 @@
-import { Document } from 'mongoose';
-
 // Catégorie de ressource
 export interface ICategory {
   id: string;
@@ -19,7 +17,7 @@ export interface ICategory {
 }
 
 // Ressource (Document MongoDB)
-export interface IResource extends Document {
+export interface IResource {
   title: string;
   description: string;
   type: 'pdf' | 'code' | 'video' | 'article' | 'course' | 'dataset';

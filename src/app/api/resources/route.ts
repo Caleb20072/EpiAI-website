@@ -8,9 +8,14 @@ import {
 import type { ResourceFilters, CreateResourceInput } from '@/lib/resources/types';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
 
-// GET /api/resources - List resources
+// GET /api/resources - List resources (members only)
 export async function GET(request: NextRequest) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     const filters: ResourceFilters = {

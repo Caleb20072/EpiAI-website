@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { checkUserPermission } from '@/lib/auth/checkPermission';
 import { StreamChat } from 'stream-chat';
 
 const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY!;
@@ -24,9 +24,9 @@ export async function POST() {
             return NextResponse.json({ error: 'Stream Chat not configured' }, { status: 503 });
         }
 
-        const { userId } = await auth();
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const permCheck = await checkUserPermission('dashboard.admin');
+        if ('error' in permCheck) {
+            return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
         }
 
         const serverClient = StreamChat.getInstance(apiKey, apiSecret);

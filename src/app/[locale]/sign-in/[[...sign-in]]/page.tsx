@@ -9,7 +9,8 @@ export default function SignInPage() {
   const locale = params.locale as string || routing.defaultLocale;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 px-4 py-8">
+      <div className="w-full max-w-md">
       <SignIn
         routing="path"
         path={`/${locale}/sign-in`}
@@ -31,6 +32,7 @@ export default function SignInPage() {
           },
         }}
       />
+      </div>
     </div>
   );
 }

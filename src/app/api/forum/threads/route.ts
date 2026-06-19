@@ -10,10 +10,16 @@ import {
   deleteThread,
 } from '@/lib/forum/repository';
 import type { ThreadFilters, CreateThreadInput } from '@/lib/forum/types';
+import { rateLimit } from '@/lib/rate-limit';
 
 // GET /api/forum/threads - List threads or get one by id
 export async function GET(request: NextRequest) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     // Fetch single thread by id
@@ -58,6 +64,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    const permCheck = await checkUserPermission('content.create');
+    if ('error' in permCheck) {
+      return NextResponse.json({ error: permCheck.error }, { status: permCheck.status });
+    }
+
+    const limited = rateLimit(`forum-thread:${userId}`, 10, 60_000);
+    if (!limited.ok) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(limited.retryAfter) } }
       );
     }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { UserButton, useUser } from '@clerk/nextjs';
+import { userButtonProps } from '@/lib/clerk/user-button';
 import { useAuth } from '@/hooks/useAuth';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { useTransition } from 'react';
@@ -80,7 +81,7 @@ export function AuthHeader({ locale }: AuthHeaderProps) {
 
       {/* User Menu */}
       <UserButton
-        afterSignOutUrl="/"
+        {...userButtonProps(locale)}
         appearance={{
           elements: {
             avatarBox: 'w-9 h-9 rounded-full border-2 border-white/30 hover:border-white/50 transition-all',

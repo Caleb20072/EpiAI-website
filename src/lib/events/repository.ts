@@ -1,6 +1,4 @@
-import { connectToDatabase } from '@/lib/mongodb/client';
-import { Event, Registration } from './models';
-import { Activity } from '@/lib/activities/models';
+import { prisma } from '@/lib/prisma';
 import { CATEGORIES as EVENT_CATEGORIES } from './categories';
 import type {
   EventWithDetails,
@@ -9,7 +7,6 @@ import type {
   EventFilters,
   PaginationParams,
   PaginatedResponse,
-  ICategory,
 } from './types';
 
 // Re-export for backwards compatibility
@@ -23,7 +20,7 @@ function transformEvent(doc: any, isRegistered: boolean = false): EventWithDetai
   const isPast = eventDate < now;
 
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     title: doc.title,
     description: doc.description,
     content: doc.content,
@@ -54,7 +51,7 @@ function transformEvent(doc: any, isRegistered: boolean = false): EventWithDetai
 // Helper pour transformer une registration
 function transformRegistration(doc: any): RegistrationWithUser {
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     eventId: doc.eventId,
     userId: doc.userId,
     userName: doc.userName,
@@ -71,51 +68,53 @@ export async function getEvents(
   pagination: PaginationParams = { page: 1, limit: 10 },
   userId?: string
 ): Promise<PaginatedResponse<EventWithDetails>> {
-  await connectToDatabase();
+  const where: any = { isPublished: true };
 
-  const query: any = { isPublished: true };
+  if (filters.categoryId) where.categoryId = filters.categoryId;
 
-  // Filtre par catégorie
-  if (filters.categoryId) {
-    query.categoryId = filters.categoryId;
-  }
-
-  // Filtre upcoming/past
   const now = new Date();
   if (filters.upcoming) {
-    query.date = { $gte: now };
+    where.date = { gte: now };
   } else if (filters.past) {
-    query.date = { $lt: now };
+    where.date = { lt: now };
   }
 
-  // Recherche textuelle
   if (filters.search) {
-    query.$text = { $search: filters.search };
+    where.OR = [
+      { title: { contains: filters.search, mode: 'insensitive' } },
+      { description: { contains: filters.search, mode: 'insensitive' } },
+      { content: { contains: filters.search, mode: 'insensitive' } },
+      { location: { contains: filters.search, mode: 'insensitive' } },
+    ];
   }
-
-  // Tri: événements à venir en premier, puis par date
-  const sort: any = { date: filters.past ? -1 : 1, isFeatured: -1 };
 
   const skip = (pagination.page - 1) * pagination.limit;
 
   const [events, total] = await Promise.all([
-    Event.find(query).sort(sort).skip(skip).limit(pagination.limit).lean(),
-    Event.countDocuments(query),
+    prisma.event.findMany({
+      where,
+      orderBy: [{ date: filters.past ? 'desc' : 'asc' }, { isFeatured: 'desc' }],
+      skip,
+      take: pagination.limit,
+    }),
+    prisma.event.count({ where }),
   ]);
 
-  // Si userId fourni, vérifier les inscriptions
   let registeredEventIds: Set<string> = new Set();
-  if (userId) {
-    const registrations = await Registration.find({
-      userId,
-      eventId: { $in: events.map(e => e._id.toString()) },
-      status: 'registered',
-    }).lean();
+  if (userId && events.length > 0) {
+    const registrations = await prisma.eventRegistration.findMany({
+      where: {
+        userId,
+        eventId: { in: events.map(e => e.id) },
+        status: 'registered',
+      },
+      select: { eventId: true },
+    });
     registeredEventIds = new Set(registrations.map(r => r.eventId));
   }
 
   return {
-    data: events.map(e => transformEvent(e, registeredEventIds.has(e._id.toString()))),
+    data: events.map(e => transformEvent(e, registeredEventIds.has(e.id))),
     total,
     page: pagination.page,
     limit: pagination.limit,
@@ -124,37 +123,36 @@ export async function getEvents(
 }
 
 export async function getEventById(id: string, userId?: string): Promise<EventWithDetails | null> {
-  await connectToDatabase();
-
-  const event = await Event.findById(id).lean();
+  const event = await prisma.event.findUnique({ where: { id } });
   if (!event) return null;
 
-  // Vérifier si l'utilisateur est inscrit
   let isRegistered = false;
   if (userId) {
-    const registration = await Registration.findOne({
-      eventId: id,
-      userId,
-      status: 'registered',
-    }).lean();
-    isRegistered = !!registration;
+    const registration = await prisma.eventRegistration.findUnique({
+      where: {
+        eventId_userId: {
+          eventId: id,
+          userId,
+        },
+      },
+    });
+    isRegistered = !!registration && registration.status === 'registered';
   }
 
   return transformEvent(event, isRegistered);
 }
 
 export async function getFeaturedEvents(limit: number = 3): Promise<EventWithDetails[]> {
-  await connectToDatabase();
-
   const now = new Date();
-  const events = await Event.find({
-    isPublished: true,
-    isFeatured: true,
-    date: { $gte: now },
-  })
-    .sort({ date: 1 })
-    .limit(limit)
-    .lean();
+  const events = await prisma.event.findMany({
+    where: {
+      isPublished: true,
+      isFeatured: true,
+      date: { gte: now },
+    },
+    orderBy: { date: 'asc' },
+    take: limit,
+  });
 
   return events.map(e => transformEvent(e));
 }
@@ -164,50 +162,54 @@ export async function createEvent(
   creatorId: string,
   creatorName?: string
 ): Promise<EventWithDetails> {
-  await connectToDatabase();
-
   const eventDate = new Date(input.date);
-
-  const event = await Event.create({
-    title: input.title,
-    description: input.description,
-    content: input.content,
-    categoryId: input.categoryId,
-    date: eventDate,
-    endDate: input.endDate ? new Date(input.endDate) : undefined,
-    location: input.location,
-    isOnline: input.isOnline || false,
-    onlineLink: input.onlineLink,
-    capacity: input.capacity,
-    imageUrl: input.imageUrl,
-    gallery: input.gallery || [],
-    isPublished: true,
-    isFeatured: false,
-    registeredCount: 0,
-    createdBy: creatorId,
-  });
-
-  // Créer l'activité miroir côté Intranet
   const registrationDeadline = new Date(eventDate.getTime() - 24 * 60 * 60 * 1000);
-  const mirrorActivity = await Activity.create({
-    title: input.title,
-    description: input.description,
-    date: eventDate,
-    endDate: input.endDate ? new Date(input.endDate) : undefined,
-    location: input.location,
-    isOnline: input.isOnline || false,
-    onlineLink: input.onlineLink,
-    registrationDeadline,
-    isMandatory: false,
-    isActive: true,
-    createdBy: creatorId,
-    createdByName: creatorName || 'Admin',
-    linkedEventId: event._id.toString(),
-  });
 
-  // Lier l'event à l'activité
-  event.linkedActivityId = mirrorActivity._id.toString();
-  await event.save();
+  const event = await prisma.$transaction(async tx => {
+    const createdEvent = await tx.event.create({
+      data: {
+        title: input.title,
+        description: input.description,
+        content: input.content,
+        categoryId: input.categoryId,
+        date: eventDate,
+        endDate: input.endDate ? new Date(input.endDate) : undefined,
+        location: input.location,
+        isOnline: input.isOnline || false,
+        onlineLink: input.onlineLink,
+        capacity: input.capacity,
+        imageUrl: input.imageUrl,
+        gallery: input.gallery || [],
+        isPublished: true,
+        isFeatured: false,
+        registeredCount: 0,
+        createdBy: creatorId,
+      },
+    });
+
+    const mirrorActivity = await tx.activity.create({
+      data: {
+        title: input.title,
+        description: input.description,
+        date: eventDate,
+        endDate: input.endDate ? new Date(input.endDate) : undefined,
+        location: input.location,
+        isOnline: input.isOnline || false,
+        onlineLink: input.onlineLink,
+        registrationDeadline,
+        isMandatory: false,
+        isActive: true,
+        createdBy: creatorId,
+        createdByName: creatorName || 'Admin',
+        linkedEventId: createdEvent.id,
+      },
+    });
+
+    return tx.event.update({
+      where: { id: createdEvent.id },
+      data: { linkedActivityId: mirrorActivity.id },
+    });
+  });
 
   return transformEvent(event);
 }
@@ -216,50 +218,49 @@ export async function updateEvent(
   id: string,
   updates: Partial<CreateEventInput>
 ): Promise<EventWithDetails | null> {
-  await connectToDatabase();
+  const existing = await prisma.event.findUnique({ where: { id }, select: { id: true } });
+  if (!existing) return null;
 
   const updateData: any = { ...updates };
   if (updates.date) updateData.date = new Date(updates.date);
   if (updates.endDate) updateData.endDate = new Date(updates.endDate);
 
-  const event = await Event.findByIdAndUpdate(
-    id,
-    { $set: updateData },
-    { new: true }
-  ).lean();
+  const event = await prisma.event.update({
+    where: { id },
+    data: updateData,
+  });
 
-  return event ? transformEvent(event) : null;
+  return transformEvent(event);
 }
 
 export async function deleteEvent(id: string): Promise<boolean> {
-  await connectToDatabase();
+  const event = await prisma.event.findUnique({ where: { id } });
+  if (!event) return false;
 
-  const event = await Event.findById(id).lean();
-  const result = await Event.findByIdAndDelete(id);
-  // Supprimer les inscriptions
-  await Registration.deleteMany({ eventId: id });
+  await prisma.$transaction(async tx => {
+    await tx.event.delete({ where: { id } });
+    await tx.eventRegistration.deleteMany({ where: { eventId: id } });
 
-  // Supprimer l'activité miroir si elle existe
-  if (event?.linkedActivityId) {
-    const { ActivityRegistration, Attendance } = await import('@/lib/activities/models');
-    await Activity.findByIdAndDelete(event.linkedActivityId);
-    await ActivityRegistration.deleteMany({ activityId: event.linkedActivityId });
-    await Attendance.deleteMany({ activityId: event.linkedActivityId });
-  }
+    if (event.linkedActivityId) {
+      await tx.activity.deleteMany({ where: { id: event.linkedActivityId } });
+      await tx.activityRegistration.deleteMany({ where: { activityId: event.linkedActivityId } });
+      await tx.attendance.deleteMany({ where: { activityId: event.linkedActivityId } });
+    }
+  });
 
-  return !!result;
+  return true;
 }
 
 export async function togglePublishEvent(id: string): Promise<EventWithDetails | null> {
-  await connectToDatabase();
-
-  const event = await Event.findById(id);
+  const event = await prisma.event.findUnique({ where: { id } });
   if (!event) return null;
 
-  event.isPublished = !event.isPublished;
-  await event.save();
+  const updated = await prisma.event.update({
+    where: { id },
+    data: { isPublished: !event.isPublished },
+  });
 
-  return transformEvent(event);
+  return transformEvent(updated);
 }
 
 // === REGISTRATIONS ===
@@ -270,10 +271,7 @@ export async function registerForEvent(
   userName: string,
   userEmail: string
 ): Promise<{ success: boolean; event?: EventWithDetails; error?: string }> {
-  await connectToDatabase();
-
-  // Vérifier l'événement
-  const event = await Event.findById(eventId);
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
   if (!event) {
     return { success: false, error: 'Event not found' };
   }
@@ -286,100 +284,123 @@ export async function registerForEvent(
     return { success: false, error: 'Event has already passed' };
   }
 
-  // Vérifier la capacité
   if (event.registeredCount >= event.capacity) {
     return { success: false, error: 'Event is full' };
   }
 
-  // Vérifier inscription existante
-  const existingReg = await Registration.findOne({
-    eventId,
-    userId,
-  }).lean();
+  const existingReg = await prisma.eventRegistration.findUnique({
+    where: {
+      eventId_userId: {
+        eventId,
+        userId,
+      },
+    },
+  });
 
   if (existingReg) {
     if (existingReg.status === 'registered') {
       return { success: false, error: 'Already registered for this event' };
     }
     if (existingReg.status === 'cancelled') {
-      // Réinscription
-      await Registration.findByIdAndUpdate(existingReg._id, {
-        status: 'registered',
-        registeredAt: new Date(),
+      await prisma.$transaction(async tx => {
+        await tx.eventRegistration.update({
+          where: { id: existingReg.id },
+          data: {
+            status: 'registered',
+            registeredAt: new Date(),
+          },
+        });
+        await tx.event.update({
+          where: { id: eventId },
+          data: { registeredCount: { increment: 1 } },
+        });
       });
-      await Event.findByIdAndUpdate(eventId, { $inc: { registeredCount: 1 } });
-      return { success: true, event: transformEvent(event.toObject()) };
+      return { success: true, event: transformEvent(event) };
     }
   }
 
-  // Créer l'inscription
-  await Registration.create({
-    eventId,
-    userId,
-    userName,
-    userEmail,
-    status: 'registered',
-    registeredAt: new Date(),
+  await prisma.$transaction(async tx => {
+    await tx.eventRegistration.create({
+      data: {
+        eventId,
+        userId,
+        userName,
+        userEmail,
+        status: 'registered',
+        registeredAt: new Date(),
+      },
+    });
+    await tx.event.update({
+      where: { id: eventId },
+      data: { registeredCount: { increment: 1 } },
+    });
   });
 
-  // Incrémenter le compteur
-  await Event.findByIdAndUpdate(eventId, { $inc: { registeredCount: 1 } });
-
-  return { success: true, event: transformEvent(event.toObject()) };
+  return { success: true, event: transformEvent(event) };
 }
 
 export async function cancelRegistration(
   eventId: string,
   userId: string
 ): Promise<{ success: boolean; error?: string }> {
-  await connectToDatabase();
+  const activeRegistration = await prisma.eventRegistration.findFirst({
+    where: {
+      eventId,
+      userId,
+      status: 'registered',
+    },
+  });
 
-  const registration = await Registration.findOne({
-    eventId,
-    userId,
-    status: 'registered',
-  }).lean();
-
-  if (!registration) {
+  if (!activeRegistration) {
     return { success: false, error: 'No registration found' };
   }
 
-  await Registration.findByIdAndUpdate(registration._id, { status: 'cancelled' });
-  await Event.findByIdAndUpdate(eventId, { $inc: { registeredCount: -1 } });
+  await prisma.$transaction(async tx => {
+    await tx.eventRegistration.update({
+      where: { id: activeRegistration.id },
+      data: { status: 'cancelled' },
+    });
+    await tx.event.update({
+      where: { id: eventId },
+      data: { registeredCount: { decrement: 1 } },
+    });
+  });
 
   return { success: true };
 }
 
 export async function getUserRegistrations(userId: string): Promise<RegistrationWithUser[]> {
-  await connectToDatabase();
-
-  const registrations = await Registration.find({
-    userId,
-    status: 'registered',
-  }).sort({ registeredAt: -1 }).lean();
+  const registrations = await prisma.eventRegistration.findMany({
+    where: {
+      userId,
+      status: 'registered',
+    },
+    orderBy: { registeredAt: 'desc' },
+  });
 
   return registrations.map(transformRegistration);
 }
 
 export async function getEventRegistrations(eventId: string): Promise<RegistrationWithUser[]> {
-  await connectToDatabase();
-
-  const registrations = await Registration.find({
-    eventId,
-    status: 'registered',
-  }).sort({ registeredAt: -1 }).lean();
+  const registrations = await prisma.eventRegistration.findMany({
+    where: {
+      eventId,
+      status: 'registered',
+    },
+    orderBy: { registeredAt: 'desc' },
+  });
 
   return registrations.map(transformRegistration);
 }
 
 export async function isUserRegistered(eventId: string, userId: string): Promise<boolean> {
-  await connectToDatabase();
-
-  const registration = await Registration.findOne({
-    eventId,
-    userId,
-    status: 'registered',
-  }).lean();
+  const registration = await prisma.eventRegistration.findFirst({
+    where: {
+      eventId,
+      userId,
+      status: 'registered',
+    },
+  });
 
   return !!registration;
 }
@@ -387,14 +408,12 @@ export async function isUserRegistered(eventId: string, userId: string): Promise
 // === STATS ===
 
 export async function getEventStats() {
-  await connectToDatabase();
-
   const now = new Date();
 
   const [upcomingCount, pastCount, totalRegistrations] = await Promise.all([
-    Event.countDocuments({ isPublished: true, date: { $gte: now } }),
-    Event.countDocuments({ isPublished: true, date: { $lt: now } }),
-    Registration.countDocuments({ status: 'registered' }),
+    prisma.event.count({ where: { isPublished: true, date: { gte: now } } }),
+    prisma.event.count({ where: { isPublished: true, date: { lt: now } } }),
+    prisma.eventRegistration.count({ where: { status: 'registered' } }),
   ]);
 
   return {

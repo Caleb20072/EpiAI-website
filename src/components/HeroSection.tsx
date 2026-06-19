@@ -37,11 +37,13 @@ export default function HeroSection() {
             className="flex flex-col justify-center min-h-screen relative overflow-hidden py-32"
         >
             {/* Formules mathématiques flottantes */}
-            <MathFormulas />
+            <div className="hidden md:block">
+                <MathFormulas />
+            </div>
 
             {/* Contenu aligné à gauche */}
             <motion.div
-                className="max-w-[1400px] w-full mx-auto px-8 relative z-10"
+                className="max-w-[1400px] w-full mx-auto px-4 sm:px-8 relative z-10"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"

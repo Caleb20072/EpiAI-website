@@ -1,43 +1,40 @@
 import type { RoleDefinition } from './types';
 
-// Icons pour chaque rôle (utilisant lucide-react)
+/** Adhérent asso (hors bureau) — consommation & participation, pas de publication éditoriale. */
+const MEMBER_PERMISSIONS = ['dashboard.access', 'profile.edit', 'content.edit.own'] as const;
+
+/** Contributeurs de pôle / équipe — peuvent ouvrir des discussions et proposer du contenu. */
+const POLE_TEAM_PERMISSIONS = [...MEMBER_PERMISSIONS, 'content.create'] as const;
+
 export const ROLES: Record<string, RoleDefinition> = {
-  nouveau_membre: {
-    id: 'nouveau_membre',
-    name: { en: 'New Member', fr: 'Nouveau Membre' },
-    level: 1,
-    permissions: ['dashboard.access', 'content.edit.own', 'profile.edit'],
-    color: 'text-gray-400',
-    icon: 'User',
-  },
   membre: {
     id: 'membre',
     name: { en: 'Member', fr: 'Membre' },
-    level: 2,
-    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'profile.edit'],
+    level: 1,
+    permissions: [...MEMBER_PERMISSIONS],
     color: 'text-blue-400',
     icon: 'Users',
   },
   membre_equipe: {
     id: 'membre_equipe',
     name: { en: 'Team Member', fr: 'Membre d\'Équipe' },
-    level: 3,
-    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'profile.edit'],
+    level: 2,
+    permissions: [...POLE_TEAM_PERMISSIONS],
     color: 'text-cyan-400',
     icon: 'UserCog',
   },
   chef_equipe: {
     id: 'chef_equipe',
     name: { en: 'Team Lead', fr: 'Chef d\'Équipe' },
-    level: 4,
-    permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'profile.edit'],
+    level: 3,
+    permissions: [...POLE_TEAM_PERMISSIONS],
     color: 'text-teal-400',
     icon: 'Briefcase',
   },
   mentor: {
     id: 'mentor',
     name: { en: 'Mentor', fr: 'Mentor' },
-    level: 5,
+    level: 4,
     permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'profile.edit', 'resources.create', 'resources.manage'],
     color: 'text-indigo-400',
     icon: 'GraduationCap',
@@ -45,7 +42,7 @@ export const ROLES: Record<string, RoleDefinition> = {
   mentor_senior: {
     id: 'mentor_senior',
     name: { en: 'Senior Mentor', fr: 'Mentor Senior' },
-    level: 6,
+    level: 5,
     permissions: ['dashboard.access', 'content.create', 'content.edit.own', 'content.edit.all', 'profile.edit', 'resources.create', 'resources.manage'],
     color: 'text-purple-400',
     icon: 'Award',
@@ -53,7 +50,7 @@ export const ROLES: Record<string, RoleDefinition> = {
   logistique: {
     id: 'logistique',
     name: { en: 'Logistics', fr: 'Logistique' },
-    level: 7,
+    level: 6,
     permissions: ['dashboard.access', 'dashboard.admin', 'content.create', 'content.edit.all', 'profile.edit', 'resources.create', 'resources.manage', 'activities.create', 'activities.manage'],
     color: 'text-lime-400',
     icon: 'Truck',
@@ -84,21 +81,21 @@ export const ROLES: Record<string, RoleDefinition> = {
   },
 };
 
-// Role par defaut pour les nouveaux users
-export const DEFAULT_ROLE = 'nouveau_membre';
+/** Anciens slugs → rôle actuel (rétrocompatibilité Clerk / DB). */
+export const LEGACY_ROLE_ALIASES: Record<string, keyof typeof ROLES> = {
+  nouveau_membre: 'membre',
+};
 
-// Roles qui peuvent attribuer des roles
+export const DEFAULT_ROLE = 'membre';
+
 export const ROLES_WITH_ASSIGN_PERMISSION = ['president', 'admin_general', 'chef_pole'];
 
-// Roles avec acces dashboard admin
 export const ADMIN_ROLES = ['president', 'admin_general', 'chef_pole', 'logistique'];
 
-// Obtenir le role par defaut
 export function getDefaultRole(): RoleDefinition {
   return ROLES[DEFAULT_ROLE];
 }
 
-// Verifier si un roleId est valide
 export function isValidRole(roleId: string): roleId is keyof typeof ROLES {
   return roleId in ROLES;
 }

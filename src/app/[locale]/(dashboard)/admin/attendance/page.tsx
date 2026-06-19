@@ -110,6 +110,11 @@ export default function AttendanceReportPage() {
                     <div>
                       <p className="text-white text-sm font-medium">{member.userName}</p>
                       <p className="text-white/40 text-xs">{member.userEmail}</p>
+                      {member.attendanceRate < 50 && member.totalPresent + member.totalAbsent > 2 && (
+                        <span className="text-amber-400 text-xs" role="status">
+                          {locale === 'fr' ? '⚠ Absences répétées' : '⚠ Low attendance'}
+                        </span>
+                      )}
                     </div>
                     {expandedUser === member.userId ? (
                       <ChevronUp className="w-4 h-4 text-white/30 ml-auto" />

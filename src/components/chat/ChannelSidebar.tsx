@@ -25,9 +25,10 @@ interface ChannelSidebarProps {
     userId: string;
     activeChannelId: string;
     onChannelSelect: (id: string) => void;
+    className?: string;
 }
 
-export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelect }: ChannelSidebarProps) {
+export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelect, className }: ChannelSidebarProps) {
     const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
 
     useEffect(() => {
@@ -68,7 +69,7 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
     }, [client, userId]);
 
     return (
-        <div className="w-64 shrink-0 border-r border-white/10 bg-black/30 flex flex-col">
+        <div className={cn('w-64 max-w-[85vw] shrink-0 border-r border-white/10 bg-zinc-900 lg:bg-black/30 flex flex-col h-full', className)}>
             {/* Header */}
             <div className="p-4 border-b border-white/10">
                 <h2 className="text-white font-semibold text-sm uppercase tracking-wider opacity-60">

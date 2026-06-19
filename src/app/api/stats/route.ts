@@ -1,38 +1,34 @@
 import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
+import { getRecentActivity } from '@/lib/users/repository';
 
 export async function GET() {
     try {
         const { userId } = await auth();
-
         if (!userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Fetch real member count from Clerk
         const client = await clerkClient();
         const users = await client.users.getUserList({ limit: 500 });
-        const memberCount = users.totalCount;
 
-        // TODO: Fetch from MongoDB when installed
-        // For now, return 0 for discussions, events, resources
-        const stats = {
-            members: memberCount,
-            discussions: 0, // TODO: Query discussions collection
-            events: 0,      // TODO: Query events collection
-            resources: 0,   // TODO: Query resources collection
-        };
+        const [discussions, events, resources, recentActivity] = await Promise.all([
+            prisma.thread.count(),
+            prisma.event.count({ where: { isPublished: true } }),
+            prisma.resource.count({ where: { isPublished: true } }),
+            getRecentActivity(8),
+        ]);
 
-        return NextResponse.json(stats);
-
+        return NextResponse.json({
+            members: users.totalCount,
+            discussions,
+            events,
+            resources,
+            recentActivity,
+        });
     } catch (error) {
         console.error('[API] Error fetching stats:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

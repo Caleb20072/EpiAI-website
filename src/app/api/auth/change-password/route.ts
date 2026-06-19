@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { rateLimit } from '@/lib/rate-limit';
 
 /**
  * POST /api/auth/change-password
@@ -13,6 +14,14 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
+            );
+        }
+
+        const limited = rateLimit(`auth-pwd:${userId}`, 5, 300_000);
+        if (!limited.ok) {
+            return NextResponse.json(
+                { error: 'Too many attempts' },
+                { status: 429, headers: { 'Retry-After': String(limited.retryAfter) } }
             );
         }
 

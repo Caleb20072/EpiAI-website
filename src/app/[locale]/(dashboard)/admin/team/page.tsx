@@ -15,9 +15,11 @@ import {
   ImageIcon,
 } from 'lucide-react';
 import type { ITeamMember, CreateTeamMemberInput } from '@/lib/team/types';
+import { TEAM_POLES } from '@/lib/team/poles';
 
 const SECTION_OPTIONS = [
   { value: 'executive', label: { en: 'Executive Board', fr: 'Bureau Exécutif' } },
+  { value: 'referent', label: { en: 'Referent', fr: 'Référent' } },
   { value: 'pole', label: { en: 'Strategic Pole', fr: 'Pôle Stratégique' } },
   { value: 'mentor', label: { en: 'Mentor', fr: 'Mentor' } },
 ];
@@ -218,7 +220,7 @@ export default function AdminTeamPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs text-white/50 mb-1 block">{locale === 'fr' ? 'Rôle/Poste' : 'Role/Position'} *</label>
                     <input
@@ -239,7 +241,7 @@ export default function AdminTeamPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs text-white/50 mb-1 block">Section *</label>
                     <select
@@ -256,12 +258,18 @@ export default function AdminTeamPage() {
                   </div>
                   <div>
                     <label className="text-xs text-white/50 mb-1 block">{locale === 'fr' ? 'Clé du pôle' : 'Pole Key'}</label>
-                    <input
+                    <select
                       value={form.poleKey || ''}
                       onChange={(e) => setForm(f => ({ ...f, poleKey: e.target.value }))}
-                      placeholder="Ex: pole_tech, pole_events"
                       className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:border-white/30 outline-none"
-                    />
+                    >
+                      <option value="">—</option>
+                      {TEAM_POLES.map(p => (
+                        <option key={p.key} value={p.key}>
+                          {locale === 'fr' ? p.nameFr : p.nameEn}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -344,7 +352,7 @@ export default function AdminTeamPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs text-white/50 mb-1 block">LinkedIn</label>
                     <input

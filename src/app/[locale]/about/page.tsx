@@ -1,5 +1,4 @@
 import { useTranslations } from 'next-intl';
-import Header from '@/components/Header';
 import Image from 'next/image';
 
 export default function About() {
@@ -19,9 +18,7 @@ export default function About() {
         />
       </div>
 
-      <Header />
-
-      <main className="pt-32 pb-20 px-4">
+      <main className="pt-24 sm:pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16 max-w-4xl mx-auto">

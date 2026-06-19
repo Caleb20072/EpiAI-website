@@ -69,7 +69,15 @@ export default function EventsPage() {
             {total} {total === 1 ? 'event' : 'events'}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <a
+            href="/api/events/calendar"
+            download
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white text-sm"
+          >
+            <Calendar className="w-4 h-4" aria-hidden />
+            iCal
+          </a>
           <button
             onClick={() => {
               startTransition(() => {

@@ -3,36 +3,58 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { ITeamMember } from '@/lib/team/types';
+import { TEAM_POLES } from '@/lib/team/poles';
 
-export default function TeamSection() {
-    const [members, setMembers] = useState<ITeamMember[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [locale, setLocale] = useState<'en' | 'fr'>('en');
+type TeamSectionProps = {
+    initialMembers?: ITeamMember[];
+    locale?: 'fr' | 'en';
+};
+
+export default function TeamSection({ initialMembers, locale: localeProp }: TeamSectionProps) {
+    const [members, setMembers] = useState<ITeamMember[]>(initialMembers ?? []);
+    const [loading, setLoading] = useState(!initialMembers?.length);
+    const [locale, setLocale] = useState<'en' | 'fr'>(localeProp ?? 'fr');
 
     useEffect(() => {
+        if (localeProp) {
+            setLocale(localeProp);
+            return;
+        }
         const path = window.location.pathname;
         setLocale(path.startsWith('/fr') ? 'fr' : 'en');
-    }, []);
+    }, [localeProp]);
 
     useEffect(() => {
+        if (initialMembers?.length) {
+            setMembers(initialMembers);
+            setLoading(false);
+            return;
+        }
+
         fetch('/api/team-members')
             .then(res => res.ok ? res.json() : [])
             .then(data => setMembers(Array.isArray(data) ? data : []))
             .catch(() => setMembers([]))
             .finally(() => setLoading(false));
-    }, []);
+    }, [initialMembers]);
 
+    const referents = members.filter(m => m.section === 'referent');
     const executives = members.filter(m => m.section === 'executive');
-    const poles = members.filter(m => m.section === 'pole');
+    const poleMembers = members.filter(m => m.section === 'pole' && m.name !== '—');
+    const poleVacant = members.filter(m => m.section === 'pole' && m.name === '—');
     const mentors = members.filter(m => m.section === 'mentor');
 
-    // Regrouper les poles par poleKey
-    const poleGroups = poles.reduce<Record<string, ITeamMember[]>>((acc, m) => {
+    const poleGroups = poleMembers.reduce<Record<string, ITeamMember[]>>((acc, m) => {
         const key = m.poleKey || m.role;
         if (!acc[key]) acc[key] = [];
         acc[key].push(m);
         return acc;
     }, {});
+
+    const vacantPoleKeys = new Set(poleVacant.map(p => p.poleKey).filter(Boolean) as string[]);
+
+    const techPoles = TEAM_POLES.filter(p => p.category === 'tech');
+    const nonTechPoles = TEAM_POLES.filter(p => p.category === 'non_tech');
 
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
@@ -46,6 +68,83 @@ export default function TeamSection() {
             </a>
         );
     };
+
+    const MemberCard = ({ member, large = false }: { member: ITeamMember; large?: boolean }) => (
+        <div className={`p-6 rounded-[1.5rem] bg-gradient-to-br from-blue-900/30 to-slate-900/30 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 shadow-2xl transform hover:scale-105 transition-all duration-300 group hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] ${large ? 'max-w-sm mx-auto' : ''}`}>
+            <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-black border-2 border-blue-400/30 flex items-center justify-center overflow-hidden group-hover:border-blue-400/80 transition-colors shadow-[0_0_20px_rgba(59,130,246,0.2)] relative`}>
+                {member.photoUrl ? (
+                    <Image src={member.photoUrl} alt={member.name} fill className="object-cover" sizes="96px" />
+                ) : (
+                    <span className="text-2xl font-bold text-white/40">{member.name.charAt(0)}</span>
+                )}
+            </div>
+            <div className="text-sm text-blue-300 font-bold mb-1 tracking-widest uppercase">{member.role}</div>
+            <div className="text-lg font-bold text-white mb-1">{member.name}</div>
+            {member.title && <div className="text-xs text-gray-400 mb-2">{member.title}</div>}
+            {member.description && <p className="text-xs text-gray-400 mb-3">{member.description}</p>}
+            <div className="flex justify-center gap-4 border-t border-white/10 pt-4">
+                <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
+                <SocialLink type="github" url={member.socialLinks.github} />
+            </div>
+        </div>
+    );
+
+    const PoleCard = ({ poleKey, poleDef, assigned }: { poleKey: string; poleDef?: typeof TEAM_POLES[0]; assigned: ITeamMember[] }) => {
+        const isVacant = assigned.length === 0 || vacantPoleKeys.has(poleKey);
+        const name = poleDef ? (locale === 'fr' ? poleDef.nameFr : poleDef.nameEn) : assigned[0]?.role || poleKey;
+        const mission = poleDef ? (locale === 'fr' ? poleDef.missionFr : poleDef.missionEn) : assigned[0]?.description;
+
+        return (
+            <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 text-left flex items-start gap-4 group hover:-translate-y-1 hover:shadow-xl">
+                <div className="flex shrink-0">
+                    {isVacant ? (
+                        <div className="w-14 h-14 rounded-xl bg-blue-900/40 border border-dashed border-white/20 flex items-center justify-center text-white/30 text-xs font-bold">
+                            ?
+                        </div>
+                    ) : (
+                        assigned.map((m, idx) => (
+                            <div key={m.id} className={`w-14 h-14 rounded-xl bg-[#020617] border border-white/10 flex items-center justify-center overflow-hidden shadow-lg ring-2 ring-[#020617] relative ${idx > 0 ? '-ml-4 z-10' : 'z-20'}`}>
+                                {m.photoUrl ? (
+                                    <Image src={m.photoUrl} alt={m.name} fill className="object-cover" sizes="56px" />
+                                ) : (
+                                    <span className="text-lg font-bold text-white/40">{m.name.charAt(0)}</span>
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-bold mb-0.5 text-emerald-300 group-hover:brightness-125 transition-all leading-tight">{name}</h4>
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">
+                        {isVacant
+                            ? (locale === 'fr' ? 'Responsable à nommer' : 'Lead to be assigned')
+                            : assigned.length > 1 ? 'Co-Leads' : (assigned[0]?.title || 'Lead')}
+                    </div>
+                    {!isVacant && (
+                        <div className="text-white text-sm font-medium mb-1 truncate">
+                            {assigned.map(m => m.name).join(' & ')}
+                        </div>
+                    )}
+                    {mission && (
+                        <p className="text-xs text-gray-400 mb-2 leading-snug min-h-[2.5em]">{mission}</p>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    const renderPoleGrid = (poles: typeof TEAM_POLES) => (
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {poles.map(pole => (
+                <PoleCard
+                    key={pole.key}
+                    poleKey={pole.key}
+                    poleDef={pole}
+                    assigned={poleGroups[pole.key] || []}
+                />
+            ))}
+        </div>
+    );
 
     if (loading) {
         return (
@@ -66,115 +165,76 @@ export default function TeamSection() {
     }
 
     return (
-        <section id="team" className="py-20 px-4 min-h-screen flex flex-col justify-center relative">
-            <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-900/20 rounded-full blur-[100px] -z-10"></div>
-            <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] -z-10"></div>
+        <section id="team" className="py-16 sm:py-20 px-4 min-h-0 sm:min-h-screen flex flex-col justify-center relative">
+            <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-900/20 rounded-full blur-[100px] -z-10" />
+            <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] -z-10" />
 
             <div className="max-w-6xl mx-auto w-full text-center z-10">
                 <h2 className="text-2xl md:text-3xl font-bold mb-12 text-white text-glow drop-shadow-lg">
                     {locale === 'fr' ? 'Notre Équipe' : 'Our Team'}
                 </h2>
 
-                {/* Executive Board */}
+                {referents.length > 0 && (
+                    <div className="mb-16">
+                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                            {locale === 'fr' ? 'Notre Référent' : 'Our Referent'}
+                        </h3>
+                        <div className="flex justify-center">
+                            {referents.map(m => <MemberCard key={m.id} member={m} large />)}
+                        </div>
+                    </div>
+                )}
+
                 {executives.length > 0 && (
                     <div className="mb-16">
                         <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
                             {locale === 'fr' ? 'Bureau Exécutif' : 'Executive Board'}
                         </h3>
                         <div className="flex flex-col md:flex-row justify-center gap-6">
-                            {executives.map((member) => (
-                                <div key={member.id} className="p-6 rounded-[1.5rem] bg-gradient-to-br from-blue-900/30 to-slate-900/30 backdrop-blur-xl border border-white/10 hover:border-blue-500/50 shadow-2xl flex-1 max-w-sm mx-auto transform hover:scale-105 transition-all duration-300 group hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                                    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-black border-2 border-blue-400/30 flex items-center justify-center overflow-hidden group-hover:border-blue-400/80 transition-colors shadow-[0_0_20px_rgba(59,130,246,0.2)] relative">
-                                        {member.photoUrl ? (
-                                            <Image src={member.photoUrl} alt={member.name} fill className="object-cover" />
-                                        ) : (
-                                            <span className="text-2xl font-bold text-white/40">{member.name.charAt(0)}</span>
-                                        )}
-                                    </div>
-                                    <div className="text-sm text-blue-300 font-bold mb-1 tracking-widest uppercase">{member.role}</div>
-                                    <div className="text-lg font-bold text-white mb-3">{member.name}</div>
-                                    {member.description && <p className="text-xs text-gray-400 mb-3">{member.description}</p>}
-                                    <div className="flex justify-center gap-4 border-t border-white/10 pt-4">
-                                        <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
-                                        <SocialLink type="github" url={member.socialLinks.github} />
-                                    </div>
-                                </div>
-                            ))}
+                            {executives.map(m => <MemberCard key={m.id} member={m} large />)}
                         </div>
                     </div>
                 )}
 
-                {/* Strategic Poles */}
-                {Object.keys(poleGroups).length > 0 && (
-                    <div className="mb-16">
-                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
-                            {locale === 'fr' ? 'Pôles Stratégiques' : 'Strategic Poles'}
-                        </h3>
-                        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {Object.entries(poleGroups).map(([poleKey, poleMembers]) => (
-                                <div key={poleKey} className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 text-left flex items-start gap-4 group hover:-translate-y-1 hover:shadow-xl">
-                                    <div className="flex shrink-0">
-                                        {poleMembers.map((m, idx) => (
-                                            <div key={m.id} className={`w-14 h-14 rounded-xl bg-[#020617] border border-white/10 flex items-center justify-center overflow-hidden shadow-lg ring-2 ring-[#020617] relative ${idx > 0 ? '-ml-4 z-10' : 'z-20'}`}>
-                                                {m.photoUrl ? (
-                                                    <Image src={m.photoUrl} alt={m.name} fill className="object-cover" />
-                                                ) : (
-                                                    <span className="text-lg font-bold text-white/40">{m.name.charAt(0)}</span>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-bold mb-0.5 text-emerald-300 group-hover:brightness-125 transition-all leading-tight">
-                                            {poleMembers[0]?.role || poleKey}
-                                        </h4>
-                                        <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">
-                                            {poleMembers.length > 1 ? 'Co-Leads' : (poleMembers[0]?.title || 'Lead')}
-                                        </div>
-                                        <div className="text-white text-sm font-medium mb-1 truncate">
-                                            {poleMembers.map(m => m.name).join(' & ')}
-                                        </div>
-                                        {poleMembers[0]?.description && (
-                                            <p className="text-[10px] text-gray-400 mb-3 leading-tight min-h-[2.5em]">
-                                                {poleMembers[0].description}
-                                            </p>
-                                        )}
-                                        <div className="flex gap-2">
-                                            {poleMembers.map((m, idx) => (
-                                                <div key={m.id} className="flex gap-1 items-center">
-                                                    {poleMembers.length > 1 && (
-                                                        <span className="text-[8px] text-gray-500">{idx + 1}:</span>
-                                                    )}
-                                                    <SocialLink type="linkedin" url={m.socialLinks.linkedin} />
-                                                    <SocialLink type="github" url={m.socialLinks.github} />
-                                                    {idx < poleMembers.length - 1 && <div className="w-px h-3 bg-white/10 mx-1" />}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                <div className="mb-16">
+                    <h3 className="text-xl font-bold mb-4 text-white/90 border-b border-white/10 pb-3 inline-block">
+                        {locale === 'fr' ? 'Pôles Techniques' : 'Technical Poles'}
+                    </h3>
+                    <div className="mb-8 hidden md:block max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 opacity-80">
+                        <Image src="/assets/team/charts/poles-tech.png" alt="" width={1024} height={579} className="w-full h-auto" />
                     </div>
-                )}
+                    {renderPoleGrid(techPoles)}
+                </div>
 
-                {/* Mentors */}
+                <div className="mb-16">
+                    <h3 className="text-xl font-bold mb-4 text-white/90 border-b border-white/10 pb-3 inline-block">
+                        {locale === 'fr' ? 'Pôles Non-Techniques' : 'Non-Technical Poles'}
+                    </h3>
+                    <div className="mb-8 hidden md:block max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 opacity-80">
+                        <Image src="/assets/team/charts/poles-non-tech.png" alt="" width={1024} height={579} className="w-full h-auto" />
+                    </div>
+                    {renderPoleGrid(nonTechPoles)}
+                </div>
+
                 {mentors.length > 0 && (
                     <div>
                         <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
                             {locale === 'fr' ? 'Nos Mentors' : 'Our Mentors'}
                         </h3>
-                        <div className="flex flex-wrap justify-center gap-2">
-                            {mentors.map((mentor) => (
-                                <div key={mentor.id} className="pl-2 pr-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 hover:border-white/30 transition-all cursor-default flex items-center gap-2 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-white/10 to-transparent flex items-center justify-center border border-white/10 overflow-hidden relative">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                            {mentors.map(mentor => (
+                                <div key={mentor.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-400/30 transition-all flex flex-col items-center text-center gap-2">
+                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 relative">
                                         {mentor.photoUrl ? (
-                                            <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover" />
+                                            <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover" sizes="64px" />
                                         ) : (
-                                            <span className="text-[10px] font-bold text-white/50">{mentor.name.charAt(0)}</span>
+                                            <span className="flex items-center justify-center w-full h-full text-white/40 font-bold">{mentor.name.charAt(0)}</span>
                                         )}
                                     </div>
-                                    <span className="text-xs font-medium text-white/80">{mentor.name}</span>
+                                    <div>
+                                        <p className="text-white text-sm font-semibold leading-tight">{mentor.name}</p>
+                                        {mentor.title && <p className="text-[10px] text-blue-300/80 mt-1">{mentor.title}</p>}
+                                    </div>
                                 </div>
                             ))}
                         </div>

@@ -7,6 +7,10 @@ import {
 } from '@/lib/events/repository';
 import type { EventFilters, CreateEventInput } from '@/lib/events/types';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
+import { notifyAllActiveMembers } from '@/lib/notifications/service';
+import { sendNewEventEmail } from '@/lib/email/resend';
+import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 // GET /api/events - List events
 export async function GET(request: NextRequest) {
@@ -62,6 +66,31 @@ export async function POST(request: NextRequest) {
     const creatorName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Admin';
 
     const event = await createEvent(body, userId, creatorName);
+
+    if (event.isPublished) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
+      const link = `/events/${event.id}`;
+      await notifyAllActiveMembers({
+        type: 'event',
+        title: 'Nouvel événement',
+        message: event.title,
+        link,
+      });
+
+      const members = await prisma.user.findMany({
+        where: { memberStatus: 'active' },
+        select: { email: true, firstName: true },
+        take: 200,
+      });
+      for (const m of members) {
+        sendNewEventEmail(
+          m.email,
+          m.firstName || 'Membre',
+          event.title,
+          `${siteUrl}/fr${link}`
+        ).catch((err) => logger.warn('Event email failed', { email: m.email, err: String(err) }));
+      }
+    }
 
     return NextResponse.json(event, { status: 201 });
   } catch (error: any) {

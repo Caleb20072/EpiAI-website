@@ -4,7 +4,9 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    turbopack: false,
+    turbopack: {
+        root: import.meta.dirname,
+    },
     images: {
         remotePatterns: [
             {

@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Loader2 } from 'lucide-react';
 
@@ -70,9 +69,7 @@ export default function JoinPage() {
                 />
             </div>
 
-            <Header />
-
-            <main className="max-w-5xl mx-auto px-6 py-32 relative z-10">
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 py-24 sm:py-32 relative z-10">
                 {/* Intro Section */}
                 <div className="text-center mb-20 animate-fade-in-up">
                     <h1 className="text-4xl md:text-6xl font-black mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-purple-200">

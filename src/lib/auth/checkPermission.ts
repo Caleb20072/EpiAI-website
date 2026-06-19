@@ -1,5 +1,5 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { hasPermission as checkPermission } from '@/lib/roles/utils';
+import { hasPermission as checkPermission, resolveRoleSlug } from '@/lib/roles/utils';
 import type { Permission } from '@/lib/roles/types';
 
 /**
@@ -7,16 +7,14 @@ import type { Permission } from '@/lib/roles/types';
  * 1. sessionClaims.publicMetadata (JWT décodé localement — rapide, pas d'appel réseau)
  * 2. clerkClient.users.getUser() — fallback si le token ne contient pas encore le metadata
  */
-async function getRoleIdForUser(userId: string, sessionClaims: Record<string, any> | null): Promise<string> {
-    // Essayer depuis les claims JWT d'abord (aucun appel réseau)
+async function getRoleIdForUser(userId: string, sessionClaims: Record<string, unknown> | null): Promise<string> {
     const metaFromClaims = (sessionClaims?.publicMetadata as Record<string, unknown>) || {};
-    const roleFromClaims = (metaFromClaims?.role as string) || (metaFromClaims?.roleId as string);
+    const roleFromClaims = resolveRoleSlug(metaFromClaims);
     if (roleFromClaims) return roleFromClaims;
 
-    // Fallback : appel Clerk API (plus lent mais garantit les données fraîches)
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
-    return (user.publicMetadata?.role as string) || (user.publicMetadata?.roleId as string) || '';
+    return resolveRoleSlug(user.publicMetadata as Record<string, unknown>);
 }
 
 /**
@@ -35,7 +33,7 @@ export async function checkUserPermission(
         return { error: 'Unauthorized', status: 401 };
     }
 
-    const roleId = await getRoleIdForUser(userId, sessionClaims as Record<string, any>);
+    const roleId = await getRoleIdForUser(userId, sessionClaims as Record<string, unknown> | null);
     const allowed = checkPermission(roleId, required);
 
     if (!allowed) {

@@ -1,5 +1,5 @@
-import { connectToDatabase } from '@/lib/mongodb/client';
-import { Resource } from './models';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { CATEGORIES as RES_CATEGORIES, TAGS as RES_TAGS } from './categories';
 import type {
   ResourceWithDetails,
@@ -36,7 +36,7 @@ function transformResource(doc: any): ResourceWithDetails {
   const difficultyColors = DIFFICULTY_COLORS[doc.difficulty as keyof typeof DIFFICULTY_COLORS] || DIFFICULTY_COLORS.beginner;
 
   return {
-    id: doc._id.toString(),
+    id: doc.id,
     title: doc.title,
     description: doc.description,
     type: doc.type,
@@ -70,28 +70,31 @@ export async function getResources(
   filters: ResourceFilters = {},
   pagination: PaginationParams = { page: 1, limit: 12 }
 ): Promise<PaginatedResponse<ResourceWithDetails>> {
-  await connectToDatabase();
-
-  const query: any = { isPublished: true };
+  const query: Prisma.ResourceWhereInput = { isPublished: true };
 
   if (filters.categoryId) {
     query.categoryId = filters.categoryId;
   }
 
   if (filters.type) {
-    query.type = filters.type;
+    query.type = filters.type as any;
   }
 
   if (filters.tag) {
-    query.tags = filters.tag;
+    query.tags = { has: filters.tag };
   }
 
   if (filters.difficulty) {
-    query.difficulty = filters.difficulty;
+    query.difficulty = filters.difficulty as any;
   }
 
   if (filters.search) {
-    query.$text = { $search: filters.search };
+    query.OR = [
+      { title: { contains: filters.search, mode: 'insensitive' } },
+      { description: { contains: filters.search, mode: 'insensitive' } },
+      { author: { contains: filters.search, mode: 'insensitive' } },
+      { tags: { hasSome: [filters.search] } },
+    ];
   }
 
   if (filters.featured) {
@@ -99,13 +102,21 @@ export async function getResources(
   }
 
   // Tri: featured first, then by date or popularity
-  let sort: any = { isFeatured: -1, createdAt: -1 };
+  const sort: Prisma.ResourceOrderByWithRelationInput[] = [
+    { isFeatured: 'desc' },
+    { createdAt: 'desc' },
+  ];
 
   const skip = (pagination.page - 1) * pagination.limit;
 
   const [resources, total] = await Promise.all([
-    Resource.find(query).sort(sort).skip(skip).limit(pagination.limit).lean(),
-    Resource.countDocuments(query),
+    prisma.resource.findMany({
+      where: query,
+      orderBy: sort,
+      skip,
+      take: pagination.limit,
+    }),
+    prisma.resource.count({ where: query }),
   ]);
 
   return {
@@ -118,27 +129,27 @@ export async function getResources(
 }
 
 export async function getResourceById(id: string): Promise<ResourceWithDetails | null> {
-  await connectToDatabase();
-
-  const resource = await Resource.findById(id).lean();
+  const resource = await prisma.resource.findUnique({ where: { id } });
   if (!resource) return null;
 
   // Incrémenter les vues
-  await Resource.findByIdAndUpdate(id, { $inc: { viewCount: 1 } });
+  await prisma.resource.update({
+    where: { id },
+    data: { viewCount: { increment: 1 } },
+  });
 
   return transformResource(resource);
 }
 
 export async function getFeaturedResources(limit: number = 6): Promise<ResourceWithDetails[]> {
-  await connectToDatabase();
-
-  const resources = await Resource.find({
-    isPublished: true,
-    isFeatured: true,
-  })
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .lean();
+  const resources = await prisma.resource.findMany({
+    where: {
+      isPublished: true,
+      isFeatured: true,
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  });
 
   return resources.map(transformResource);
 }
@@ -147,15 +158,15 @@ export async function createResource(
   input: CreateResourceInput,
   creatorId: string
 ): Promise<ResourceWithDetails> {
-  await connectToDatabase();
-
-  const resource = await Resource.create({
-    ...input,
-    viewCount: 0,
-    downloadCount: 0,
-    isFeatured: false,
-    isPublished: true,
-    createdBy: creatorId,
+  const resource = await prisma.resource.create({
+    data: {
+      ...input,
+      viewCount: 0,
+      downloadCount: 0,
+      isFeatured: false,
+      isPublished: true,
+      createdBy: creatorId,
+    },
   });
 
   return transformResource(resource);
@@ -165,75 +176,74 @@ export async function updateResource(
   id: string,
   updates: Partial<CreateResourceInput>
 ): Promise<ResourceWithDetails | null> {
-  await connectToDatabase();
+  const result = await prisma.resource.updateMany({
+    where: { id },
+    data: updates,
+  });
 
-  const resource = await Resource.findByIdAndUpdate(
-    id,
-    { $set: updates },
-    { new: true }
-  ).lean();
+  if (result.count === 0) return null;
 
-  return resource ? transformResource(resource) : null;
-}
-
-export async function deleteResource(id: string): Promise<boolean> {
-  await connectToDatabase();
-
-  const result = await Resource.findByIdAndDelete(id);
-  return !!result;
-}
-
-export async function toggleFeatureResource(id: string): Promise<ResourceWithDetails | null> {
-  await connectToDatabase();
-
-  const resource = await Resource.findById(id);
+  const resource = await prisma.resource.findUnique({ where: { id } });
   if (!resource) return null;
-
-  resource.isFeatured = !resource.isFeatured;
-  await resource.save();
 
   return transformResource(resource);
 }
 
+export async function deleteResource(id: string): Promise<boolean> {
+  const result = await prisma.resource.deleteMany({ where: { id } });
+  return result.count > 0;
+}
+
+export async function toggleFeatureResource(id: string): Promise<ResourceWithDetails | null> {
+  const resource = await prisma.resource.findUnique({ where: { id } });
+  if (!resource) return null;
+
+  const updated = await prisma.resource.update({
+    where: { id },
+    data: { isFeatured: !resource.isFeatured },
+  });
+
+  return transformResource(updated);
+}
+
 export async function incrementDownload(id: string): Promise<void> {
-  await connectToDatabase();
-  await Resource.findByIdAndUpdate(id, { $inc: { downloadCount: 1 } });
+  await prisma.resource.updateMany({
+    where: { id },
+    data: { downloadCount: { increment: 1 } },
+  });
 }
 
 export async function getUserResources(userId: string): Promise<ResourceWithDetails[]> {
-  await connectToDatabase();
-
-  const resources = await Resource.find({
-    createdBy: userId,
-  })
-    .sort({ createdAt: -1 })
-    .lean();
+  const resources = await prisma.resource.findMany({
+    where: {
+      createdBy: userId,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 
   return resources.map(transformResource);
 }
 
 export async function getPopularResources(limit: number = 6): Promise<ResourceWithDetails[]> {
-  await connectToDatabase();
-
-  const resources = await Resource.find({
-    isPublished: true,
-  })
-    .sort({ viewCount: -1 })
-    .limit(limit)
-    .lean();
+  const resources = await prisma.resource.findMany({
+    where: {
+      isPublished: true,
+    },
+    orderBy: { viewCount: 'desc' },
+    take: limit,
+  });
 
   return resources.map(transformResource);
 }
 
 export async function getRecentResources(limit: number = 6): Promise<ResourceWithDetails[]> {
-  await connectToDatabase();
-
-  const resources = await Resource.find({
-    isPublished: true,
-  })
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .lean();
+  const resources = await prisma.resource.findMany({
+    where: {
+      isPublished: true,
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  });
 
   return resources.map(transformResource);
 }
@@ -241,16 +251,14 @@ export async function getRecentResources(limit: number = 6): Promise<ResourceWit
 // === STATS ===
 
 export async function getResourcesStats() {
-  await connectToDatabase();
-
   const [totalResources, pdfCount, codeCount, videoCount, articleCount, courseCount, datasetCount] = await Promise.all([
-    Resource.countDocuments({ isPublished: true }),
-    Resource.countDocuments({ isPublished: true, type: 'pdf' }),
-    Resource.countDocuments({ isPublished: true, type: 'code' }),
-    Resource.countDocuments({ isPublished: true, type: 'video' }),
-    Resource.countDocuments({ isPublished: true, type: 'article' }),
-    Resource.countDocuments({ isPublished: true, type: 'course' }),
-    Resource.countDocuments({ isPublished: true, type: 'dataset' }),
+    prisma.resource.count({ where: { isPublished: true } }),
+    prisma.resource.count({ where: { isPublished: true, type: 'pdf' } }),
+    prisma.resource.count({ where: { isPublished: true, type: 'code' } }),
+    prisma.resource.count({ where: { isPublished: true, type: 'video' } }),
+    prisma.resource.count({ where: { isPublished: true, type: 'article' } }),
+    prisma.resource.count({ where: { isPublished: true, type: 'course' } }),
+    prisma.resource.count({ where: { isPublished: true, type: 'dataset' } }),
   ]);
 
   return {
