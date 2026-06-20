@@ -12,7 +12,7 @@ import type { ResourceWithDetails } from '@/lib/resources/types';
 export default function MyResourcesPage() {
   const params = useParams();
   const locale = (params.locale as string) || 'en';
-  const { isSignedIn, userId } = useAuth();
+  const { isSignedIn, userId, hasPermission } = useAuth();
   const t = useTranslations('Resources');
 
   const [resources, setResources] = useState<ResourceWithDetails[]>([]);
@@ -71,6 +71,7 @@ export default function MyResourcesPage() {
             {resources.length} {resources.length === 1 ? 'resource' : 'resources'} uploaded
           </p>
         </div>
+        {hasPermission('resources.create') && (
         <Link
           href={`/${locale}/resources/new`}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
@@ -78,6 +79,7 @@ export default function MyResourcesPage() {
           <Plus className="w-5 h-5" />
           {t('addResource')}
         </Link>
+        )}
       </div>
 
       {/* Resources Grid */}

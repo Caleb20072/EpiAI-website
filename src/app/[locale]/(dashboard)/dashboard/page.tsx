@@ -2,9 +2,8 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { getRoleName, getRoleColor } from '@/lib/roles/utils';
-import { PermissionGate } from '@/components/shared/PermissionGate';
-import { useParams } from 'next/navigation';
 import { Link } from '@/i18n/routing';
+import { useParams } from 'next/navigation';
 import {
   Users,
   MessageSquare,
@@ -14,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import type { Permission } from '@/lib/roles/types';
 
 interface DashboardStats {
   members: number;
@@ -32,7 +32,7 @@ interface DashboardStats {
 export default function DashboardPage() {
   const params = useParams();
   const locale = (params.locale as string) || 'fr';
-  const { roleId, role, isAdmin } = useAuth();
+  const { roleId, role, isAdmin, hasPermission } = useAuth();
   const t = useTranslations('Dashboard');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,6 +62,38 @@ export default function DashboardPage() {
     { label: t('stats.resources'), value: stats?.resources || 0, icon: FileText, color: 'text-emerald-400', bgColor: 'bg-emerald-400/10' },
     { label: t('stats.members'), value: stats?.members || 0, icon: Users, color: 'text-amber-400', bgColor: 'bg-amber-400/10' },
   ];
+
+  const quickActions = [
+    {
+      permission: 'content.create' as Permission,
+      href: '/forum/new',
+      icon: MessageSquare,
+      iconClass: 'text-blue-400',
+      label: t('actions.newDiscussion'),
+    },
+    {
+      permission: 'dashboard.admin' as Permission,
+      href: '/events/new',
+      icon: Calendar,
+      iconClass: 'text-purple-400',
+      label: t('actions.createEvent'),
+    },
+    {
+      permission: 'resources.create' as Permission,
+      href: '/resources/new',
+      icon: FileText,
+      iconClass: 'text-emerald-400',
+      label: t('actions.addResource'),
+    },
+    {
+      permission: 'dashboard.admin' as Permission,
+      href: '/admin/membership',
+      icon: Users,
+      iconClass: 'text-amber-400',
+      label: t('actions.manageMembers'),
+      cardClass: 'bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20',
+    },
+  ].filter((action) => hasPermission(action.permission));
 
   return (
     <div className="space-y-8">
@@ -170,29 +202,28 @@ export default function DashboardPage() {
           )}
         </div>
 
+        {quickActions.length > 0 && (
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
           <h2 className="text-lg font-semibold text-white mb-4">{t('quickActions')}</h2>
           <div className="grid grid-cols-2 gap-3">
-            <Link href="/forum/new" className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left">
-              <MessageSquare className="w-5 h-5 text-blue-400 mb-2" />
-              <p className="text-white font-medium text-sm">{t('actions.newDiscussion')}</p>
-            </Link>
-            <Link href="/events/new" className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left">
-              <Calendar className="w-5 h-5 text-purple-400 mb-2" />
-              <p className="text-white font-medium text-sm">{t('actions.createEvent')}</p>
-            </Link>
-            <Link href="/resources/new" className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-left">
-              <FileText className="w-5 h-5 text-emerald-400 mb-2" />
-              <p className="text-white font-medium text-sm">{t('actions.addResource')}</p>
-            </Link>
-            <PermissionGate permission="dashboard.admin">
-              <Link href="/admin/membership" className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-all text-left">
-                <Users className="w-5 h-5 text-amber-400 mb-2" />
-                <p className="text-white font-medium text-sm">{t('actions.manageMembers')}</p>
-              </Link>
-            </PermissionGate>
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className={`p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all text-left ${
+                    action.cardClass ?? 'bg-white/5'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 ${action.iconClass} mb-2`} />
+                  <p className="text-white font-medium text-sm">{action.label}</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
+        )}
       </div>
     </div>
   );
