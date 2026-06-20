@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { Link } from '@/i18n/routing';
+import { BrandLogo } from '@/components/BrandLogo';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
@@ -51,9 +51,7 @@ export default function Header() {
         >
             <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
                 <Link href="/" className="flex items-center shrink-0" aria-label="EPI'AI home">
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 overflow-hidden rounded-full border-2 border-white/20">
-                        <Image src="/assets/logo.jpg" alt="" fill className="object-cover rounded-full" sizes="56px" />
-                    </div>
+                    <BrandLogo size="lg" priority />
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-8" aria-label="Main">

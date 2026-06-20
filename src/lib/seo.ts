@@ -12,7 +12,7 @@ export function buildPageMetadata(opts: {
 }): Metadata {
   const locale = opts.locale || 'fr';
   const url = `${BASE}/${locale}${opts.path}`;
-  const image = opts.image || `${BASE}/assets/logo.jpg`;
+  const image = opts.image || `${BASE}/assets/epiai-logo.png`;
 
   return {
     title: `${opts.title} | ${SITE}`,

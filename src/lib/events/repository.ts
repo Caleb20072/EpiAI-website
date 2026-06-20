@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { normalizeImageUrl } from '@/lib/utils/image-url';
 import { CATEGORIES as EVENT_CATEGORIES } from './categories';
 import type {
   EventWithDetails,
@@ -36,7 +37,7 @@ function transformEvent(doc: any, isRegistered: boolean = false): EventWithDetai
     capacity: doc.capacity,
     registeredCount: doc.registeredCount || 0,
     spotsLeft: Math.max(0, doc.capacity - (doc.registeredCount || 0)),
-    imageUrl: doc.imageUrl,
+    imageUrl: normalizeImageUrl(doc.imageUrl),
     gallery: doc.gallery || [],
     isPublished: doc.isPublished || false,
     isFeatured: doc.isFeatured || false,
@@ -178,7 +179,7 @@ export async function createEvent(
         isOnline: input.isOnline || false,
         onlineLink: input.onlineLink,
         capacity: input.capacity,
-        imageUrl: input.imageUrl,
+        imageUrl: normalizeImageUrl(input.imageUrl),
         gallery: input.gallery || [],
         isPublished: true,
         isFeatured: false,
@@ -224,6 +225,9 @@ export async function updateEvent(
   const updateData: any = { ...updates };
   if (updates.date) updateData.date = new Date(updates.date);
   if (updates.endDate) updateData.endDate = new Date(updates.endDate);
+  if ('imageUrl' in updates) {
+    updateData.imageUrl = normalizeImageUrl(updates.imageUrl) ?? null;
+  }
 
   const event = await prisma.event.update({
     where: { id },

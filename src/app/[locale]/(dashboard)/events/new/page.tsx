@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { normalizeImageUrl } from '@/lib/utils/image-url';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -107,7 +108,7 @@ export default function CreateEventPage() {
             isOnline: form.isOnline,
             onlineLink: form.isOnline ? form.onlineLink : undefined,
             capacity: form.capacity,
-            imageUrl: form.imageUrl || undefined,
+            imageUrl: normalizeImageUrl(form.imageUrl) || undefined,
           }),
         });
 
@@ -316,9 +317,28 @@ export default function CreateEventPage() {
             type="url"
             value={form.imageUrl}
             onChange={(e) => updateForm('imageUrl', e.target.value)}
-            placeholder="https://..."
+            placeholder="https://... (Google Drive, Dropbox, lien direct)"
             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
           />
+          {form.imageUrl.trim() && (
+            <div className="mt-3 rounded-xl overflow-hidden border border-white/10 h-40">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={normalizeImageUrl(form.imageUrl) || form.imageUrl}
+                alt="Preview"
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          <p className="text-white/40 text-xs mt-2">
+            {locale === 'fr'
+              ? 'Utilise un lien direct ou un partage Google Drive / Dropbox.'
+              : 'Use a direct link or Google Drive / Dropbox share URL.'}
+          </p>
         </div>
 
         {/* Submit */}

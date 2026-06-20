@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { useRouter, usePathname } from 'next/navigation'; // Changed from '@/i18n/routing'
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { BrandLogo } from '@/components/BrandLogo';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl'; // Added
 import {
@@ -232,9 +233,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="flex items-center gap-3"
                 aria-label={locale === 'fr' ? 'Tableau de bord EPI\'AI' : 'EPI\'AI dashboard'}
               >
-                <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
-                  <span className="text-white font-bold">E</span>
-                </div>
+                <BrandLogo size="md" />
                 <div>
                   <span className="text-white font-bold text-lg">EPI&apos;AI</span>
                   <p className="text-white/50 text-xs">Dashboard</p>
@@ -370,10 +369,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Link
               href={dashboardHref}
               onClick={handleLogoClick}
-              className="text-white font-bold"
+              className="flex items-center"
               aria-label={locale === 'fr' ? 'Tableau de bord' : 'Dashboard'}
             >
-              EPI&apos;AI
+              <BrandLogo size="sm" />
             </Link>
             <UserButton
               {...userButtonProps(locale)}

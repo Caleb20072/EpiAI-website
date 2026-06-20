@@ -15,8 +15,8 @@ import {
   Users2,
   GraduationCap,
   ExternalLink,
-  Image,
 } from 'lucide-react';
+import { EventCoverImage } from './EventCoverImage';
 
 const iconComponents: Record<string, any> = {
   Wrench,
@@ -39,36 +39,20 @@ export function EventDetail({ event, className }: EventDetailProps) {
   return (
     <div className={cn('space-y-6', className)}>
       {/* Header Image */}
-      {event.imageUrl && (
-        <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden">
-          <img
-            src={event.imageUrl}
-            alt={event.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden">
+        <EventCoverImage
+          src={event.imageUrl}
+          alt={event.title}
+          className="h-full w-full rounded-2xl"
+        />
 
-          {/* Category Badge */}
-          <div className="absolute top-6 left-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-white/20">
-            <Icon className={cn('w-5 h-5', event.categoryColor)} />
-            <span className="text-white font-medium">{event.categoryName}</span>
-          </div>
+        <div className="absolute top-6 left-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-white/20">
+          <Icon className={cn('w-5 h-5', event.categoryColor)} />
+          <span className="text-white font-medium">{event.categoryName}</span>
         </div>
-      )}
+      </div>
 
-      {/* Title & Category */}
       <div>
-        {!event.imageUrl && (
-          <div className={cn(
-            'inline-flex items-center gap-2 px-3 py-1.5 rounded-xl mb-4',
-            'bg-white/10'
-          )}>
-            <Icon className={cn('w-4 h-4', event.categoryColor)} />
-            <span className={cn('text-sm font-medium', event.categoryColor)}>
-              {event.categoryName}
-            </span>
-          </div>
-        )}
         <h1 className="text-3xl md:text-4xl font-bold text-white">{event.title}</h1>
       </div>
 

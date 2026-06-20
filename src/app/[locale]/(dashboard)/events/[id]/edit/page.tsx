@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { CATEGORIES } from '@/lib/events/categories';
-import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, AlertCircle, ImageIcon } from 'lucide-react';
+import { normalizeImageUrl } from '@/lib/utils/image-url';
 
 export default function EditEventPage() {
   const params = useParams();
@@ -24,6 +25,7 @@ export default function EditEventPage() {
     date: '',
     location: '',
     capacity: 50,
+    imageUrl: '',
   });
 
   const canEdit = hasPermission('dashboard.admin');
@@ -42,6 +44,7 @@ export default function EditEventPage() {
           date: event.date ? new Date(event.date).toISOString().slice(0, 16) : '',
           location: event.location || '',
           capacity: event.capacity || 50,
+          imageUrl: event.imageUrl || '',
         });
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Erreur');
@@ -161,6 +164,30 @@ export default function EditEventPage() {
           onChange={(e) => setForm((f) => ({ ...f, capacity: Number(e.target.value) }))}
           className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
         />
+        <div>
+          <label className="block text-white/70 text-sm font-medium mb-2 flex items-center gap-2">
+            <ImageIcon className="w-4 h-4" />
+            {locale === 'fr' ? 'URL de l\'image' : 'Image URL'}
+          </label>
+          <input
+            type="url"
+            value={form.imageUrl}
+            onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
+            placeholder="https://..."
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          />
+          {form.imageUrl.trim() && (
+            <div className="mt-3 rounded-xl overflow-hidden border border-white/10 h-40">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={normalizeImageUrl(form.imageUrl) || form.imageUrl}
+                alt="Preview"
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          )}
+        </div>
         <button
           type="submit"
           disabled={isPending}
