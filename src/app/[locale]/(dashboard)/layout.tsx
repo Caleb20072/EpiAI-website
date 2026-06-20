@@ -66,6 +66,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     router.push(`/${locale}`);
   };
 
+  const dashboardHref = `/${locale}/dashboard`;
+  const isOnDashboard = pathname === dashboardHref;
+
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setSidebarOpen(false);
+    if (isOnDashboard) {
+      e.preventDefault();
+      router.refresh();
+    }
+  };
+
   const navItems = [
     {
       label: t('dashboard'),
@@ -194,7 +205,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex flex-col h-full">
             {/* Logo */}
             <div className="p-6 border-b border-white/10">
-              <Link href={`/${locale}`} className="flex items-center gap-3">
+              <Link
+                href={dashboardHref}
+                onClick={handleLogoClick}
+                className="flex items-center gap-3"
+                aria-label={locale === 'fr' ? 'Tableau de bord EPI\'AI' : 'EPI\'AI dashboard'}
+              >
                 <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
                   <span className="text-white font-bold">E</span>
                 </div>
@@ -327,7 +343,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <span className="text-white font-bold">EPI&apos;AI</span>
+            <Link
+              href={dashboardHref}
+              onClick={handleLogoClick}
+              className="text-white font-bold"
+              aria-label={locale === 'fr' ? 'Tableau de bord' : 'Dashboard'}
+            >
+              EPI&apos;AI
+            </Link>
             <UserButton
               {...userButtonProps(locale)}
               appearance={{
