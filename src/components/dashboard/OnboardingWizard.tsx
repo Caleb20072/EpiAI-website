@@ -1,44 +1,91 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { X, ChevronRight } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import { useAuth } from '@/hooks/useAuth';
 
 const STEP_KEYS = ['welcome', 'profile', 'chat', 'resources', 'done'] as const;
+
+function storageKey(userId: string) {
+  return `epiai:onboarding:done:${userId}`;
+}
 
 export default function OnboardingWizard() {
   const params = useParams();
   const locale = (params.locale as string) || 'fr';
   const t = useTranslations('Onboarding');
+  const { userId, isSignedIn } = useAuth();
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/onboarding')
+    if (!isSignedIn || !userId) {
+      setLoading(false);
+      return;
+    }
+
+    if (localStorage.getItem(storageKey(userId)) === '1') {
+      setVisible(false);
+      setLoading(false);
+      return;
+    }
+
+    fetch('/api/onboarding', { cache: 'no-store' })
       .then((r) => r.json())
       .then((data) => {
-        if (!data.done) {
+        if (data.done) {
+          localStorage.setItem(storageKey(userId), '1');
+          setVisible(false);
+        } else {
           setVisible(true);
-          setStep(data.step || 0);
+          setStep(typeof data.step === 'number' ? data.step : 0);
         }
       })
-      .catch(() => {});
-  }, []);
+      .catch(() => setVisible(false))
+      .finally(() => setLoading(false));
+  }, [isSignedIn, userId]);
 
-  const finish = async (done: boolean) => {
-    const nextStep = done ? STEP_KEYS.length - 1 : Math.min(step + 1, STEP_KEYS.length - 1);
-    await fetch('/api/onboarding', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: nextStep, done }),
-    });
-    if (done) setVisible(false);
-    else setStep(nextStep);
-  };
+  const finish = useCallback(
+    async (markDone: boolean) => {
+      const nextStep = markDone
+        ? STEP_KEYS.length - 1
+        : Math.min(step + 1, STEP_KEYS.length - 1);
 
-  if (!visible) return null;
+      try {
+        const res = await fetch('/api/onboarding', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ step: nextStep, done: markDone }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.done && userId) {
+            localStorage.setItem(storageKey(userId), '1');
+          }
+        } else if (markDone && userId) {
+          localStorage.setItem(storageKey(userId), '1');
+        }
+      } catch {
+        if (markDone && userId) {
+          localStorage.setItem(storageKey(userId), '1');
+        }
+      }
+
+      if (markDone) {
+        setVisible(false);
+      } else {
+        setStep(nextStep);
+      }
+    },
+    [step, userId]
+  );
+
+  if (loading || !visible) return null;
 
   const key = STEP_KEYS[step] || 'welcome';
   const isLast = step >= STEP_KEYS.length - 1;
@@ -63,7 +110,7 @@ export default function OnboardingWizard() {
       <div className="w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl p-6 shadow-2xl relative">
         <button
           type="button"
-          onClick={() => finish(true)}
+          onClick={() => void finish(true)}
           className="absolute top-4 right-4 text-white/40 hover:text-white p-1"
           aria-label={t('skip')}
         >
@@ -80,7 +127,7 @@ export default function OnboardingWizard() {
           {action && (
             <Link
               href={action.href}
-              onClick={() => finish(false)}
+              onClick={() => void finish(false)}
               className="inline-flex items-center gap-1 flex-1 justify-center py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm font-medium min-w-[120px]"
             >
               {action.label}
@@ -90,7 +137,7 @@ export default function OnboardingWizard() {
           {!isLast ? (
             <button
               type="button"
-              onClick={() => finish(false)}
+              onClick={() => void finish(false)}
               className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm min-w-[120px]"
             >
               {t('next')}
@@ -98,7 +145,7 @@ export default function OnboardingWizard() {
           ) : (
             <button
               type="button"
-              onClick={() => finish(true)}
+              onClick={() => void finish(true)}
               className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm"
             >
               {t('finish')}
@@ -106,7 +153,7 @@ export default function OnboardingWizard() {
           )}
           <button
             type="button"
-            onClick={() => finish(true)}
+            onClick={() => void finish(true)}
             className="px-4 py-2.5 rounded-xl bg-white/5 text-white/60 hover:text-white text-sm"
           >
             {t('skip')}
