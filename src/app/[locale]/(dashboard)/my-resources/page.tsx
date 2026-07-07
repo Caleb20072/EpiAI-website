@@ -8,6 +8,7 @@ import { ResourceGrid } from '@/components/resources/ResourceGrid';
 import { Plus, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ResourceWithDetails } from '@/lib/resources/types';
+import { PageHeader, Button, EmptyState } from '@/components/ui';
 
 export default function MyResourcesPage() {
   const params = useParams();
@@ -44,43 +45,35 @@ export default function MyResourcesPage() {
 
   if (!isSignedIn) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-16">
-        <h1 className="text-2xl font-bold text-white mb-4">
-          Sign In Required
-        </h1>
-        <p className="text-white/60 mb-6">
-          You need to be signed in to view your resources.
-        </p>
-        <Link
-          href={`/${locale}/sign-in`}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
-        >
-          Sign In
-        </Link>
-      </div>
+      <EmptyState
+        icon={<FolderOpen className="w-12 h-12" />}
+        title="You need to be signed in to view your resources."
+        action={
+          <Link href={`/${locale}/sign-in`}>
+            <Button>Sign In</Button>
+          </Link>
+        }
+      />
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('myResources')}</h1>
-          <p className="text-white/60">
-            {resources.length} {resources.length === 1 ? 'resource' : 'resources'} uploaded
-          </p>
-        </div>
-        {hasPermission('resources.create') && (
-        <Link
-          href={`/${locale}/resources/new`}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          {t('addResource')}
-        </Link>
-        )}
-      </div>
+      <PageHeader
+        title={t('myResources')}
+        description={`${resources.length} ${resources.length === 1 ? 'resource' : 'resources'} uploaded`}
+        actions={
+          hasPermission('resources.create') ? (
+            <Link
+              href={`/${locale}/resources/new`}
+              className="inline-flex items-center justify-center font-semibold transition-colors gap-2 px-5 py-2.5 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-500"
+            >
+              <Plus className="w-5 h-5" />
+              {t('addResource')}
+            </Link>
+          ) : undefined
+        }
+      />
 
       {/* Resources Grid */}
       <ResourceGrid resources={resources} isLoading={isLoading} />

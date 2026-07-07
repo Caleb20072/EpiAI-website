@@ -33,11 +33,11 @@ export default async function MembershipAdminPage() {
 
   if (!canManage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950">
+      <div className="min-h-screen flex items-center justify-center bg-page">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
-          <p className="text-white/60">You don't have permission to manage memberships.</p>
-          <p className="text-sm text-white/40 mt-2">Role ID: {roleId}</p>
+          <h1 className="text-2xl font-bold text-primary mb-4">Access Denied</h1>
+          <p className="text-secondary">You don't have permission to manage memberships.</p>
+          <p className="text-sm text-muted mt-2">Role ID: {roleId}</p>
         </div>
       </div>
     );

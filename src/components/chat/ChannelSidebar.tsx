@@ -89,9 +89,9 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
     }, [client, userId, syncUnread]);
 
     return (
-        <div className={cn('w-64 max-w-[85vw] shrink-0 border-r border-white/10 bg-zinc-900 lg:bg-black/30 flex flex-col h-full', className)}>
-            <div className="p-4 border-b border-white/10">
-                <h2 className="text-white font-semibold text-sm uppercase tracking-wider opacity-60">
+        <div className={cn('w-64 max-w-[85vw] shrink-0 border-r border-default bg-surface lg:bg-black/30 flex flex-col h-full', className)}>
+            <div className="p-4 border-b border-default">
+                <h2 className="text-primary font-semibold text-sm uppercase tracking-wider opacity-60">
                     Canaux
                 </h2>
             </div>
@@ -108,10 +108,10 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
                             className={cn(
                                 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group',
                                 isActive
-                                    ? 'bg-white/10 text-white'
+                                    ? 'bg-card-muted text-primary'
                                     : unread > 0
-                                      ? 'text-white/90 bg-white/[0.03] hover:bg-white/5'
-                                      : 'text-white/50 hover:bg-white/5 hover:text-white/80'
+                                      ? 'text-white/90 bg-white/[0.03] hover:bg-card'
+                                      : 'text-muted hover:bg-card hover:text-secondary'
                             )}
                         >
                             <span className="text-lg shrink-0 relative">
@@ -123,7 +123,7 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
                             <div className="flex-1 min-w-0">
                                 <p className={cn(
                                     'text-sm font-medium truncate',
-                                    unread > 0 && !isActive ? 'text-white font-semibold' : isActive ? 'text-white' : ''
+                                    unread > 0 && !isActive ? 'text-primary font-semibold' : isActive ? 'text-primary' : ''
                                 )}>
                                     {ch.label}
                                 </p>
@@ -134,8 +134,8 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
                 })}
             </div>
 
-            <div className="p-3 border-t border-white/10">
-                <p className="text-white/20 text-xs text-center">Epi&apos;AI Chat • Temps réel</p>
+            <div className="p-3 border-t border-default">
+                <p className="text-muted text-xs text-center">Epi&apos;AI Chat • Temps réel</p>
             </div>
         </div>
     );

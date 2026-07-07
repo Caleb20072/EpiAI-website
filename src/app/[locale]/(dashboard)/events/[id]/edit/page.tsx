@@ -57,14 +57,14 @@ export default function EditEventPage() {
 
   if (!canEdit) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-16 text-white">
+      <div className="max-w-2xl mx-auto text-center py-16 text-primary">
         {locale === 'fr' ? 'Accès refusé' : 'Access denied'}
       </div>
     );
   }
 
   if (loading) {
-    return <div className="animate-pulse h-64 rounded-2xl bg-white/5" />;
+    return <div className="animate-pulse h-64 rounded-2xl bg-card" />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -92,13 +92,13 @@ export default function EditEventPage() {
     <div className="max-w-3xl mx-auto">
       <Link
         href={`/${locale}/events/${eventId}`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-6"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         {locale === 'fr' ? 'Retour' : 'Back'}
       </Link>
 
-      <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+      <h1 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
         <Calendar className="w-6 h-6" />
         {locale === 'fr' ? 'Modifier l\'événement' : 'Edit event'}
       </h1>
@@ -116,7 +116,7 @@ export default function EditEventPage() {
           value={form.title}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
           placeholder="Titre"
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         />
         <textarea
           required
@@ -124,7 +124,7 @@ export default function EditEventPage() {
           value={form.description}
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
           placeholder="Description"
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         />
         <textarea
           required
@@ -132,12 +132,12 @@ export default function EditEventPage() {
           value={form.content}
           onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
           placeholder="Contenu"
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         />
         <select
           value={form.categoryId}
           onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         >
           {CATEGORIES.map((c) => (
             <option key={c.id} value={c.id}>{c.name[locale as 'fr' | 'en'] || c.name.fr}</option>
@@ -148,24 +148,24 @@ export default function EditEventPage() {
           required
           value={form.date}
           onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         />
         <input
           required
           value={form.location}
           onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
           placeholder="Lieu"
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         />
         <input
           type="number"
           min={1}
           value={form.capacity}
           onChange={(e) => setForm((f) => ({ ...f, capacity: Number(e.target.value) }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         />
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2 flex items-center gap-2">
+          <label className="block text-secondary text-sm font-medium mb-2 flex items-center gap-2">
             <ImageIcon className="w-4 h-4" />
             {locale === 'fr' ? 'URL de l\'image' : 'Image URL'}
           </label>
@@ -174,10 +174,10 @@ export default function EditEventPage() {
             value={form.imageUrl}
             onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
             placeholder="https://..."
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
           />
           {form.imageUrl.trim() && (
-            <div className="mt-3 rounded-xl overflow-hidden border border-white/10 h-40">
+            <div className="mt-3 rounded-xl overflow-hidden border border-default h-40">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={normalizeImageUrl(form.imageUrl) || form.imageUrl}

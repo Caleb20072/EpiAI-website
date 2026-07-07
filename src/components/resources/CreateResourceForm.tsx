@@ -208,14 +208,14 @@ export function CreateResourceForm() {
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Title *
         </label>
         <input
           type="text"
           value={formData.title}
           onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all"
           placeholder="Enter resource title"
           required
         />
@@ -223,13 +223,13 @@ export function CreateResourceForm() {
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Description *
         </label>
         <textarea
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all resize-none"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all resize-none"
           placeholder="Describe this resource..."
           rows={4}
           required
@@ -238,7 +238,7 @@ export function CreateResourceForm() {
 
       {/* Type Selection */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-3">
+        <label className="block text-sm font-medium text-secondary mb-3">
           Resource Type *
         </label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -255,7 +255,7 @@ export function CreateResourceForm() {
                   'flex items-center gap-3 px-4 py-3 rounded-xl border transition-all',
                   isSelected
                     ? type.color + ' border-current'
-                    : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                    : 'bg-card border-default text-secondary hover:bg-card-muted'
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -268,25 +268,25 @@ export function CreateResourceForm() {
 
       {/* Resource Source - URL and/or File Upload */}
       <div className="space-y-4">
-        <label className="block text-sm font-medium text-white/70">
+        <label className="block text-sm font-medium text-secondary">
           Resource Source *
         </label>
-        <p className="text-xs text-white/40 -mt-2">
+        <p className="text-xs text-muted -mt-2">
           Provide a URL, upload a file, or both.
         </p>
 
         {/* URL Input */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <LinkIcon className="w-4 h-4 text-white/50" />
-            <span className="text-sm text-white/60">URL Link</span>
+            <LinkIcon className="w-4 h-4 text-muted" />
+            <span className="text-sm text-secondary">URL Link</span>
             {hasUrl && <Check className="w-4 h-4 text-brand-400" />}
           </div>
           <input
             type="url"
             value={formData.url}
             onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all"
             placeholder="https://example.com/resource"
           />
         </div>
@@ -294,8 +294,8 @@ export function CreateResourceForm() {
         {/* File Upload */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Upload className="w-4 h-4 text-white/50" />
-            <span className="text-sm text-white/60">Upload File</span>
+            <Upload className="w-4 h-4 text-muted" />
+            <span className="text-sm text-secondary">Upload File</span>
             {hasFile && <Check className="w-4 h-4 text-brand-400" />}
           </div>
 
@@ -303,13 +303,13 @@ export function CreateResourceForm() {
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-500/10 border border-brand-500/20">
               <File className="w-5 h-5 text-brand-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white truncate">{uploadedFileName}</p>
-                <p className="text-xs text-white/40">{formatFileSize(formData.fileSize)}</p>
+                <p className="text-sm text-primary truncate">{uploadedFileName}</p>
+                <p className="text-xs text-muted">{formatFileSize(formData.fileSize)}</p>
               </div>
               <button
                 type="button"
                 onClick={handleRemoveFile}
-                className="p-1 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                className="p-1 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-all"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -320,20 +320,20 @@ export function CreateResourceForm() {
               className={cn(
                 'flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed transition-all cursor-pointer',
                 isUploading
-                  ? 'border-white/20 bg-white/5'
-                  : 'border-white/10 hover:border-white/20 hover:bg-white/5'
+                  ? 'border-default bg-card'
+                  : 'border-default hover:border-default hover:bg-card'
               )}
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="w-6 h-6 text-white/50 animate-spin" />
-                  <span className="text-sm text-white/50">Uploading...</span>
+                  <Loader2 className="w-6 h-6 text-muted animate-spin" />
+                  <span className="text-sm text-muted">Uploading...</span>
                 </>
               ) : (
                 <>
-                  <Upload className="w-6 h-6 text-white/40" />
-                  <span className="text-sm text-white/50">Click to upload a file</span>
-                  <span className="text-xs text-white/30">Max 50MB</span>
+                  <Upload className="w-6 h-6 text-muted" />
+                  <span className="text-sm text-muted">Click to upload a file</span>
+                  <span className="text-xs text-muted">Max 50MB</span>
                 </>
               )}
             </div>
@@ -355,22 +355,22 @@ export function CreateResourceForm() {
       </div>
 
       {/* Downloadable Toggle */}
-      <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+      <div className="p-4 rounded-xl bg-card border border-default">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={cn(
               'p-2 rounded-lg',
               formData.isDownloadable
                 ? 'bg-brand-500/20 text-brand-400'
-                : 'bg-white/10 text-white/40'
+                : 'bg-card-muted text-muted'
             )}>
               {formData.isDownloadable ? <Download className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </div>
             <div>
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-primary">
                 {formData.isDownloadable ? 'Downloadable' : 'View only'}
               </p>
-              <p className="text-xs text-white/40">
+              <p className="text-xs text-muted">
                 {formData.isDownloadable
                   ? 'Users can download this resource'
                   : 'Users can only view this resource (no download)'}
@@ -397,16 +397,16 @@ export function CreateResourceForm() {
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Category *
         </label>
         <select
           value={formData.categoryId}
           onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all"
         >
           {CATEGORIES.map((category) => (
-            <option key={category.id} value={category.id} className="bg-zinc-900">
+            <option key={category.id} value={category.id} className="bg-surface">
               {category.name[locale as 'en' | 'fr'] || category.name.en}
             </option>
           ))}
@@ -415,7 +415,7 @@ export function CreateResourceForm() {
 
       {/* Difficulty */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Difficulty Level
         </label>
         <div className="flex gap-3">
@@ -431,7 +431,7 @@ export function CreateResourceForm() {
                   'flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-all',
                   isSelected
                     ? difficulty.color + ' border-current'
-                    : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                    : 'bg-card border-default text-secondary hover:bg-card-muted'
                 )}
               >
                 {difficulty.label}
@@ -443,7 +443,7 @@ export function CreateResourceForm() {
 
       {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Tags
         </label>
         <div className="flex gap-2 mb-3">
@@ -452,13 +452,13 @@ export function CreateResourceForm() {
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-            className="flex-1 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+            className="flex-1 px-4 py-2 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all"
             placeholder="Add a tag"
           />
           <button
             type="button"
             onClick={handleAddTag}
-            className="px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all"
+            className="px-4 py-2 rounded-xl bg-card-muted text-primary hover:bg-card-muted transition-all"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -468,13 +468,13 @@ export function CreateResourceForm() {
             {formData.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/10 text-white/70 text-sm"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-card-muted text-secondary text-sm"
               >
                 #{tag}
                 <button
                   type="button"
                   onClick={() => handleRemoveTag(tag)}
-                  className="text-white/40 hover:text-white transition-colors"
+                  className="text-muted hover:text-primary transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -486,14 +486,14 @@ export function CreateResourceForm() {
 
       {/* Author */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Author Name (optional)
         </label>
         <input
           type="text"
           value={formData.author}
           onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all"
           placeholder="Author name or organization"
         />
       </div>
@@ -501,14 +501,14 @@ export function CreateResourceForm() {
       {/* Duration (for videos/courses) */}
       {(formData.type === 'video' || formData.type === 'course') && (
         <div>
-          <label className="block text-sm font-medium text-white/70 mb-2">
+          <label className="block text-sm font-medium text-secondary mb-2">
             Duration (optional)
           </label>
           <input
             type="text"
             value={formData.duration}
             onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all"
             placeholder="e.g., 2h 30m, 10 hours, 45 min"
           />
         </div>

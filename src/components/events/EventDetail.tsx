@@ -46,36 +46,36 @@ export function EventDetail({ event, className }: EventDetailProps) {
           className="h-full w-full rounded-2xl"
         />
 
-        <div className="absolute top-6 left-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-white/20">
+        <div className="absolute top-6 left-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-default">
           <Icon className={cn('w-5 h-5', event.categoryColor)} />
-          <span className="text-white font-medium">{event.categoryName}</span>
+          <span className="text-primary font-medium">{event.categoryName}</span>
         </div>
       </div>
 
       <div>
-        <h1 className="text-3xl md:text-4xl font-bold text-white">{event.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-primary">{event.title}</h1>
       </div>
 
       {/* Meta Info */}
       <div className="flex flex-wrap gap-4 md:gap-6">
-        <div className="flex items-center gap-2 text-white/70">
+        <div className="flex items-center gap-2 text-secondary">
           <Calendar className="w-5 h-5" />
           <span>{formatDate(event.date)}</span>
         </div>
-        <div className="flex items-center gap-2 text-white/70">
+        <div className="flex items-center gap-2 text-secondary">
           <MapPin className="w-5 h-5" />
           <span>{event.isOnline ? 'Online Event' : event.location}</span>
         </div>
-        <div className="flex items-center gap-2 text-white/70">
+        <div className="flex items-center gap-2 text-secondary">
           <Users className="w-5 h-5" />
           <span>{event.registeredCount} / {event.capacity} registered</span>
         </div>
       </div>
 
       {/* Capacity Bar */}
-      <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+      <div className="p-4 rounded-xl bg-card border border-default">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-white/70">Availability</span>
+          <span className="text-secondary">Availability</span>
           <span className={cn(
             'font-medium',
             isFull ? 'text-red-400' : 'text-brand-400'
@@ -83,7 +83,7 @@ export function EventDetail({ event, className }: EventDetailProps) {
             {event.spotsLeft} spots remaining
           </span>
         </div>
-        <div className="h-3 rounded-full bg-white/10 overflow-hidden">
+        <div className="h-3 rounded-full bg-card-muted overflow-hidden">
           <div
             className={cn(
               'h-full rounded-full transition-all',
@@ -110,8 +110,8 @@ export function EventDetail({ event, className }: EventDetailProps) {
 
       {/* Description */}
       <div className="prose prose-invert max-w-none">
-        <h2 className="text-xl font-semibold text-white mb-3">About this event</h2>
-        <p className="text-white/70 whitespace-pre-wrap leading-relaxed">
+        <h2 className="text-xl font-semibold text-primary mb-3">About this event</h2>
+        <p className="text-secondary whitespace-pre-wrap leading-relaxed">
           {event.description}
         </p>
       </div>
@@ -119,8 +119,8 @@ export function EventDetail({ event, className }: EventDetailProps) {
       {/* Full Content */}
       {event.content && (
         <div className="prose prose-invert max-w-none">
-          <h2 className="text-xl font-semibold text-white mb-3">Details</h2>
-          <div className="text-white/70 whitespace-pre-wrap leading-relaxed">
+          <h2 className="text-xl font-semibold text-primary mb-3">Details</h2>
+          <div className="text-secondary whitespace-pre-wrap leading-relaxed">
             {event.content}
           </div>
         </div>
@@ -129,7 +129,7 @@ export function EventDetail({ event, className }: EventDetailProps) {
       {/* Gallery */}
       {event.gallery && event.gallery.length > 0 && (
         <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Gallery</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">Gallery</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {event.gallery.map((image, index) => (
               <div

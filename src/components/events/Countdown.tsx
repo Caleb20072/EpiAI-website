@@ -23,7 +23,7 @@ export function Countdown({ targetDate, className }: CountdownProps) {
   if (timeLeft.isPast) {
     return (
       <div className={cn('text-center', className)}>
-        <p className="text-white/60">Event has started!</p>
+        <p className="text-secondary">Event has started!</p>
       </div>
     );
   }
@@ -42,12 +42,12 @@ export function Countdown({ targetDate, className }: CountdownProps) {
           key={unit.label}
           className="flex flex-col items-center"
         >
-          <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-            <span className="text-2xl md:text-3xl font-bold text-white">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-card-muted border border-default flex items-center justify-center">
+            <span className="text-2xl md:text-3xl font-bold text-primary">
               {String(unit.value).padStart(2, '0')}
             </span>
           </div>
-          <span className="text-xs text-white/50 mt-2 uppercase tracking-wide">
+          <span className="text-xs text-muted mt-2 uppercase tracking-wide">
             {unit.label}
           </span>
         </div>

@@ -38,8 +38,8 @@ export function EventCard({ event, className }: EventCardProps) {
   return (
     <div
       className={cn(
-        'group rounded-2xl bg-white/5 border border-white/10 overflow-hidden',
-        'hover:bg-white/10 hover:border-white/20 transition-all duration-300',
+        'group rounded-2xl bg-card border border-default overflow-hidden',
+        'hover:bg-card-muted hover:border-default transition-all duration-300',
         className
       )}
     >
@@ -51,19 +51,19 @@ export function EventCard({ event, className }: EventCardProps) {
           imgClassName="group-hover:scale-105 transition-transform duration-500"
         />
 
-        <div className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/50 backdrop-blur-sm border border-white/20">
+        <div className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/50 backdrop-blur-sm border border-default">
           <Icon className={cn('w-4 h-4', event.categoryColor)} />
-          <span className="text-white text-sm font-medium">{event.categoryName}</span>
+          <span className="text-primary text-sm font-medium">{event.categoryName}</span>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-5 space-y-4">
-        <h3 className="text-lg font-bold text-white line-clamp-2 group-hover:text-white/90 transition-colors">
+        <h3 className="text-lg font-bold text-primary line-clamp-2 group-hover:text-white/90 transition-colors">
           {event.title}
         </h3>
 
-        <div className="flex flex-wrap gap-3 text-sm text-white/60">
+        <div className="flex flex-wrap gap-3 text-sm text-secondary">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" />
             <span>{formatDate(event.date)}</span>
@@ -83,13 +83,13 @@ export function EventCard({ event, className }: EventCardProps) {
           </div>
         </div>
 
-        <p className="text-white/50 text-sm line-clamp-2 leading-relaxed">
+        <p className="text-muted text-sm line-clamp-2 leading-relaxed">
           {event.description}
         </p>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-1.5 text-white/60">
+            <div className="flex items-center gap-1.5 text-secondary">
               <Users className="w-4 h-4" />
               <span>{event.registeredCount} / {event.capacity}</span>
             </div>
@@ -100,7 +100,7 @@ export function EventCard({ event, className }: EventCardProps) {
               {event.spotsLeft} spots left
             </span>
           </div>
-          <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-card-muted overflow-hidden">
             <div
               className={cn(
                 'h-full rounded-full transition-all',

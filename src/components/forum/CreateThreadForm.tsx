@@ -131,7 +131,7 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Title *
         </label>
         <input
@@ -140,9 +140,9 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter a descriptive title..."
           className={cn(
-            'w-full px-4 py-3 rounded-xl bg-white/5 border text-white placeholder:text-white/40',
-            'focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all',
-            errors.title ? 'border-red-500/50' : 'border-white/10'
+            'w-full px-4 py-3 rounded-xl bg-card border text-primary placeholder:text-muted',
+            'focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all',
+            errors.title ? 'border-red-500/50' : 'border-default'
           )}
         />
         {errors.title && (
@@ -152,7 +152,7 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Category *
         </label>
         <div className="flex flex-wrap gap-2">
@@ -168,8 +168,8 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
                 className={cn(
                   'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
                   isSelected
-                    ? 'bg-white/20 text-white border border-white/40'
-                    : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10'
+                    ? 'bg-white/20 text-primary border border-white/40'
+                    : 'bg-card text-secondary hover:text-primary hover:bg-card-muted border border-default'
                 )}
               >
                 <Icon className={cn('w-4 h-4', category.color)} />
@@ -182,7 +182,7 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
 
       {/* Content */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Content *
         </label>
         <textarea
@@ -191,9 +191,9 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
           placeholder="Write your discussion content here..."
           rows={8}
           className={cn(
-            'w-full px-4 py-3 rounded-xl bg-white/5 border text-white placeholder:text-white/40 resize-none',
-            'focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all',
-            errors.content ? 'border-red-500/50' : 'border-white/10'
+            'w-full px-4 py-3 rounded-xl bg-card border text-primary placeholder:text-muted resize-none',
+            'focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all',
+            errors.content ? 'border-red-500/50' : 'border-default'
           )}
         />
         {errors.content && (
@@ -203,20 +203,20 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
 
       {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-white/70 mb-2">
+        <label className="block text-sm font-medium text-secondary mb-2">
           Tags (optional, max 5)
         </label>
         <div className="flex flex-wrap gap-2 mb-3">
           {selectedTags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/10 text-white text-sm border border-white/20"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-card-muted text-primary text-sm border border-default"
             >
               #{tag}
               <button
                 type="button"
                 onClick={() => handleRemoveTag(tag)}
-                className="text-white/40 hover:text-white transition-colors"
+                className="text-muted hover:text-primary transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -224,7 +224,7 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
           ))}
         </div>
         <div className="relative">
-          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
           <input
             type="text"
             value={tagInput}
@@ -233,8 +233,8 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
             placeholder="Add a tag and press Enter..."
             disabled={selectedTags.length >= 5}
             className={cn(
-              'w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border text-white placeholder:text-white/40',
-              'focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all',
+              'w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border text-primary placeholder:text-muted',
+              'focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all',
               selectedTags.length >= 5 && 'opacity-50 cursor-not-allowed'
             )}
           />
@@ -247,7 +247,7 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
               type="button"
               onClick={() => handleAddTag(tag.id)}
               disabled={selectedTags.length >= 5}
-              className="px-2 py-1 rounded-lg bg-white/5 text-white/60 hover:text-white hover:bg-white/10 text-xs transition-colors"
+              className="px-2 py-1 rounded-lg bg-card text-secondary hover:text-primary hover:bg-card-muted text-xs transition-colors"
             >
               #{tag.name}
             </button>
@@ -256,12 +256,12 @@ export function CreateThreadForm({ onSuccess, onCancel }: CreateThreadFormProps)
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-default">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all font-medium"
+            className="px-6 py-2.5 rounded-xl text-secondary hover:text-primary hover:bg-card-muted transition-all font-medium"
           >
             Cancel
           </button>

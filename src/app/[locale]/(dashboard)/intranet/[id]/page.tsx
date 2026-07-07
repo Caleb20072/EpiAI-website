@@ -140,7 +140,7 @@ export default function ActivityDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-default border-t-brand-500 rounded-full" />
       </div>
     );
   }
@@ -148,7 +148,7 @@ export default function ActivityDetailPage() {
   if (!activity) {
     return (
       <div className="text-center py-20">
-        <p className="text-white/60">{locale === 'fr' ? 'Activité non trouvée' : 'Activity not found'}</p>
+        <p className="text-secondary">{locale === 'fr' ? 'Activité non trouvée' : 'Activity not found'}</p>
       </div>
     );
   }
@@ -158,19 +158,19 @@ export default function ActivityDetailPage() {
       {/* Back */}
       <Link
         href={`/${locale}/intranet`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors text-sm"
       >
         <ArrowLeft className="w-4 h-4" />
         {locale === 'fr' ? 'Retour aux activités' : 'Back to activities'}
       </Link>
 
       {/* Activity Info */}
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+      <div className="p-6 rounded-2xl bg-card border border-default">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-2">{activity.title}</h1>
-            <p className="text-white/60 mb-4">{activity.description}</p>
-            <div className="flex flex-wrap gap-4 text-white/50 text-sm">
+            <h1 className="text-2xl font-bold text-primary mb-2">{activity.title}</h1>
+            <p className="text-secondary mb-4">{activity.description}</p>
+            <div className="flex flex-wrap gap-4 text-muted text-sm">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
                 {new Date(activity.date).toLocaleDateString(locale, {
@@ -212,7 +212,7 @@ export default function ActivityDetailPage() {
 
       {/* Admin: Attendance Management */}
       <PermissionGate permission="attendance.manage">
-        <div className="p-6 rounded-2xl bg-white/5 border border-amber-500/20">
+        <div className="p-6 rounded-2xl bg-card border border-amber-500/20">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-amber-400">
               {locale === 'fr' ? 'Gestion de la présence' : 'Attendance Management'}
@@ -238,8 +238,8 @@ export default function ActivityDetailPage() {
 
           {/* Force Register Form */}
           {showForceForm && (
-            <div className="mb-4 p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
-              <h4 className="text-sm font-semibold text-white">
+            <div className="mb-4 p-4 rounded-xl bg-card border border-default space-y-3">
+              <h4 className="text-sm font-semibold text-primary">
                 {locale === 'fr' ? 'Inscription forcée' : 'Force Registration'}
               </h4>
               <div className="grid grid-cols-3 gap-3">
@@ -247,19 +247,19 @@ export default function ActivityDetailPage() {
                   value={forceUserId}
                   onChange={(e) => setForceUserId(e.target.value)}
                   placeholder="User ID (Clerk)"
-                  className="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm placeholder:text-white/30 focus:border-blue-500/50 outline-none"
+                  className="px-3 py-2 rounded-lg bg-input border border-default text-primary text-sm placeholder:text-muted focus:border-blue-500/50 outline-none"
                 />
                 <input
                   value={forceUserName}
                   onChange={(e) => setForceUserName(e.target.value)}
                   placeholder={locale === 'fr' ? 'Nom complet' : 'Full name'}
-                  className="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm placeholder:text-white/30 focus:border-blue-500/50 outline-none"
+                  className="px-3 py-2 rounded-lg bg-input border border-default text-primary text-sm placeholder:text-muted focus:border-blue-500/50 outline-none"
                 />
                 <input
                   value={forceUserEmail}
                   onChange={(e) => setForceUserEmail(e.target.value)}
                   placeholder="Email"
-                  className="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm placeholder:text-white/30 focus:border-blue-500/50 outline-none"
+                  className="px-3 py-2 rounded-lg bg-input border border-default text-primary text-sm placeholder:text-muted focus:border-blue-500/50 outline-none"
                 />
               </div>
               <button
@@ -273,13 +273,13 @@ export default function ActivityDetailPage() {
 
           {/* Attendance List */}
           <div className="space-y-2">
-            <div className="grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-2 text-xs text-white/40 font-semibold uppercase">
+            <div className="grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-2 text-xs text-muted font-semibold uppercase">
               <span>{locale === 'fr' ? 'Membre' : 'Member'}</span>
               <span>{locale === 'fr' ? 'Présent' : 'Present'}</span>
               <span>{locale === 'fr' ? 'Absent' : 'Absent'}</span>
             </div>
             {registrations.length === 0 ? (
-              <p className="text-white/40 text-sm text-center py-4">
+              <p className="text-muted text-sm text-center py-4">
                 {locale === 'fr' ? 'Aucun inscrit' : 'No registrations'}
               </p>
             ) : (
@@ -291,12 +291,12 @@ export default function ActivityDetailPage() {
                       ? 'bg-brand-500/10 border-brand-500/20'
                       : attendanceMap[reg.userId] === false
                       ? 'bg-red-500/10 border-red-500/20'
-                      : 'bg-white/5 border-white/10'
+                      : 'bg-card border-default'
                   }`}
                 >
                   <div>
-                    <p className="text-white text-sm font-medium">{reg.userName}</p>
-                    <p className="text-white/40 text-xs">{reg.userEmail}</p>
+                    <p className="text-primary text-sm font-medium">{reg.userName}</p>
+                    <p className="text-muted text-xs">{reg.userEmail}</p>
                     {reg.isForcedRegistration && (
                       <span className="text-amber-400 text-[10px]">
                         {locale === 'fr' ? '(Inscription forcée)' : '(Force registered)'}
@@ -307,8 +307,8 @@ export default function ActivityDetailPage() {
                     onClick={() => setAttendanceMap(m => ({ ...m, [reg.userId]: true }))}
                     className={`p-2 rounded-lg transition-colors ${
                       attendanceMap[reg.userId] === true
-                        ? 'bg-brand-500 text-white'
-                        : 'bg-white/5 text-white/30 hover:text-brand-400'
+                        ? 'bg-brand-500 text-primary'
+                        : 'bg-card text-muted hover:text-brand-400'
                     }`}
                   >
                     <CheckCircle className="w-5 h-5" />
@@ -317,8 +317,8 @@ export default function ActivityDetailPage() {
                     onClick={() => setAttendanceMap(m => ({ ...m, [reg.userId]: false }))}
                     className={`p-2 rounded-lg transition-colors ${
                       attendanceMap[reg.userId] === false
-                        ? 'bg-red-500 text-white'
-                        : 'bg-white/5 text-white/30 hover:text-red-400'
+                        ? 'bg-red-500 text-primary'
+                        : 'bg-card text-muted hover:text-red-400'
                     }`}
                   >
                     <XCircle className="w-5 h-5" />

@@ -20,8 +20,8 @@ export function ReplyForm({ threadId, threadLocked, onSuccess }: ReplyFormProps)
 
   if (!isSignedIn) {
     return (
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-        <p className="text-white/60 mb-4">
+      <div className="p-6 rounded-2xl bg-card border border-default text-center">
+        <p className="text-secondary mb-4">
           You need to be signed in to reply to this discussion.
         </p>
         <a
@@ -36,8 +36,8 @@ export function ReplyForm({ threadId, threadLocked, onSuccess }: ReplyFormProps)
 
   if (threadLocked) {
     return (
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-        <p className="text-white/60">
+      <div className="p-6 rounded-2xl bg-card border border-default text-center">
+        <p className="text-secondary">
           This discussion is locked. No new replies are allowed.
         </p>
       </div>
@@ -84,16 +84,16 @@ export function ReplyForm({ threadId, threadLocked, onSuccess }: ReplyFormProps)
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* User info */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-          <span className="text-white font-medium">
+        <div className="w-10 h-10 rounded-full bg-card-muted flex items-center justify-center">
+          <span className="text-primary font-medium">
             M
           </span>
         </div>
         <div>
-          <p className="text-white font-medium">
+          <p className="text-primary font-medium">
             Membre
           </p>
-          <p className="text-white/50 text-sm">Post a reply</p>
+          <p className="text-muted text-sm">Post a reply</p>
         </div>
       </div>
 
@@ -105,9 +105,9 @@ export function ReplyForm({ threadId, threadLocked, onSuccess }: ReplyFormProps)
           placeholder="Write your reply..."
           rows={4}
           className={cn(
-            'w-full px-4 py-3 rounded-xl bg-white/5 border text-white placeholder:text-white/40 resize-none',
-            'focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all',
-            error ? 'border-red-500/50' : 'border-white/10'
+            'w-full px-4 py-3 rounded-xl bg-card border text-primary placeholder:text-muted resize-none',
+            'focus:outline-none focus:border-brand-500/40 focus:bg-card-muted transition-all',
+            error ? 'border-red-500/50' : 'border-default'
           )}
         />
         {error && (

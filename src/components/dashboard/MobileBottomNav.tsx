@@ -47,7 +47,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-zinc-900/95 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-default pb-[env(safe-area-inset-bottom)]"
       aria-label={locale === 'fr' ? 'Navigation principale' : 'Main navigation'}
     >
       <ul className="flex items-center justify-around py-2">
@@ -60,7 +60,7 @@ export default function MobileBottomNav() {
                 href={`/${locale}${href}`}
                 className={cn(
                   'relative flex flex-col items-center gap-0.5 px-2 py-2 text-xs font-medium min-w-[56px] min-h-[52px] justify-center',
-                  active ? 'text-brand-400' : badge > 0 ? 'text-white/80' : 'text-white/50'
+                  active ? 'text-brand-400' : badge > 0 ? 'text-secondary' : 'text-muted'
                 )}
                 aria-current={active ? 'page' : undefined}
               >

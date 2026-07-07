@@ -3,11 +3,14 @@ import { hasPermission as checkPermission, resolveRoleSlug } from '@/lib/roles/u
 import type { Permission } from '@/lib/roles/types';
 
 /**
- * Extrait le roleId depuis les sources disponibles, dans l'ordre de priorité :
+ * Extrait le slug de rôle depuis les sources disponibles, dans l'ordre de priorité :
  * 1. sessionClaims.publicMetadata (JWT décodé localement — rapide, pas d'appel réseau)
  * 2. clerkClient.users.getUser() — fallback si le token ne contient pas encore le metadata
  */
-async function getRoleIdForUser(userId: string, sessionClaims: Record<string, unknown> | null): Promise<string> {
+export async function getSessionRoleSlug(
+    userId: string,
+    sessionClaims: Record<string, unknown> | null
+): Promise<string> {
     const metaFromClaims = (sessionClaims?.publicMetadata as Record<string, unknown>) || {};
     const roleFromClaims = resolveRoleSlug(metaFromClaims);
     if (roleFromClaims) return roleFromClaims;
@@ -33,7 +36,7 @@ export async function checkUserPermission(
         return { error: 'Unauthorized', status: 401 };
     }
 
-    const roleId = await getRoleIdForUser(userId, sessionClaims as Record<string, unknown> | null);
+    const roleId = await getSessionRoleSlug(userId, sessionClaims as Record<string, unknown> | null);
     const allowed = checkPermission(roleId, required);
 
     if (!allowed) {

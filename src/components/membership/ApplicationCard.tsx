@@ -188,27 +188,27 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
 
   return (
     <div className={cn(
-      'p-6 rounded-xl bg-white/5 border transition-all',
+      'p-6 rounded-xl bg-card border transition-all',
       application.status === 'pending'
-        ? 'border-white/10 hover:border-white/20'
-        : 'border-white/5 opacity-75'
+        ? 'border-default hover:border-default'
+        : 'border-subtle opacity-75'
     )}>
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-default flex items-center justify-center">
             <User className="w-6 h-6 text-brand-400" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-primary">
               {application.firstName} {application.lastName}
             </h3>
             <div className="flex flex-wrap items-center gap-3 mt-1">
-              <span className="inline-flex items-center gap-1.5 text-sm text-white/60">
+              <span className="inline-flex items-center gap-1.5 text-sm text-secondary">
                 <Mail className="w-4 h-4" />
                 {application.email}
               </span>
-              <span className="inline-flex items-center gap-1.5 text-sm text-white/60">
+              <span className="inline-flex items-center gap-1.5 text-sm text-secondary">
                 <Phone className="w-4 h-4" />
                 {application.whatsapp}
               </span>
@@ -220,12 +220,12 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
           {getStatusBadge()}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg bg-card hover:bg-card-muted transition-colors"
           >
             {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-white/60" />
+              <ChevronUp className="w-5 h-5 text-secondary" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-white/60" />
+              <ChevronDown className="w-5 h-5 text-secondary" />
             )}
           </button>
         </div>
@@ -233,26 +233,26 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="mt-6 pt-6 border-t border-white/10 animate-fade-in">
+        <div className="mt-6 pt-6 border-t border-default animate-fade-in">
           {/* Motivations */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-white/60 mb-2 flex items-center gap-2">
+            <h4 className="text-sm font-medium text-secondary mb-2 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Motivations
             </h4>
-            <div className="p-4 rounded-lg bg-white/5 text-white/80 text-sm leading-relaxed">
+            <div className="p-4 rounded-lg bg-card text-secondary text-sm leading-relaxed">
               {application.motivations}
             </div>
           </div>
 
           {/* Meta */}
-          <div className="flex items-center gap-4 text-sm text-white/40 mb-6">
+          <div className="flex items-center gap-4 text-sm text-muted mb-6">
             <span>Submitted {formatDistanceToNow(application.createdAt, locale as 'en' | 'fr')}</span>
           </div>
 
           {/* Actions (only for pending) */}
           {application.status === 'pending' && (
-            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-default">
               {error && (
                 <div className="w-full p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm">
                   {error}
@@ -283,7 +283,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
             </div>
           )}
           {application.status === 'approved' && (
-            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-default">
               {error && (
                 <div className="w-full p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm">
                   {error}
@@ -318,27 +318,27 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
           <p className="text-amber-400/90 text-sm mb-4">{credentialsModal.note}</p>
         )}
         {credentialsModal?.password ? (
-          <div className="p-4 rounded-xl bg-white/5 space-y-2 text-sm font-mono">
-            <p className="text-white/80">
-              <span className="text-white/50">Email :</span> {credentialsModal.email}
+          <div className="p-4 rounded-xl bg-card space-y-2 text-sm font-mono">
+            <p className="text-secondary">
+              <span className="text-muted">Email :</span> {credentialsModal.email}
             </p>
-            <p className="text-white/80">
-              <span className="text-white/50">Mot de passe :</span> {credentialsModal.password}
+            <p className="text-secondary">
+              <span className="text-muted">Mot de passe :</span> {credentialsModal.password}
             </p>
           </div>
         ) : credentialsModal?.emailSent ? (
-          <p className="text-white/70 text-sm">
+          <p className="text-secondary text-sm">
             Le membre devrait recevoir un email sous peu. Vérifie aussi les spams.
           </p>
         ) : null}
-        <p className="text-white/50 text-xs mt-4">
+        <p className="text-muted text-xs mt-4">
           Transmets ces infos par WhatsApp si l&apos;email ne part pas. Le membre devra changer son
           mot de passe à la première connexion.
         </p>
         <button
           type="button"
           onClick={() => setCredentialsModal(null)}
-          className="mt-4 w-full px-4 py-2 rounded-xl bg-white/10 text-white font-medium hover:bg-white/15"
+          className="mt-4 w-full px-4 py-2 rounded-xl bg-card-muted text-primary font-medium hover:bg-white/15"
         >
           Fermer
         </button>
@@ -354,14 +354,14 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
       >
         <div className="space-y-4 mt-2">
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-2">
+            <label className="block text-sm font-medium text-secondary mb-2">
               Reason for rejection (will be sent to the applicant)
             </label>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               rows={4}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
+              className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40"
               placeholder="Please provide a reason..."
             />
           </div>
@@ -373,7 +373,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
                 setShowRejectModal(false);
                 setRejectReason('');
               }}
-              className="flex-1 px-4 py-2 rounded-xl bg-white/5 text-white font-medium hover:bg-white/10 transition-all"
+              className="flex-1 px-4 py-2 rounded-xl bg-card text-primary font-medium hover:bg-card-muted transition-all"
             >
               Cancel
             </button>

@@ -10,6 +10,7 @@ import type { EventWithDetails, PaginatedResponse } from '@/lib/events/types';
 import { Plus, Filter, SortDesc, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { PageHeader, Button, FilterBar } from '@/components/ui';
 
 export default function EventsPage() {
   const params = useParams();
@@ -61,52 +62,51 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('title')}</h1>
-          <p className="text-white/60">
-            {total} {total === 1 ? 'event' : 'events'}
-          </p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <a
-            href="/api/events/calendar"
-            download
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white text-sm"
-          >
-            <Calendar className="w-4 h-4" aria-hidden />
-            iCal
-          </a>
-          <button
-            onClick={() => {
-              startTransition(() => {
-                const newParams = new URLSearchParams(searchParams.toString());
-                newParams.set('past', showPast ? 'false' : 'true');
-                router.push(`/${locale}/events?${newParams.toString()}`);
-              });
-            }}
-            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${showPast
-              ? 'bg-white text-black'
-              : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
-              }`}
-          >
-            {showPast ? t('upcoming') : t('past')}
-          </button>
-          {canCreateEvent && (
-            <Link
-              href={`/${locale}/events/new`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
+      <PageHeader
+        title={t('title')}
+        description={`${total} ${total === 1 ? 'event' : 'events'}`}
+        actions={
+          <div className="flex gap-2 flex-wrap">
+            <a
+              href="/api/events/calendar"
+              download
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-default text-secondary hover:text-primary text-sm"
             >
-              <Plus className="w-5 h-5" />
-              {t('createEvent')}
-            </Link>
-          )}
-        </div>
-      </div>
+              <Calendar className="w-4 h-4" aria-hidden />
+              iCal
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                startTransition(() => {
+                  const newParams = new URLSearchParams(searchParams.toString());
+                  newParams.set('past', showPast ? 'false' : 'true');
+                  router.push(`/${locale}/events?${newParams.toString()}`);
+                });
+              }}
+              className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all border ${
+                showPast
+                  ? 'bg-brand-600 text-white border-brand-600'
+                  : 'bg-card text-primary hover:bg-card-muted border-default'
+              }`}
+            >
+              {showPast ? t('upcoming') : t('past')}
+            </button>
+            {canCreateEvent ? (
+              <Link href={`/${locale}/events/new`}>
+                <Button>
+                  <Plus className="w-5 h-5" />
+                  {t('createEvent')}
+                </Button>
+              </Link>
+            ) : null}
+          </div>
+        }
+      />
 
-      {/* Category Filter */}
-      <CategoryFilter />
+      <FilterBar>
+        <CategoryFilter />
+      </FilterBar>
 
       {/* Event List */}
       <EventList events={events} isLoading={isLoading} />
@@ -124,9 +124,9 @@ export default function EventsPage() {
                   router.push(`/${locale}/events?${newParams.toString()}`);
                 });
               }}
-              className={`w-10 h-10 rounded-xl font-medium transition-all ${page === currentPage
-                ? 'bg-white text-black'
-                : 'bg-white/5 text-white hover:bg-white/10'
+              className={`w-10 h-10 rounded-xl font-medium transition-all border ${page === currentPage
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-card text-primary hover:bg-card-muted border-default'
                 }`}
             >
               {page}

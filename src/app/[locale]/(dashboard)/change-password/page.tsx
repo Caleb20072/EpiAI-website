@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { AlertCircle, Check, Eye, EyeOff, Lock } from 'lucide-react';
+import { Button, FormShell, Input } from '@/components/ui';
 
 export default function ChangePasswordPage() {
-    const t = useTranslations();
     const router = useRouter();
     const params = useParams();
     const locale = (params.locale as string) || 'fr';
@@ -19,7 +18,6 @@ export default function ChangePasswordPage() {
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Validation du mot de passe
     const hasMinLength = newPassword.length >= 8;
     const hasUpperCase = /[A-Z]/.test(newPassword);
     const hasLowerCase = /[a-z]/.test(newPassword);
@@ -55,106 +53,98 @@ export default function ChangePasswordPage() {
 
             setSuccess(true);
 
-            // Rediriger vers le dashboard après 2 secondes
             setTimeout(() => {
                 router.push(`/${locale}/dashboard`);
             }, 2000);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Une erreur est survenue');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 px-4">
+        <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-md">
-                <div className="bg-zinc-800/50 backdrop-blur-xl border border-zinc-700/50 rounded-2xl p-8 shadow-2xl">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-500/10 mb-4">
-                            <Lock className="w-8 h-8 text-brand-400" />
-                        </div>
-                        <h1 className="text-2xl font-bold text-white mb-2">
-                            Changement de mot de passe requis
-                        </h1>
-                        <p className="text-zinc-400 text-sm">
-                            Pour des raisons de sécurité, vous devez changer votre mot de passe temporaire
-                        </p>
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500/10 mb-4">
+                        <Lock className="w-7 h-7 text-brand-600" />
                     </div>
+                    <h1 className="text-2xl font-bold text-primary mb-2">
+                        Changement de mot de passe requis
+                    </h1>
+                    <p className="text-secondary text-sm">
+                        Pour des raisons de sécurité, vous devez changer votre mot de passe temporaire
+                    </p>
+                </div>
 
-                    {/* Success Message */}
-                    {success && (
-                        <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-start gap-3">
-                            <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                            <div>
-                                <p className="text-green-400 font-medium">Mot de passe changé avec succès !</p>
-                                <p className="text-green-400/70 text-sm mt-1">Redirection en cours...</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Error Message */}
-                    {error && (
-                        <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                            <p className="text-red-400 text-sm">{error}</p>
-                        </div>
-                    )}
-
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* New Password */}
+                {success && (
+                    <div className="mb-6 p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-start gap-3">
+                        <Check className="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5" />
                         <div>
-                            <label className="block text-sm font-medium text-zinc-300 mb-2">
+                            <p className="text-brand-700 font-medium">Mot de passe changé avec succès !</p>
+                            <p className="text-secondary text-sm mt-1">Redirection en cours...</p>
+                        </div>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-red-600 text-sm">{error}</p>
+                    </div>
+                )}
+
+                <FormShell>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label className="text-xs font-medium text-secondary mb-1.5 block">
                                 Nouveau mot de passe
                             </label>
                             <div className="relative">
-                                <input
+                                <Input
                                     type={showNewPassword ? 'text' : 'password'}
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 pr-12"
                                     placeholder="••••••••"
                                     required
+                                    className="pr-12"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary"
                                 >
                                     {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
 
-                        {/* Confirm Password */}
                         <div>
-                            <label className="block text-sm font-medium text-zinc-300 mb-2">
+                            <label className="text-xs font-medium text-secondary mb-1.5 block">
                                 Confirmer le mot de passe
                             </label>
                             <div className="relative">
-                                <input
+                                <Input
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 pr-12"
                                     placeholder="••••••••"
                                     required
+                                    className="pr-12"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary"
                                 >
                                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
 
-                        {/* Password Requirements */}
-                        <div className="bg-zinc-900/30 rounded-lg p-4 space-y-2">
-                            <p className="text-sm font-medium text-zinc-300 mb-3">Critères requis :</p>
+                        <div className="bg-card-muted rounded-xl p-4 space-y-2 border border-subtle">
+                            <p className="text-sm font-medium text-secondary mb-2">Critères requis :</p>
                             <PasswordRequirement met={hasMinLength} text="Au moins 8 caractères" />
                             <PasswordRequirement met={hasUpperCase} text="Au moins une majuscule" />
                             <PasswordRequirement met={hasLowerCase} text="Au moins une minuscule" />
@@ -162,11 +152,11 @@ export default function ChangePasswordPage() {
                             <PasswordRequirement met={passwordsMatch} text="Les mots de passe correspondent" />
                         </div>
 
-                        {/* Submit Button */}
-                        <button
+                        <Button
                             type="submit"
+                            size="lg"
+                            className="w-full"
                             disabled={!isValid || loading || success}
-                            className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <>
@@ -181,9 +171,9 @@ export default function ChangePasswordPage() {
                             ) : (
                                 'Changer le mot de passe'
                             )}
-                        </button>
+                        </Button>
                     </form>
-                </div>
+                </FormShell>
             </div>
         </div>
     );
@@ -197,11 +187,10 @@ interface PasswordRequirementProps {
 function PasswordRequirement({ met, text }: PasswordRequirementProps) {
     return (
         <div className="flex items-center gap-2">
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${met ? 'bg-green-500/20' : 'bg-zinc-700/50'
-                }`}>
-                {met && <Check className="w-3 h-3 text-green-400" />}
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${met ? 'bg-brand-500/20' : 'bg-card-muted'}`}>
+                {met && <Check className="w-3 h-3 text-brand-600" />}
             </div>
-            <span className={`text-sm ${met ? 'text-green-400' : 'text-zinc-400'}`}>
+            <span className={`text-sm ${met ? 'text-brand-700' : 'text-muted'}`}>
                 {text}
             </span>
         </div>

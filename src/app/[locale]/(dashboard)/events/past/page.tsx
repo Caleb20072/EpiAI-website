@@ -57,14 +57,14 @@ export default function PastEventsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('pastEvents')}</h1>
-          <p className="text-white/60">
+          <h1 className="text-3xl font-bold text-primary mb-2">{t('pastEvents')}</h1>
+          <p className="text-secondary">
             {total} {total === 1 ? 'event' : 'events'} from the past
           </p>
         </div>
         <Link
           href={`/${locale}/events`}
-          className="px-4 py-2.5 rounded-xl bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-all"
+          className="px-4 py-2.5 rounded-xl bg-card text-primary hover:bg-card-muted border border-default transition-all"
         >
           {t('upcoming')}
         </Link>
@@ -91,7 +91,7 @@ export default function PastEventsPage() {
               }}
               className={`w-10 h-10 rounded-xl font-medium transition-all ${page === currentPage
                   ? 'bg-white text-black'
-                  : 'bg-white/5 text-white hover:bg-white/10'
+                  : 'bg-card text-primary hover:bg-card-muted'
                 }`}
             >
               {page}

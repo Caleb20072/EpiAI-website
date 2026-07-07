@@ -26,6 +26,16 @@ import {
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import {
+  PageHeader,
+  StatCard,
+  Card,
+  Modal,
+  FilterBar,
+  Input,
+  Select,
+  Button,
+} from '@/components/ui';
 
 interface AdminPageProps {
   params: Promise<{ locale: string }>;
@@ -249,88 +259,67 @@ export default function AdminPage({ params }: AdminPageProps) {
       permission="dashboard.admin"
       fallback={
         <div className="flex flex-col items-center justify-center py-20">
-          <Shield className="w-16 h-16 text-white/20 mb-4" />
-          <h2 className="text-xl font-semibold text-white mb-2">Access Denied</h2>
-          <p className="text-white/60 text-center max-w-md">
+          <Shield className="w-16 h-16 text-muted mb-4" />
+          <h2 className="text-xl font-semibold text-primary mb-2">Access Denied</h2>
+          <p className="text-secondary text-center max-w-md">
             You don&apos;t have permission to access this page. Only administrators can view this section.
           </p>
         </div>
       }
     >
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Administration</h1>
-            <p className="text-white/60">
-              Gérez les utilisateurs et leurs rôles. {stats && <span className="text-white/40 text-sm">Dernière mise à jour: {new Date(stats.lastUpdated).toLocaleTimeString()}</span>}
-            </p>
-          </div>
-          <button
-            onClick={fetchData}
-            disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors disabled:opacity-50"
-            title="Actualiser"
-          >
-            <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
+        <PageHeader
+          title="Administration"
+          description={
+            stats
+              ? `Gérez les utilisateurs et leurs rôles. Dernière mise à jour: ${new Date(stats.lastUpdated).toLocaleTimeString()}`
+              : 'Gérez les utilisateurs et leurs rôles.'
+          }
+          actions={
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={fetchData}
+              disabled={refreshing}
+              title="Actualiser"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          }
+        />
 
-        {/* Stats */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin w-12 h-12 border-2 border-white/20 border-t-brand-500 rounded-full"></div>
+            <div className="animate-spin w-12 h-12 border-2 border-default border-t-brand-500 rounded-full" />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/60 text-sm">Total Users</p>
-                  <p className="text-2xl font-bold text-white">{stats?.totalUsers || 0}</p>
-                </div>
-                <Users className="w-8 h-8 text-brand-400" />
-              </div>
-            </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/60 text-sm">Active</p>
-                  <p className="text-2xl font-bold text-brand-400">
-                    {stats?.approvedMembers || 0}
-                  </p>
-                </div>
-                <Check className="w-8 h-8 text-brand-400" />
-              </div>
-            </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/60 text-sm">Pending</p>
-                  <p className="text-2xl font-bold text-amber-400">
-                    {stats?.pendingMembers || 0}
-                  </p>
-                </div>
-                <Filter className="w-8 h-8 text-amber-400" />
-              </div>
-            </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/60 text-sm">Admins</p>
-                  <p className="text-2xl font-bold text-purple-400">
-                    {stats?.adminCount || 0}
-                  </p>
-                </div>
-                <Shield className="w-8 h-8 text-purple-400" />
-              </div>
-            </div>
+            <StatCard label="Total Users" value={stats?.totalUsers || 0} icon={Users} />
+            <StatCard
+              label="Active"
+              value={stats?.approvedMembers || 0}
+              icon={Check}
+              iconClassName="text-brand-600"
+            />
+            <StatCard
+              label="Pending"
+              value={stats?.pendingMembers || 0}
+              icon={Filter}
+              iconClassName="text-amber-600"
+              iconBgClassName="bg-amber-500/10"
+            />
+            <StatCard
+              label="Admins"
+              value={stats?.adminCount || 0}
+              icon={Shield}
+              iconClassName="text-purple-600"
+              iconBgClassName="bg-purple-500/10"
+            />
           </div>
         )}
 
-        {/* Roles Overview */}
-        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-          <h2 className="text-lg font-semibold text-white mb-4">Hiérarchie des Rôles</h2>
+        <Card>
+          <h2 className="text-lg font-semibold text-primary mb-4">Hiérarchie des Rôles</h2>
           <div className="flex flex-wrap gap-2">
             {roles.map((role) => {
               const Icon = getRoleIcon(role.id);
@@ -346,49 +335,49 @@ export default function AdminPage({ params }: AdminPageProps) {
               );
             })}
           </div>
-        </div>
+        </Card>
 
-        {/* Users List */}
-        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-              <input
-                type="text"
-                placeholder="Rechercher un utilisateur..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
-              />
-            </div>
-            <select
-              value={selectedRole || ''}
-              onChange={(e) => setSelectedRole(e.target.value || null)}
-              className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30"
-            >
-              <option value="" className="bg-zinc-900">Tous les rôles</option>
-              {roles.map((role) => (
-                <option key={role.id} value={role.id} className="bg-zinc-900">
-                  {role.name[locale as 'en' | 'fr'] || role.name.en}
-                </option>
-              ))}
-            </select>
+        <Card padding="none">
+          <div className="p-6 border-b border-subtle">
+            <FilterBar className="border-0 p-0 bg-transparent rounded-none">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+                <Input
+                  placeholder="Rechercher un utilisateur..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Select
+                value={selectedRole || ''}
+                onChange={(e) => setSelectedRole(e.target.value || null)}
+                className="sm:w-48"
+              >
+                <option value="">Tous les rôles</option>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.id}>
+                    {role.name[locale as 'en' | 'fr'] || role.name.en}
+                  </option>
+                ))}
+              </Select>
+            </FilterBar>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto p-6 pt-0">
             <table className="w-full">
               <thead>
-                <tr className="text-left border-b border-white/10">
-                  <th className="pb-3 text-white/60 text-sm font-medium">User</th>
-                  <th className="pb-3 text-white/60 text-sm font-medium">Rôle</th>
-                  <th className="pb-3 text-white/60 text-sm font-medium">Statut</th>
-                  <th className="pb-3 text-white/60 text-sm font-medium">Actions</th>
+                <tr className="text-left border-b border-default">
+                  <th className="pb-3 text-secondary text-sm font-medium">User</th>
+                  <th className="pb-3 text-secondary text-sm font-medium">Rôle</th>
+                  <th className="pb-3 text-secondary text-sm font-medium">Statut</th>
+                  <th className="pb-3 text-secondary text-sm font-medium">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-subtle">
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-8 text-center text-white/40">
+                    <td colSpan={4} className="py-8 text-center text-muted">
                       {loading ? 'Chargement...' : 'Aucun utilisateur trouvé'}
                     </td>
                   </tr>
@@ -396,19 +385,19 @@ export default function AdminPage({ params }: AdminPageProps) {
                   filteredUsers.map((user) => {
                     const Icon = getRoleIcon(user.role);
                     return (
-                      <tr key={user.id} className="hover:bg-white/5">
+                      <tr key={user.id} className="hover:bg-card">
                         <td className="py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
+                            <div className="w-10 h-10 rounded-full bg-card-muted flex items-center justify-center overflow-hidden">
                               {user.imageUrl ? (
                                 <img src={user.imageUrl} alt={user.name} className="w-full h-full object-cover" />
                               ) : (
-                                <UserCog className="w-5 h-5 text-white/60" />
+                                <UserCog className="w-5 h-5 text-secondary" />
                               )}
                             </div>
                             <div>
-                              <p className="text-white font-medium">{user.name}</p>
-                              <p className="text-white/40 text-sm">{user.email}</p>
+                              <p className="text-primary font-medium">{user.name}</p>
+                              <p className="text-muted text-sm">{user.email}</p>
                             </div>
                           </div>
                         </td>
@@ -442,14 +431,14 @@ export default function AdminPage({ params }: AdminPageProps) {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => openEditModal(user)}
-                                className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                                className="p-2 rounded-lg hover:bg-card-muted text-secondary hover:text-primary transition-colors"
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
                               <PermissionGate permission="admin.users.manage">
                                 <button
                                   onClick={() => handleDeleteUser(user.id)}
-                                  className="p-2 rounded-lg hover:bg-red-500/10 text-white/60 hover:text-red-400 transition-colors"
+                                  className="p-2 rounded-lg hover:bg-red-500/10 text-secondary hover:text-red-400 transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -464,101 +453,77 @@ export default function AdminPage({ params }: AdminPageProps) {
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
 
-        {/* Edit User Modal */}
-        {editingUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
-              <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-white">Modifier l&apos;utilisateur</h3>
-                <button onClick={closeEditModal} className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white">
-                  <X className="w-5 h-5" />
-                </button>
+        <Modal
+          open={!!editingUser}
+          onClose={closeEditModal}
+          title="Modifier l'utilisateur"
+          footer={
+            <>
+              <Button variant="secondary" onClick={closeEditModal}>
+                Annuler
+              </Button>
+              <Button
+                onClick={handleSaveUser}
+                disabled={
+                  isSaving ||
+                  (!!editingUser && newRole === editingUser.role && newStatus === editingUser.status)
+                }
+              >
+                {isSaving ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Sauvegarde...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    Sauvegarder
+                  </>
+                )}
+              </Button>
+            </>
+          }
+        >
+          {editingUser ? (
+            <>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-card-muted flex items-center justify-center overflow-hidden">
+                  {editingUser.imageUrl ? (
+                    <img src={editingUser.imageUrl} alt={editingUser.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <UserCog className="w-6 h-6 text-secondary" />
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-primary font-medium text-lg">{editingUser.name}</h4>
+                  <p className="text-muted text-sm">{editingUser.email}</p>
+                </div>
               </div>
 
-              <div className="p-6 space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
-                    {editingUser.imageUrl ? (
-                      <img src={editingUser.imageUrl} alt={editingUser.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <UserCog className="w-6 h-6 text-white/60" />
-                    )}
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium text-lg">{editingUser.name}</h4>
-                    <p className="text-white/40 text-sm">{editingUser.email}</p>
-                  </div>
-                </div>
+              <Select
+                label={locale === 'fr' ? 'Statut adhésion' : 'Membership status'}
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+              >
+                <option value="pending">{locale === 'fr' ? 'En essai' : 'Trial'}</option>
+                <option value="active">{locale === 'fr' ? 'Actif (membre validé)' : 'Active (validated)'}</option>
+                <option value="approved">{locale === 'fr' ? 'Approuvé' : 'Approved'}</option>
+              </Select>
 
-                <div>
-                  <label className="block text-sm font-medium text-white/60 mb-2">
-                    {locale === 'fr' ? 'Statut adhésion' : 'Membership status'}
-                  </label>
-                  <select
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all mb-4"
-                  >
-                    <option value="pending" className="bg-zinc-900">
-                      {locale === 'fr' ? 'En essai' : 'Trial'}
-                    </option>
-                    <option value="active" className="bg-zinc-900">
-                      {locale === 'fr' ? 'Actif (membre validé)' : 'Active (validated)'}
-                    </option>
-                    <option value="approved" className="bg-zinc-900">
-                      {locale === 'fr' ? 'Approuvé' : 'Approved'}
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-white/60 mb-2">Rôle</label>
-                  <select
-                    value={newRole}
-                    onChange={(e) => setNewRole(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all"
-                  >
-                    {roles.map((role) => (
-                      <option key={role.id} value={role.id} className="bg-zinc-900">
-                        {role.name[locale as 'en' | 'fr'] || role.name.en} (Lv.{role.level})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex justify-end gap-3 pt-2">
-                  <button
-                    onClick={closeEditModal}
-                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    onClick={handleSaveUser}
-                    disabled={isSaving || (newRole === editingUser.role && newStatus === editingUser.status)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSaving ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        Sauvegarde...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        Sauvegarder
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+              <Select label="Rôle" value={newRole} onChange={(e) => setNewRole(e.target.value)}>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.id}>
+                    {role.name[locale as 'en' | 'fr'] || role.name.en} (Lv.{role.level})
+                  </option>
+                ))}
+              </Select>
+            </>
+          ) : null}
+        </Modal>
       </div>
-    </PermissionGate >
+    </PermissionGate>
   );
 }
 

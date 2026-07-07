@@ -21,8 +21,8 @@ export function ReplyList({ replies, onDeleteReply, className }: ReplyListProps)
   if (replies.length === 0) {
     return (
       <div className={cn('py-8 text-center', className)}>
-        <MessageSquare className="w-10 h-10 text-white/20 mx-auto mb-3" />
-        <p className="text-white/50">No replies yet. Be the first to respond!</p>
+        <MessageSquare className="w-10 h-10 text-muted mx-auto mb-3" />
+        <p className="text-muted">No replies yet. Be the first to respond!</p>
       </div>
     );
   }
@@ -37,21 +37,21 @@ export function ReplyList({ replies, onDeleteReply, className }: ReplyListProps)
           <div
             key={reply.id}
             className={cn(
-              'p-5 rounded-2xl bg-white/5 border border-white/10',
+              'p-5 rounded-2xl bg-card border border-default',
               index === 0 && 'mt-4'
             )}
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">
+                <div className="w-9 h-9 rounded-full bg-card-muted flex items-center justify-center">
+                  <span className="text-primary text-sm font-medium">
                     {reply.authorName.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <p className="text-white font-medium">{reply.authorName}</p>
-                  <p className="text-white/40 text-sm">
+                  <p className="text-primary font-medium">{reply.authorName}</p>
+                  <p className="text-muted text-sm">
                     {formatDistanceToNow(reply.createdAt, locale as 'en' | 'fr')}
                   </p>
                 </div>
@@ -61,7 +61,7 @@ export function ReplyList({ replies, onDeleteReply, className }: ReplyListProps)
               {canDelete && (
                 <button
                   onClick={() => onDeleteReply?.(reply.id)}
-                  className="p-2 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
                   title="Delete reply"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -71,13 +71,13 @@ export function ReplyList({ replies, onDeleteReply, className }: ReplyListProps)
 
             {/* Content */}
             <div className="pl-12">
-              <div className="text-white/80 whitespace-pre-wrap leading-relaxed">
+              <div className="text-secondary whitespace-pre-wrap leading-relaxed">
                 {reply.content}
               </div>
 
               {/* Edited badge */}
               {reply.isEdited && (
-                <div className="flex items-center gap-1 mt-3 text-white/40 text-xs">
+                <div className="flex items-center gap-1 mt-3 text-muted text-xs">
                   <Edit className="w-3 h-3" />
                   <span>edited</span>
                 </div>

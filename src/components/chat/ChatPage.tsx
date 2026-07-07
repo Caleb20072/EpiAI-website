@@ -116,8 +116,8 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
         return (
             <div className="flex items-center justify-center h-full">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
-                    <p className="text-white/30 text-xs">Connexion WebSocket...</p>
+                    <Loader2 className="w-6 h-6 text-muted animate-spin" />
+                    <p className="text-muted text-xs">Connexion WebSocket...</p>
                 </div>
             </div>
         );
@@ -148,16 +148,16 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                 />
 
                 <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    <div className="lg:hidden shrink-0 flex items-center gap-2 px-3 py-2 border-b border-white/10 bg-black/40">
+                    <div className="lg:hidden shrink-0 flex items-center gap-2 px-3 py-2 border-b border-default bg-input">
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
-                            className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/15 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            className="p-2.5 rounded-xl bg-card-muted text-primary hover:bg-white/15 min-w-[44px] min-h-[44px] flex items-center justify-center"
                             aria-label="Ouvrir les canaux"
                         >
                             <Menu className="w-5 h-5" />
                         </button>
-                        <span className="text-sm font-medium text-white/80 truncate">
+                        <span className="text-sm font-medium text-secondary truncate">
                             {CHAT_CHANNEL_IDS.includes(activeChannelId as typeof CHAT_CHANNEL_IDS[number])
                                 ? activeChannelId.replace(/-/g, ' ')
                                 : activeChannelId}
@@ -167,15 +167,15 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                     <div className="flex-1 min-h-0 overflow-hidden">
                         {channelLoading ? (
                             <div className="flex items-center justify-center h-full">
-                                <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+                                <Loader2 className="w-6 h-6 text-muted animate-spin" />
                             </div>
                         ) : channelError || !activeChannel ? (
                             <div className="flex flex-col items-center justify-center h-full px-4 text-center gap-3">
-                                <p className="text-white/60 text-sm">{channelError ?? 'Connexion au canal...'}</p>
+                                <p className="text-secondary text-sm">{channelError ?? 'Connexion au canal...'}</p>
                                 <button
                                     type="button"
                                     onClick={() => setChannelRetry((n) => n + 1)}
-                                    className="px-4 py-2 rounded-xl bg-white/10 text-white text-sm hover:bg-white/15"
+                                    className="px-4 py-2 rounded-xl bg-card-muted text-primary text-sm hover:bg-white/15"
                                 >
                                     Réessayer
                                 </button>
@@ -244,11 +244,11 @@ export function ChatPage() {
                 <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
                     <span className="text-3xl">⚠️</span>
                 </div>
-                <h2 className="text-xl font-bold text-white mb-2">Chat non disponible</h2>
-                <p className="text-white/60 max-w-md text-sm mb-4">{error}</p>
+                <h2 className="text-xl font-bold text-primary mb-2">Chat non disponible</h2>
+                <p className="text-secondary max-w-md text-sm mb-4">{error}</p>
                 <button
                     onClick={() => { setError(null); setTokenData(null); }}
-                    className="px-4 py-3 rounded-xl bg-white/10 text-white text-sm hover:bg-white/20 transition-colors min-h-[44px]"
+                    className="px-4 py-3 rounded-xl bg-card-muted text-primary text-sm hover:bg-card-muted transition-colors min-h-[44px]"
                 >
                     Réessayer
                 </button>
@@ -260,15 +260,15 @@ export function ChatPage() {
         return (
             <div className="flex items-center justify-center min-h-[50dvh]">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
-                    <p className="text-white/40 text-sm">Connexion au chat...</p>
+                    <Loader2 className="w-8 h-8 text-muted animate-spin" />
+                    <p className="text-muted text-sm">Connexion au chat...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="chat-wrapper h-[calc(100dvh-11rem)] lg:h-[calc(100vh-140px)] min-h-[320px] rounded-2xl overflow-hidden border border-white/10">
+        <div className="chat-wrapper h-[calc(100dvh-11rem)] lg:h-[calc(100vh-140px)] min-h-[320px] rounded-2xl overflow-hidden border border-default">
             <ChatClient tokenData={tokenData} />
         </div>
     );

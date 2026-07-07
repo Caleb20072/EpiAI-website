@@ -110,14 +110,14 @@ export function FileViewerModal({
         >
             {/* Toolbar */}
             <div
-                className="flex items-center justify-between px-6 py-4 flex-shrink-0 border-b border-white/10"
+                className="flex items-center justify-between px-6 py-4 flex-shrink-0 border-b border-default"
                 style={{ background: 'rgba(255,255,255,0.04)' }}
             >
                 <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-2 rounded-lg bg-white/10">
-                        <Eye className="w-4 h-4 text-white/70" />
+                    <div className="p-2 rounded-lg bg-card-muted">
+                        <Eye className="w-4 h-4 text-secondary" />
                     </div>
-                    <span className="text-white font-medium truncate max-w-xs md:max-w-lg">
+                    <span className="text-primary font-medium truncate max-w-xs md:max-w-lg">
                         {fileName}
                     </span>
                 </div>
@@ -134,7 +134,7 @@ export function FileViewerModal({
                     )}
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                        className="p-2 rounded-lg bg-card-muted hover:bg-card-muted text-secondary hover:text-primary transition-all"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -163,10 +163,10 @@ export function FileViewerModal({
                             />
                         ) : (
                             <div className="flex items-center justify-center h-full">
-                                <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
+                                <Loader2 className="w-8 h-8 text-muted animate-spin" />
                             </div>
                         )}
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs px-3 py-1 rounded-full bg-black/50">
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-muted text-xs px-3 py-1 rounded-full bg-black/50">
                             Aperçu via Google Docs Viewer
                         </div>
                     </>
@@ -204,11 +204,11 @@ export function FileViewerModal({
                 {/* Audio */}
                 {mode === 'audio' && (
                     <div className="flex flex-col items-center justify-center h-full gap-6">
-                        <div className="p-8 rounded-2xl bg-white/5 border border-white/10">
-                            <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6 mx-auto">
-                                <FileText className="w-10 h-10 text-white/60" />
+                        <div className="p-8 rounded-2xl bg-card border border-default">
+                            <div className="w-24 h-24 rounded-full bg-card-muted flex items-center justify-center mb-6 mx-auto">
+                                <FileText className="w-10 h-10 text-secondary" />
                             </div>
-                            <p className="text-white/60 text-center mb-4">{fileName}</p>
+                            <p className="text-secondary text-center mb-4">{fileName}</p>
                             <audio
                                 src={serveUrl}
                                 controls
@@ -224,17 +224,17 @@ export function FileViewerModal({
                     <div className="h-full overflow-auto p-6">
                         {textLoading && (
                             <div className="flex items-center justify-center h-full">
-                                <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
+                                <Loader2 className="w-8 h-8 text-muted animate-spin" />
                             </div>
                         )}
                         {textError && (
                             <div className="flex flex-col items-center justify-center h-full gap-3">
                                 <AlertCircle className="w-10 h-10 text-red-400" />
-                                <p className="text-white/60">{textError}</p>
+                                <p className="text-secondary">{textError}</p>
                             </div>
                         )}
                         {textContent && (
-                            <pre className="text-white/80 text-sm font-mono whitespace-pre-wrap leading-relaxed">
+                            <pre className="text-secondary text-sm font-mono whitespace-pre-wrap leading-relaxed">
                                 {textContent}
                             </pre>
                         )}
@@ -244,12 +244,12 @@ export function FileViewerModal({
                 {/* Unsupported */}
                 {mode === 'unsupported' && (
                     <div className="flex flex-col items-center justify-center h-full gap-4">
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center max-w-sm">
+                        <div className="p-6 rounded-2xl bg-card border border-default text-center max-w-sm">
                             <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-                            <h3 className="text-white font-semibold text-lg mb-2">
+                            <h3 className="text-primary font-semibold text-lg mb-2">
                                 Aperçu non disponible
                             </h3>
-                            <p className="text-white/60 text-sm mb-4">
+                            <p className="text-secondary text-sm mb-4">
                                 Ce type de fichier ne peut pas être prévisualisé dans le navigateur.
                             </p>
                             {isDownloadable && (

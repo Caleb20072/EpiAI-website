@@ -10,6 +10,7 @@ import { CategoryFilter } from '@/components/resources/CategoryFilter';
 import { TypeFilter } from '@/components/resources/TypeFilter';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { PageHeader, Button, FilterBar } from '@/components/ui';
 import type { ResourceWithDetails, PaginatedResponse } from '@/lib/resources/types';
 
 export default function ResourcesPage() {
@@ -66,33 +67,27 @@ export default function ResourcesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('title')}</h1>
-          <p className="text-white/60">
-            {total} {total === 1 ? 'resource' : 'resources'}
-          </p>
-        </div>
-        {canCreateResource && (
-          <Link
-            href={`/${locale}/resources/new`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
-          >
-            <Plus className="w-5 h-5" />
-            {t('addResource')}
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        title={t('title')}
+        description={`${total} ${total === 1 ? 'resource' : 'resources'}`}
+        actions={
+          canCreateResource ? (
+            <Link href={`/${locale}/resources/new`}>
+              <Button>
+                <Plus className="w-5 h-5" />
+                {t('addResource')}
+              </Button>
+            </Link>
+          ) : undefined
+        }
+      />
 
-      {/* Search */}
       <SearchBar placeholder={t('searchPlaceholder')} />
 
-      {/* Filters */}
-      <div className="space-y-4">
+      <FilterBar>
         <CategoryFilter />
         <TypeFilter />
-      </div>
+      </FilterBar>
 
       {/* Resources Grid */}
       <ResourceGrid resources={resources} isLoading={isLoading} />
@@ -111,8 +106,8 @@ export default function ResourcesPage() {
                 });
               }}
               className={`w-10 h-10 rounded-xl font-medium transition-all ${page === currentPage
-                ? 'bg-white text-black'
-                : 'bg-white/5 text-white hover:bg-white/10'
+                ? 'bg-brand-600 text-white'
+                : 'bg-card text-primary hover:bg-card-muted border border-default'
                 }`}
             >
               {page}

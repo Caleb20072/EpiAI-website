@@ -43,8 +43,8 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
     <Link
       href={`/${locale}/resources/${resource.id}`}
       className={cn(
-        'block p-5 rounded-2xl bg-white/5 border border-white/10',
-        'hover:border-white/20 hover:bg-white/10 transition-all',
+        'block p-5 rounded-2xl bg-card border border-default',
+        'hover:border-default hover:bg-card-muted transition-all',
         'group',
         className
       )}
@@ -62,19 +62,19 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Title */}
-          <h3 className="text-lg font-semibold text-white group-hover:text-white/90 transition-colors line-clamp-2 mb-2">
+          <h3 className="text-lg font-semibold text-primary group-hover:text-brand-600 transition-colors line-clamp-2 mb-2">
             {resource.title}
           </h3>
 
           {/* Description */}
-          <p className="text-white/60 text-sm line-clamp-2 mb-3">
+          <p className="text-secondary text-sm line-clamp-2 mb-3">
             {resource.description}
           </p>
 
           {/* Meta */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
             {/* Type */}
-            <span className="px-2 py-0.5 rounded-lg bg-white/10 text-white/70 text-xs">
+            <span className="px-2 py-0.5 rounded-lg bg-card-muted text-secondary text-xs">
               {getTypeLabel(resource.type, locale as 'en' | 'fr')}
             </span>
 
@@ -88,7 +88,7 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
 
             {/* File size if available */}
             {resource.fileSize && (
-              <span className="px-2 py-0.5 rounded-lg bg-white/10 text-white/50 text-xs">
+              <span className="px-2 py-0.5 rounded-lg bg-card-muted text-muted text-xs">
                 {formatFileSize(resource.fileSize)}
               </span>
             )}
@@ -108,13 +108,13 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
               {resource.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded-lg bg-white/5 text-white/60 text-xs"
+                  className="px-2 py-0.5 rounded-lg bg-card text-secondary text-xs"
                 >
                   #{tag}
                 </span>
               ))}
               {resource.tags.length > 3 && (
-                <span className="px-2 py-0.5 rounded-lg bg-white/5 text-white/40 text-xs">
+                <span className="px-2 py-0.5 rounded-lg bg-card text-muted text-xs">
                   +{resource.tags.length - 3}
                 </span>
               )}
@@ -123,7 +123,7 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
 
           {/* Footer */}
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-3 text-white/50">
+            <div className="flex items-center gap-3 text-muted">
               <span className="flex items-center gap-1">
                 <Eye className="w-3.5 h-3.5" />
                 {resource.viewCount}
@@ -135,13 +135,13 @@ export function ResourceCard({ resource, className }: ResourceCardProps) {
                 </span>
               )}
             </div>
-            <span className="text-white/40">{timeAgo}</span>
+            <span className="text-muted">{timeAgo}</span>
           </div>
         </div>
 
         {/* External Link Indicator */}
         <div className="flex-shrink-0">
-          <ExternalLink className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
+          <ExternalLink className="w-4 h-4 text-muted group-hover:text-secondary transition-colors" />
         </div>
       </div>
 

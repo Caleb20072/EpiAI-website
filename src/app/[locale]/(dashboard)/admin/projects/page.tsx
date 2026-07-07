@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import { useParams, useRouter } from 'next/navigation';
 import { Plus, Edit, Trash2, Eye, EyeOff, Shield } from 'lucide-react';
 import { PermissionGate } from '@/components/shared/PermissionGate';
+import { PageHeader, Button } from '@/components/ui';
 
 interface Project {
     _id: string;
@@ -102,42 +103,31 @@ export default function AdminProjectsPage() {
             permission="content.create"
             fallback={
                 <div className="flex flex-col items-center justify-center py-20">
-                    <Shield className="w-16 h-16 text-white/20 mb-4" />
-                    <h2 className="text-xl font-semibold text-white mb-2">Access Denied</h2>
-                    <p className="text-white/60 text-center max-w-md">
+                    <Shield className="w-16 h-16 text-muted mb-4" />
+                    <h2 className="text-xl font-semibold text-primary mb-2">Access Denied</h2>
+                    <p className="text-secondary text-center max-w-md">
                         You don&apos;t have permission to manage projects.
                     </p>
                 </div>
             }
         >
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">Projects Management</h1>
-                        <p className="text-white/60">Manage and publish projects for the homepage</p>
-                    </div>
-                    {/* Direct link - guaranteed to work */}
-                    <a
-                        href="/admin/projects/new"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '12px 16px',
-                            backgroundColor: '#10b981',
-                            color: 'white',
-                            borderRadius: '12px',
-                            textDecoration: 'none',
-                            fontWeight: '600'
-                        }}
-                    >
-                        + New Project
-                    </a>
-                </div>
+                <PageHeader
+                    title="Projects Management"
+                    description="Manage and publish projects for the homepage"
+                    actions={
+                        <Link href={`/${locale}/admin/projects/new`}>
+                            <Button>
+                                <Plus className="w-5 h-5" />
+                                New Project
+                            </Button>
+                        </Link>
+                    }
+                />
 
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
-                        <div className="animate-spin w-12 h-12 border-2 border-white/20 border-t-brand-500 rounded-full"></div>
+                        <div className="animate-spin w-12 h-12 border-2 border-default border-t-brand-500 rounded-full"></div>
                     </div>
                 ) : fetchError ? (
                     <div className="text-center py-20 rounded-2xl bg-red-500/10 border border-red-500/20">
@@ -145,15 +135,15 @@ export default function AdminProjectsPage() {
                         <button
                             type="button"
                             onClick={() => { setLoading(true); void fetchProjects(); }}
-                            className="px-4 py-2 rounded-xl bg-white/10 text-white text-sm hover:bg-white/15"
+                            className="px-4 py-2 rounded-xl bg-card-muted text-primary text-sm hover:bg-card"
                         >
                             Réessayer
                         </button>
                     </div>
                 ) : projects.length === 0 ? (
-                    <div className="text-center py-20 rounded-2xl bg-white/5 border border-white/10">
-                        <Plus className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                        <p className="text-white/40 mb-4">No projects yet</p>
+                    <div className="text-center py-20 rounded-2xl bg-card border border-default">
+                        <Plus className="w-16 h-16 text-muted mx-auto mb-4" />
+                        <p className="text-muted mb-4">No projects yet</p>
                         <Link
                             href="/admin/projects/new"
                             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold transition-colors"
@@ -167,21 +157,21 @@ export default function AdminProjectsPage() {
                         {projects.map((project) => (
                             <div
                                 key={project._id}
-                                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
+                                className="p-6 rounded-2xl bg-card border border-default hover:border-brand-500/25 transition-all"
                             >
                                 <div className="flex items-start gap-4">
                                     <img
                                         src={project.imageUrl}
                                         alt={project.title[locale as 'en' | 'fr']}
-                                        className="w-32 h-24 object-cover rounded-xl border border-white/10"
+                                        className="w-32 h-24 object-cover rounded-xl border border-default"
                                     />
                                     <div className="flex-1">
                                         <div className="flex items-start justify-between mb-2">
                                             <div>
-                                                <h3 className="text-xl font-bold text-white mb-1">
+                                                <h3 className="text-xl font-bold text-primary mb-1">
                                                     {project.title[locale as 'en' | 'fr']}
                                                 </h3>
-                                                <p className="text-white/60 text-sm line-clamp-2">
+                                                <p className="text-secondary text-sm line-clamp-2">
                                                     {project.description[locale as 'en' | 'fr']}
                                                 </p>
                                             </div>
@@ -190,7 +180,7 @@ export default function AdminProjectsPage() {
                                                     onClick={() => togglePublished(project._id, project.published)}
                                                     className={`p-2 rounded-lg transition-colors ${project.published
                                                         ? 'bg-brand-500/20 text-brand-400 hover:bg-brand-500/30'
-                                                        : 'bg-white/5 text-white/40 hover:bg-white/10'
+                                                        : 'bg-card text-muted hover:bg-card-muted'
                                                         }`}
                                                     title={project.published ? 'Published' : 'Draft'}
                                                 >
@@ -201,7 +191,7 @@ export default function AdminProjectsPage() {
                                                         console.log('Edit clicked for project:', project._id);
                                                         window.location.href = `/${locale}/admin/projects/${project._id}/edit`;
                                                     }}
-                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                                                    className="p-2 rounded-lg bg-card hover:bg-card-muted text-secondary hover:text-primary transition-colors"
                                                 >
                                                     <Edit className="w-5 h-5" />
                                                 </button>
@@ -221,12 +211,12 @@ export default function AdminProjectsPage() {
                                                 {project.status}
                                             </span>
                                             {project.techStack.slice(0, 3).map((tech) => (
-                                                <span key={tech} className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/60 text-xs">
+                                                <span key={tech} className="px-2 py-1 rounded-md bg-card border border-default text-secondary text-xs">
                                                     {tech}
                                                 </span>
                                             ))}
                                             {project.techStack.length > 3 && (
-                                                <span className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/40 text-xs">
+                                                <span className="px-2 py-1 rounded-md bg-card border border-default text-muted text-xs">
                                                     +{project.techStack.length - 3} more
                                                 </span>
                                             )}

@@ -172,10 +172,10 @@ export default function ResourceDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-8 w-32 bg-white/10 rounded" />
-        <div className="h-12 w-3/4 bg-white/10 rounded" />
-        <div className="h-6 w-1/2 bg-white/10 rounded" />
-        <div className="h-48 bg-white/10 rounded-2xl" />
+        <div className="h-8 w-32 bg-card-muted rounded" />
+        <div className="h-12 w-3/4 bg-card-muted rounded" />
+        <div className="h-6 w-1/2 bg-card-muted rounded" />
+        <div className="h-48 bg-card-muted rounded-2xl" />
       </div>
     );
   }
@@ -183,10 +183,10 @@ export default function ResourceDetailPage() {
   if (error || !resource) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <h2 className="text-2xl font-bold text-white mb-4">Resource not found</h2>
+        <h2 className="text-2xl font-bold text-primary mb-4">Resource not found</h2>
         <Link
           href={`/${locale}/resources`}
-          className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to resources
@@ -216,7 +216,7 @@ export default function ResourceDetailPage() {
       {/* Back Link */}
       <Link
         href={`/${locale}/resources`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         {t('backToResources')}
@@ -227,7 +227,7 @@ export default function ResourceDetailPage() {
         {/* Left Column - Main Info */}
         <div className="lg:col-span-2 space-y-6">
           {/* Header Card */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div className="p-6 rounded-2xl bg-card border border-default">
             <div className="flex items-start gap-4">
               <div className={cn(
                 'p-4 rounded-xl flex-shrink-0',
@@ -237,12 +237,12 @@ export default function ResourceDetailPage() {
               </div>
 
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-white mb-2">
+                <h1 className="text-2xl font-bold text-primary mb-2">
                   {resource.title}
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <span className="px-3 py-1 rounded-lg bg-white/10 text-white/70 text-sm">
+                  <span className="px-3 py-1 rounded-lg bg-card-muted text-secondary text-sm">
                     {getTypeLabel(resource.type, locale as 'en' | 'fr')}
                   </span>
                   <DifficultyBadge
@@ -256,7 +256,7 @@ export default function ResourceDetailPage() {
                   )}
                 </div>
 
-                <p className="text-white/70 whitespace-pre-wrap">
+                <p className="text-secondary whitespace-pre-wrap">
                   {resource.description}
                 </p>
               </div>
@@ -265,8 +265,8 @@ export default function ResourceDetailPage() {
 
           {/* Tags */}
           {resource.tags.length > 0 && (
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <div className="p-6 rounded-2xl bg-card border border-default">
+              <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                 <Tag className="w-5 h-5" />
                 {t('tags')}
               </h3>
@@ -274,7 +274,7 @@ export default function ResourceDetailPage() {
                 {resource.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 rounded-lg bg-white/10 text-white/70 text-sm"
+                    className="px-3 py-1 rounded-lg bg-card-muted text-secondary text-sm"
                   >
                     #{tag}
                   </span>
@@ -287,7 +287,7 @@ export default function ResourceDetailPage() {
         {/* Right Column - Sidebar */}
         <div className="space-y-6">
           {/* Action Card */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+          <div className="p-6 rounded-2xl bg-card border border-default">
             <div className="space-y-4">
               {externalUrl && (
                 <button
@@ -327,7 +327,7 @@ export default function ResourceDetailPage() {
                   'w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-all',
                   copied
                     ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                    : 'bg-card-muted text-primary hover:bg-card-muted'
                 )}
               >
                 {copied ? (
@@ -347,7 +347,7 @@ export default function ResourceDetailPage() {
                 <div className="flex gap-2 pt-2">
                   <Link
                     href={`/${locale}/resources/${resource.id}/edit`}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-all"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-card-muted text-primary font-medium hover:bg-card-muted transition-all"
                   >
                     <Edit className="w-4 h-4" />
                     {t('edit')}
@@ -366,57 +366,57 @@ export default function ResourceDetailPage() {
           </div>
 
           {/* Stats Card */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">{t('stats')}</h3>
+          <div className="p-6 rounded-2xl bg-card border border-default">
+            <h3 className="text-lg font-semibold text-primary mb-4">{t('stats')}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-white/60 flex items-center gap-2">
+                <span className="text-secondary flex items-center gap-2">
                   <Eye className="w-4 h-4" />
                   {t('views')}
                 </span>
-                <span className="text-white font-medium">{resource.viewCount}</span>
+                <span className="text-primary font-medium">{resource.viewCount}</span>
               </div>
               {resource.isDownloadable && (
                 <div className="flex items-center justify-between">
-                  <span className="text-white/60 flex items-center gap-2">
+                  <span className="text-secondary flex items-center gap-2">
                     <Download className="w-4 h-4" />
                     {t('downloads')}
                   </span>
-                  <span className="text-white font-medium">{resource.downloadCount}</span>
+                  <span className="text-primary font-medium">{resource.downloadCount}</span>
                 </div>
               )}
               {resource.fileSize && (
                 <div className="flex items-center justify-between">
-                  <span className="text-white/60">{t('fileSize')}</span>
-                  <span className="text-white font-medium">{formatFileSize(resource.fileSize)}</span>
+                  <span className="text-secondary">{t('fileSize')}</span>
+                  <span className="text-primary font-medium">{formatFileSize(resource.fileSize)}</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Meta Card */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">{t('information')}</h3>
+          <div className="p-6 rounded-2xl bg-card border border-default">
+            <h3 className="text-lg font-semibold text-primary mb-4">{t('information')}</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-white/40" />
+                <Calendar className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/60 text-sm">{t('createdAt')}</p>
-                  <p className="text-white">{formatDate(resource.createdAt, locale as 'en' | 'fr')}</p>
+                  <p className="text-secondary text-sm">{t('createdAt')}</p>
+                  <p className="text-primary">{formatDate(resource.createdAt, locale as 'en' | 'fr')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-white/40" />
+                <User className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/60 text-sm">{t('author')}</p>
-                  <p className="text-white">{resource.author || t('anonymous')}</p>
+                  <p className="text-secondary text-sm">{t('author')}</p>
+                  <p className="text-primary">{resource.author || t('anonymous')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Tag className="w-5 h-5 text-white/40" />
+                <Tag className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/60 text-sm">{t('category')}</p>
-                  <p className="text-white">{resource.categoryName}</p>
+                  <p className="text-secondary text-sm">{t('category')}</p>
+                  <p className="text-primary">{resource.categoryName}</p>
                 </div>
               </div>
             </div>

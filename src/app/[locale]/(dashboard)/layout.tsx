@@ -201,15 +201,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <ProtectedRoute
       redirectToSignIn
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-zinc-950">
+        <div className="min-h-screen flex items-center justify-center bg-page">
           <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full mx-auto mb-4" />
-            <p className="text-white/60">{t('loading')}</p>
+            <div className="animate-spin w-8 h-8 border-2 border-default border-t-brand-500 rounded-full mx-auto mb-4" />
+            <p className="text-secondary">{t('loading')}</p>
           </div>
         </div>
       }
     >
-      <div className="min-h-screen bg-zinc-950">
+      <div className="min-h-screen bg-page">
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
@@ -221,13 +221,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            'fixed top-0 left-0 z-50 h-full w-72 bg-zinc-900/95 backdrop-blur-xl border-r border-white/10 transform transition-transform duration-300 lg:translate-x-0',
+            'fixed top-0 left-0 z-50 h-full w-72 bg-surface/95 backdrop-blur-xl border-r border-default transform transition-transform duration-300 lg:translate-x-0',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="p-6 border-b border-white/10">
+            <div className="p-6 border-b border-default">
               <Link
                 href={dashboardHref}
                 onClick={handleLogoClick}
@@ -236,8 +236,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               >
                 <BrandLogo size="md" />
                 <div>
-                  <span className="text-white font-bold text-lg">EPI&apos;AI</span>
-                  <p className="text-white/50 text-xs">Dashboard</p>
+                  <span className="text-primary font-bold text-lg">EPI&apos;AI</span>
+                  <p className="text-muted text-xs">Dashboard</p>
                 </div>
               </Link>
             </div>
@@ -253,8 +253,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
                       item.active
-                        ? 'bg-brand-500/10 text-white border border-brand-500/20'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                        ? 'bg-brand-500/10 text-primary border border-brand-500/20'
+                        : 'text-secondary hover:text-primary hover:bg-card'
                     )}
                   >
                     <Icon className="w-5 h-5 shrink-0" />
@@ -271,7 +271,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {isAdmin && (
                 <>
                   <div className="pt-4 pb-2">
-                    <p className="px-4 text-xs font-semibold text-white/40 uppercase tracking-wider">
+                    <p className="px-4 text-xs font-semibold text-muted uppercase tracking-wider">
                       {t('adminSection')}
                     </p>
                   </div>
@@ -285,7 +285,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                           'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
                           item.active
                             ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                            : 'text-white/60 hover:text-amber-400 hover:bg-amber-500/5'
+                            : 'text-secondary hover:text-amber-400 hover:bg-amber-500/5'
                         )}
                       >
                         <Icon className="w-5 h-5" />
@@ -315,7 +315,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </nav>
 
             {/* User Info */}
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 border-t border-default">
               <div className="flex items-center gap-3 mb-3">
                 <UserButton
                   {...userButtonProps(locale)}
@@ -326,12 +326,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   }}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium text-sm truncate">
+                  <p className="text-primary font-medium text-sm truncate">
                     {user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress || 'User'}
                   </p>
                   <p className={cn(
                     'text-xs truncate',
-                    roleId ? 'text-amber-400' : 'text-white/40'
+                    roleId ? 'text-amber-400' : 'text-muted'
                   )}>
                     {roleId ? getRoleName(roleId, locale as 'en' | 'fr') : 'Member'}
                   </p>
@@ -340,14 +340,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="space-y-2">
                 <Link
                   href={`/${locale}`}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-brand-600/10 text-brand-400 hover:text-white hover:bg-brand-600 transition-all text-sm font-medium border border-brand-600/20 hover:border-brand-600"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-brand-600/10 text-brand-400 hover:text-primary hover:bg-brand-600 transition-all text-sm font-medium border border-brand-600/20 hover:border-brand-600"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   {t('backHome')}
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-card text-secondary hover:text-primary hover:bg-card-muted transition-all text-sm font-medium"
                 >
                   <LogOut className="w-4 h-4" />
                   {t('signOut')}
@@ -360,10 +360,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Main Content */}
         <div className="lg:pl-72">
           {/* Mobile Header */}
-          <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-zinc-950/80 backdrop-blur-xl border-b border-white/10 lg:hidden">
+          <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-surface/90 backdrop-blur-xl border-b border-default lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-white/70 hover:text-white"
+              className="p-2 text-secondary hover:text-primary"
             >
               <Menu className="w-6 h-6" />
             </button>

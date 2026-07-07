@@ -10,6 +10,7 @@ import { SearchBar } from '@/components/forum/SearchBar';
 import type { ThreadWithAuthor, PaginatedResponse } from '@/lib/forum/types';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { PageHeader, Button, FilterBar } from '@/components/ui';
 
 export default function ForumPage() {
   const params = useParams();
@@ -73,42 +74,39 @@ export default function ForumPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{t('title')}</h1>
-          <p className="text-white/60">
-            {total} {total === 1 ? t('discussionSingular') : t('discussionPlural')}
-          </p>
-        </div>
-        {canCreateThread && (
-          <Link
-            href={`/${locale}/forum/new`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold hover:bg-white/90 transition-all"
-          >
-            <Plus className="w-5 h-5" />
-            {t('newThread')}
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        title={t('title')}
+        description={`${total} ${total === 1 ? t('discussionSingular') : t('discussionPlural')}`}
+        actions={
+          canCreateThread ? (
+            <Link href={`/${locale}/forum/new`}>
+              <Button>
+                <Plus className="w-5 h-5" />
+                {t('newThread')}
+              </Button>
+            </Link>
+          ) : undefined
+        }
+      />
 
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-1">
           <SearchBar placeholder={t('searchPlaceholder')} />
         </div>
-        <div className="flex gap-2">
-          <select
-            value={sortBy}
-            onChange={(e) => handleSortChange(e.target.value as 'latest' | 'oldest' | 'popular')}
-            className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30"
-          >
-            <option value="latest" className="bg-zinc-900">{t('sortLatest')}</option>
-            <option value="oldest" className="bg-zinc-900">{t('sortOldest')}</option>
-            <option value="popular" className="bg-zinc-900">{t('sortPopular')}</option>
-          </select>
-        </div>
+        <select
+          value={sortBy}
+          onChange={(e) => handleSortChange(e.target.value as 'latest' | 'oldest' | 'popular')}
+          className="px-4 py-2.5 rounded-xl bg-card border border-default text-primary focus-ring"
+        >
+          <option value="latest">{t('sortLatest')}</option>
+          <option value="oldest">{t('sortOldest')}</option>
+          <option value="popular">{t('sortPopular')}</option>
+        </select>
       </div>
 
-      <CategoryFilter />
+      <FilterBar>
+        <CategoryFilter />
+      </FilterBar>
 
       <ThreadList threads={threads} isLoading={isLoading} />
 
@@ -124,10 +122,10 @@ export default function ForumPage() {
                   router.push(`/${locale}/forum?${newParams.toString()}`);
                 });
               }}
-              className={`w-10 h-10 rounded-xl font-medium transition-all ${
+              className={`w-10 h-10 rounded-xl font-medium transition-all border ${
                 page === currentPage
-                  ? 'bg-white text-black'
-                  : 'bg-white/5 text-white hover:bg-white/10'
+                  ? 'bg-brand-600 text-white border-brand-600'
+                  : 'bg-card text-primary hover:bg-card-muted border-default'
               }`}
             >
               {page}

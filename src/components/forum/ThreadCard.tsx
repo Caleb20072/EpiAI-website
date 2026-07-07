@@ -44,8 +44,8 @@ export function ThreadCard({ thread, className }: ThreadCardProps) {
     <Link
       href={`/${locale}/forum/${thread.id}`}
       className={cn(
-        'block p-5 rounded-2xl bg-white/5 border border-white/10',
-        'hover:border-white/20 hover:bg-white/10 transition-all',
+        'block p-5 rounded-2xl bg-card border border-default',
+        'hover:border-default hover:bg-card-muted transition-all',
         'group',
         className
       )}
@@ -55,7 +55,7 @@ export function ThreadCard({ thread, className }: ThreadCardProps) {
         {/* Category Icon */}
         <div
           className={cn(
-            'p-2.5 rounded-xl bg-white/10 flex-shrink-0',
+            'p-2.5 rounded-xl bg-card-muted flex-shrink-0',
             thread.categoryColor
           )}
         >
@@ -78,7 +78,7 @@ export function ThreadCard({ thread, className }: ThreadCardProps) {
                 Locked
               </span>
             )}
-            <h3 className="text-lg font-semibold text-white group-hover:text-white/90 transition-colors line-clamp-2">
+            <h3 className="text-lg font-semibold text-primary group-hover:text-white/90 transition-colors line-clamp-2">
               {thread.title}
             </h3>
           </div>
@@ -89,13 +89,13 @@ export function ThreadCard({ thread, className }: ThreadCardProps) {
               {thread.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded-lg bg-white/5 text-white/60 text-xs border border-white/10"
+                  className="px-2 py-0.5 rounded-lg bg-card text-secondary text-xs border border-default"
                 >
                   #{tag}
                 </span>
               ))}
               {thread.tags.length > 3 && (
-                <span className="px-2 py-0.5 rounded-lg bg-white/5 text-white/40 text-xs">
+                <span className="px-2 py-0.5 rounded-lg bg-card text-muted text-xs">
                   +{thread.tags.length - 3}
                 </span>
               )}
@@ -103,9 +103,9 @@ export function ThreadCard({ thread, className }: ThreadCardProps) {
           )}
 
           {/* Meta */}
-          <div className="flex items-center gap-4 text-sm text-white/50">
+          <div className="flex items-center gap-4 text-sm text-muted">
             <span className="flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-xs">
+              <span className="w-5 h-5 rounded-full bg-card-muted flex items-center justify-center text-xs">
                 {thread.authorName.charAt(0).toUpperCase()}
               </span>
               <span>{thread.authorName}</span>
@@ -117,11 +117,11 @@ export function ThreadCard({ thread, className }: ThreadCardProps) {
 
         {/* Stats */}
         <div className="flex flex-col items-end gap-2 flex-shrink-0">
-          <div className="flex items-center gap-1.5 text-white/60">
+          <div className="flex items-center gap-1.5 text-secondary">
             <MessageCircle className="w-4 h-4" />
             <span className="text-sm font-medium">{thread.replyCount}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-white/40">
+          <div className="flex items-center gap-1.5 text-muted">
             <Eye className="w-4 h-4" />
             <span className="text-xs">{thread.views}</span>
           </div>

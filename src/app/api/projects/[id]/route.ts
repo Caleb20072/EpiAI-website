@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { resolveRoleSlug } from '@/lib/roles/utils';
+import { getSessionRoleSlug, checkUserPermission } from '@/lib/auth/checkPermission';
+import { hasPermission } from '@/lib/roles/utils';
 import { getProjectById, updateProject, deleteProject } from '@/lib/projects/repository';
 
 export async function GET(
@@ -20,10 +21,8 @@ export async function GET(
             if (!userId) {
                 return NextResponse.json({ error: 'Not found' }, { status: 404 });
             }
-            const claims = sessionClaims as Record<string, unknown> | null;
-            const meta = (claims?.publicMetadata as Record<string, unknown>) || {};
-            const roleSlug = resolveRoleSlug(meta);
-            const { hasPermission } = await import('@/lib/roles/utils');
+
+            const roleSlug = await getSessionRoleSlug(userId, sessionClaims as Record<string, unknown> | null);
             if (!hasPermission(roleSlug, 'content.create') && !hasPermission(roleSlug, 'dashboard.admin')) {
                 return NextResponse.json({ error: 'Not found' }, { status: 404 });
             }
@@ -41,16 +40,9 @@ export async function PUT(
     context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { userId, sessionClaims } = await auth();
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const claims = sessionClaims as Record<string, unknown> | null;
-        const roleId = (claims?.publicMetadata as Record<string, unknown>)?.role as string || '';
-        const { hasPermission } = await import('@/lib/roles/utils');
-        if (!hasPermission(roleId, 'content.edit.all')) {
-            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+        const perm = await checkUserPermission('content.edit.all');
+        if ('error' in perm) {
+            return NextResponse.json({ error: perm.error }, { status: perm.status });
         }
 
         const { id } = await context.params;
@@ -73,16 +65,9 @@ export async function DELETE(
     context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { userId, sessionClaims } = await auth();
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const claims = sessionClaims as Record<string, unknown> | null;
-        const roleId = (claims?.publicMetadata as Record<string, unknown>)?.role as string || '';
-        const { hasPermission } = await import('@/lib/roles/utils');
-        if (!hasPermission(roleId, 'content.edit.all')) {
-            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+        const perm = await checkUserPermission('content.edit.all');
+        if ('error' in perm) {
+            return NextResponse.json({ error: perm.error }, { status: perm.status });
         }
 
         const { id } = await context.params;

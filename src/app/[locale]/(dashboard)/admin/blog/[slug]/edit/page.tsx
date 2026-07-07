@@ -49,7 +49,7 @@ export default function EditBlogPostPage() {
   };
 
   if (loading) {
-    return <div className="animate-pulse h-64 bg-white/5 rounded-xl" />;
+    return <div className="animate-pulse h-64 bg-card rounded-xl" />;
   }
 
   const fields = [
@@ -67,10 +67,10 @@ export default function EditBlogPostPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Link href={`/${locale}/admin/blog`} className="p-2 rounded-lg bg-white/5 text-white/70">
+        <Link href={`/${locale}/admin/blog`} className="p-2 rounded-lg bg-card text-secondary">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-primary">
           {locale === 'fr' ? 'Modifier l\'article' : 'Edit post'}
         </h1>
       </div>
@@ -78,19 +78,19 @@ export default function EditBlogPostPage() {
       <form onSubmit={submit} className="space-y-4">
         {fields.map(([key, label]) => (
           <div key={key}>
-            <label className="block text-sm text-white/70 mb-1">{label}</label>
+            <label className="block text-sm text-secondary mb-1">{label}</label>
             {key.includes('content') || key.includes('excerpt') ? (
               <textarea
                 rows={key.includes('content') ? 8 : 3}
                 value={form[key] || ''}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none"
+                className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary outline-none"
               />
             ) : (
               <input
                 value={form[key] || ''}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none"
+                className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary outline-none"
               />
             )}
           </div>
@@ -98,7 +98,7 @@ export default function EditBlogPostPage() {
         <select
           value={form.status || 'draft'}
           onChange={(e) => setForm({ ...form, status: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
         >
           <option value="draft">Draft</option>
           <option value="published">Published</option>

@@ -50,21 +50,21 @@ export function Modal({
     >
       <div
         className={cn(
-          'w-full max-w-md p-6 rounded-2xl bg-zinc-900 border relative',
-          borderClassName ?? 'border-white/10',
+          'w-full max-w-md p-6 rounded-2xl bg-surface border relative',
+          borderClassName ?? 'border-default',
           panelClassName
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {title ? (
           <div className="flex items-start justify-between gap-4 mb-2">
-            <h3 id="modal-title" className="text-xl font-bold text-white pr-8">
+            <h3 id="modal-title" className="text-xl font-bold text-primary pr-8">
               {title}
             </h3>
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10"
+              className="absolute top-4 right-4 p-2 rounded-lg text-muted hover:text-primary hover:bg-card-muted"
               aria-label="Fermer"
             >
               <X className="w-5 h-5" />
@@ -74,7 +74,7 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10"
+            className="absolute top-4 right-4 p-2 rounded-lg text-muted hover:text-primary hover:bg-card-muted"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />

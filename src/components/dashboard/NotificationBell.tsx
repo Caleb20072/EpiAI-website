@@ -91,7 +91,7 @@ export default function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white"
+        className="relative p-2 rounded-xl bg-card border border-default text-secondary hover:text-primary"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -104,9 +104,9 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-zinc-900 border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-            <span className="text-white font-medium text-sm">
+        <div className="absolute right-0 mt-2 w-80 bg-surface border border-default rounded-2xl shadow-xl z-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-default">
+            <span className="text-primary font-medium text-sm">
               {locale === 'fr' ? 'Notifications' : 'Notifications'}
               {unread > 0 && (
                 <span className="ml-2 text-brand-400 text-xs">({unread})</span>
@@ -124,14 +124,14 @@ export default function NotificationBell() {
           </div>
           <div className="max-h-72 overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className="text-white/40 text-sm text-center py-8">
+              <p className="text-muted text-sm text-center py-8">
                 {locale === 'fr' ? 'Aucune notification' : 'No notifications'}
               </p>
             ) : (
               notifications.map((n) => (
                 <div
                   key={n.id}
-                  className={`px-4 py-3 border-b border-white/5 ${!n.isRead ? 'bg-brand-500/5 border-l-2 border-l-brand-500' : ''}`}
+                  className={`px-4 py-3 border-b border-subtle ${!n.isRead ? 'bg-brand-500/5 border-l-2 border-l-brand-500' : ''}`}
                 >
                   {n.link ? (
                     <Link
@@ -142,8 +142,8 @@ export default function NotificationBell() {
                       }}
                       className="block"
                     >
-                      <p className="text-white text-sm font-medium">{n.title}</p>
-                      <p className="text-white/50 text-xs mt-1">{n.message}</p>
+                      <p className="text-primary text-sm font-medium">{n.title}</p>
+                      <p className="text-muted text-xs mt-1">{n.message}</p>
                     </Link>
                   ) : (
                     <button
@@ -151,8 +151,8 @@ export default function NotificationBell() {
                       onClick={() => void markOne(n.id)}
                       className="block w-full text-left"
                     >
-                      <p className="text-white text-sm font-medium">{n.title}</p>
-                      <p className="text-white/50 text-xs mt-1">{n.message}</p>
+                      <p className="text-primary text-sm font-medium">{n.title}</p>
+                      <p className="text-muted text-xs mt-1">{n.message}</p>
                     </button>
                   )}
                 </div>

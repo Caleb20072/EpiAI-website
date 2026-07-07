@@ -33,7 +33,7 @@ export function EventCoverImage({
           className
         )}
       >
-        {fallback ?? <Calendar className="w-12 h-12 text-white/20" aria-hidden />}
+        {fallback ?? <Calendar className="w-12 h-12 text-muted" aria-hidden />}
       </div>
     );
   }

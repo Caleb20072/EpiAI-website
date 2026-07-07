@@ -79,15 +79,15 @@ export function InviteUserForm() {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md p-6 rounded-2xl bg-zinc-900 border border-white/10 animate-fade-in">
+      <div className="w-full max-w-md p-6 rounded-2xl bg-surface border border-default animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white">{t('title')}</h3>
+          <h3 className="text-xl font-bold text-primary">{t('title')}</h3>
           <button
             onClick={() => { setIsOpen(false); setError(null); setSuccess(false); }}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg bg-card hover:bg-card-muted transition-colors"
           >
-            <X className="w-5 h-5 text-white/60" />
+            <X className="w-5 h-5 text-secondary" />
           </button>
         </div>
 
@@ -96,8 +96,8 @@ export function InviteUserForm() {
             <div className="w-16 h-16 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-brand-400" />
             </div>
-            <h4 className="text-lg font-semibold text-white mb-2">{t('success')}</h4>
-            <p className="text-white/60 text-sm">{t('emailSent')}</p>
+            <h4 className="text-lg font-semibold text-primary mb-2">{t('success')}</h4>
+            <p className="text-secondary text-sm">{t('emailSent')}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -109,16 +109,16 @@ export function InviteUserForm() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">
+              <label className="block text-sm font-medium text-secondary mb-1.5">
                 {t('role')}
               </label>
               <select
                 value={formData.roleId}
                 onChange={(e) => setFormData(prev => ({ ...prev, roleId: e.target.value }))}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30"
+                className="w-full px-4 py-2.5 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-white/30"
               >
                 {INVITABLE_ROLES.map((role) => (
-                  <option key={role.id} value={role.id} className="bg-zinc-900">
+                  <option key={role.id} value={role.id} className="bg-surface">
                     {role.name[locale as 'en' | 'fr'] || role.name.en}
                   </option>
                 ))}
@@ -127,27 +127,27 @@ export function InviteUserForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">
+                <label className="block text-sm font-medium text-secondary mb-1.5">
                   {t('firstName')}
                 </label>
                 <input
                   type="text"
                   value={formData.firstName}
                   onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
+                  className="w-full px-4 py-2.5 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-white/30"
                   placeholder="Prénom"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">
+                <label className="block text-sm font-medium text-secondary mb-1.5">
                   {t('lastName')}
                 </label>
                 <input
                   type="text"
                   value={formData.lastName}
                   onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
+                  className="w-full px-4 py-2.5 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-white/30"
                   placeholder="Nom"
                   required
                 />
@@ -155,14 +155,14 @@ export function InviteUserForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">
+              <label className="block text-sm font-medium text-secondary mb-1.5">
                 {t('email')}
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-white/30"
+                className="w-full px-4 py-2.5 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-white/30"
                 placeholder="email@epitech.eu"
                 required
               />
@@ -172,7 +172,7 @@ export function InviteUserForm() {
               <button
                 type="button"
                 onClick={() => { setIsOpen(false); setError(null); }}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 text-white font-medium hover:bg-white/10 transition-all"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-card text-primary font-medium hover:bg-card-muted transition-all"
               >
                 {t('cancel')}
               </button>

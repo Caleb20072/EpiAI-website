@@ -81,10 +81,10 @@ export default function PushNotificationManager() {
       <div className="flex items-start gap-3 min-w-0">
         <Bell className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" />
         <div>
-          <p className="text-sm font-medium text-white">
+          <p className="text-sm font-medium text-primary">
             Activer les alertes hors ligne
           </p>
-          <p className="text-xs text-white/60 mt-0.5">
+          <p className="text-xs text-secondary mt-0.5">
             Reçois une notification sur ton appareil quand il y a une réponse forum,
             un événement ou un message chat — même sans ouvrir Epi&apos;AI.
           </p>
@@ -95,14 +95,14 @@ export default function PushNotificationManager() {
           type="button"
           onClick={subscribe}
           disabled={loading}
-          className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+          className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-brand-500 disabled:opacity-50"
         >
           {loading ? 'Activation…' : 'Activer'}
         </button>
         <button
           type="button"
           onClick={dismiss}
-          className="rounded-lg p-1.5 text-white/40 hover:bg-white/10 hover:text-white"
+          className="rounded-lg p-1.5 text-muted hover:bg-card-muted hover:text-primary"
           aria-label="Fermer"
         >
           <X className="h-4 w-4" />
@@ -149,7 +149,7 @@ export function PushSettingsToggle() {
           window.location.reload();
         }
       }}
-      className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white"
+      className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-primary"
     >
       {enabled ? <Bell className="h-3.5 w-3.5 text-brand-400" /> : <BellOff className="h-3.5 w-3.5" />}
       {enabled ? 'Alertes activées' : 'Alertes désactivées'}

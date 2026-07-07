@@ -36,12 +36,12 @@ export function RegistrationForm({
 
   if (!isSignedIn) {
     return (
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-        <User className="w-10 h-10 text-white/30 mx-auto mb-3" />
-        <h3 className="text-lg font-semibold text-white mb-2">
+      <div className="p-6 rounded-2xl bg-card border border-default text-center">
+        <User className="w-10 h-10 text-muted mx-auto mb-3" />
+        <h3 className="text-lg font-semibold text-primary mb-2">
           Sign In Required
         </h3>
-        <p className="text-white/60 mb-4">
+        <p className="text-secondary mb-4">
           You need to be signed in to register for this event.
         </p>
         <a
@@ -56,12 +56,12 @@ export function RegistrationForm({
 
   if (isPast) {
     return (
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
-        <Calendar className="w-10 h-10 text-white/30 mx-auto mb-3" />
-        <h3 className="text-lg font-semibold text-white mb-2">
+      <div className="p-6 rounded-2xl bg-card border border-default text-center">
+        <Calendar className="w-10 h-10 text-muted mx-auto mb-3" />
+        <h3 className="text-lg font-semibold text-primary mb-2">
           Event Has Passed
         </h3>
-        <p className="text-white/60">
+        <p className="text-secondary">
           This event has already taken place.
         </p>
       </div>
@@ -74,10 +74,10 @@ export function RegistrationForm({
         <div className="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-3">
           <Check className="w-7 h-7 text-brand-400" />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">
+        <h3 className="text-lg font-semibold text-primary mb-2">
           You're Registered!
         </h3>
-        <p className="text-white/60 mb-4">
+        <p className="text-secondary mb-4">
           {eventTitle} • {formatDate(eventDate)}
         </p>
         <button
@@ -98,7 +98,7 @@ export function RegistrationForm({
             });
           }}
           disabled={isPending}
-          className="px-6 py-2.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all"
+          className="px-6 py-2.5 rounded-xl bg-card-muted text-primary hover:bg-card-muted transition-all"
         >
           {isPending ? 'Cancelling...' : 'Cancel Registration'}
         </button>
@@ -136,10 +136,10 @@ export function RegistrationForm({
         <div className="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center mx-auto mb-3">
           <Check className="w-7 h-7 text-brand-400" />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">
+        <h3 className="text-lg font-semibold text-primary mb-2">
           Registration Successful!
         </h3>
-        <p className="text-white/60">
+        <p className="text-secondary">
           Check your email for confirmation details.
         </p>
       </div>
@@ -147,20 +147,20 @@ export function RegistrationForm({
   }
 
   return (
-    <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-      <h3 className="text-lg font-semibold text-white mb-4">
+    <div className="p-6 rounded-2xl bg-card border border-default">
+      <h3 className="text-lg font-semibold text-primary mb-4">
         Register for this Event
       </h3>
 
       {/* User Info */}
-      <div className="space-y-3 mb-6 pb-6 border-b border-white/10">
+      <div className="space-y-3 mb-6 pb-6 border-b border-default">
         <div className="flex items-center gap-3">
-          <User className="w-5 h-5 text-white/40" />
-          <span className="text-white/70">Membre connecté</span>
+          <User className="w-5 h-5 text-muted" />
+          <span className="text-secondary">Membre connecté</span>
         </div>
         <div className="flex items-center gap-3">
-          <Mail className="w-5 h-5 text-white/40" />
-          <span className="text-white/70">{userId?.slice(0, 8)}...</span>
+          <Mail className="w-5 h-5 text-muted" />
+          <span className="text-secondary">{userId?.slice(0, 8)}...</span>
         </div>
       </div>
 
@@ -175,15 +175,15 @@ export function RegistrationForm({
       {/* Capacity Info */}
       <div className="mb-6">
         <div className="flex items-center justify-between text-sm mb-2">
-          <span className="text-white/60">Availability</span>
+          <span className="text-secondary">Availability</span>
           <span className={cn(
             'font-medium',
-            spotsLeft <= 5 ? 'text-red-400' : 'text-white/70'
+            spotsLeft <= 5 ? 'text-red-400' : 'text-secondary'
           )}>
             {spotsLeft} spots left
           </span>
         </div>
-        <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+        <div className="h-2 rounded-full bg-card-muted overflow-hidden">
           <div
             className={cn(
               'h-full rounded-full transition-all',
@@ -201,7 +201,7 @@ export function RegistrationForm({
         className={cn(
           'w-full py-3 rounded-xl font-semibold transition-all',
           isFull
-            ? 'bg-white/5 text-white/40 cursor-not-allowed'
+            ? 'bg-card text-muted cursor-not-allowed'
             : 'bg-white text-black hover:bg-white/90',
           isPending && 'opacity-50'
         )}

@@ -133,11 +133,11 @@ export default function ThreadDetailPage() {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 w-48 bg-white/10 rounded" />
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <div className="h-6 w-3/4 bg-white/10 rounded mb-4" />
-            <div className="h-4 w-full bg-white/10 rounded mb-2" />
-            <div className="h-4 w-2/3 bg-white/10 rounded" />
+          <div className="h-8 w-48 bg-card-muted rounded" />
+          <div className="p-6 rounded-2xl bg-card border border-default">
+            <div className="h-6 w-3/4 bg-card-muted rounded mb-4" />
+            <div className="h-4 w-full bg-card-muted rounded mb-2" />
+            <div className="h-4 w-2/3 bg-card-muted rounded" />
           </div>
         </div>
       </div>
@@ -147,10 +147,10 @@ export default function ThreadDetailPage() {
   if (error || !thread) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
-        <h1 className="text-2xl font-bold text-white mb-4">
+        <h1 className="text-2xl font-bold text-primary mb-4">
           Thread Not Found
         </h1>
-        <p className="text-white/60 mb-6">
+        <p className="text-secondary mb-6">
           {error || 'This thread does not exist or has been deleted.'}
         </p>
         <Link
@@ -174,23 +174,23 @@ export default function ThreadDetailPage() {
       {/* Back Link */}
       <Link
         href={`/${locale}/forum`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         {t('backToForum')}
       </Link>
 
       {/* Thread Content */}
-      <article className="p-6 rounded-2xl bg-white/5 border border-white/10 mb-6">
+      <article className="p-6 rounded-2xl bg-card border border-default mb-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-xl bg-white/10 ${thread.categoryColor}`}>
+            <div className={`p-2.5 rounded-xl bg-card-muted ${thread.categoryColor}`}>
               <Icon className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">{thread.title}</h1>
-              <p className="text-white/50 text-sm">
+              <h1 className="text-2xl font-bold text-primary">{thread.title}</h1>
+              <p className="text-muted text-sm">
                 {formatDistanceToNow(thread.createdAt, locale as 'en' | 'fr')}
               </p>
             </div>
@@ -214,37 +214,37 @@ export default function ThreadDetailPage() {
         </div>
 
         {/* Author & Stats */}
-        <div className="flex flex-wrap items-center gap-4 mb-6 pb-6 border-b border-white/10">
+        <div className="flex flex-wrap items-center gap-4 mb-6 pb-6 border-b border-default">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-              <span className="text-white text-sm font-medium">
+            <div className="w-8 h-8 rounded-full bg-card-muted flex items-center justify-center">
+              <span className="text-primary text-sm font-medium">
                 {(thread.authorName ?? 'U').charAt(0).toUpperCase()}
               </span>
             </div>
-            <span className="text-white/70">{thread.authorName ?? 'Unknown user'}</span>
+            <span className="text-secondary">{thread.authorName ?? 'Unknown user'}</span>
           </div>
-          <div className="flex items-center gap-1 text-white/50 text-sm">
+          <div className="flex items-center gap-1 text-muted text-sm">
             <MessageSquare className="w-4 h-4" />
             <span>{thread.replyCount} replies</span>
           </div>
-          <div className="flex items-center gap-1 text-white/50 text-sm">
+          <div className="flex items-center gap-1 text-muted text-sm">
             <Eye className="w-4 h-4" />
             <span>{thread.views} views</span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="prose prose-invert max-w-none text-white/80 whitespace-pre-wrap leading-relaxed">
+        <div className="prose prose-invert max-w-none text-secondary whitespace-pre-wrap leading-relaxed">
           {thread.content}
         </div>
 
         {/* Tags */}
         {thread.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-white/10">
+          <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-default">
             {thread.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-2.5 py-1 rounded-lg bg-white/10 text-white/70 text-sm border border-white/10"
+                className="px-2.5 py-1 rounded-lg bg-card-muted text-secondary text-sm border border-default"
               >
                 #{tag}
               </span>
@@ -254,7 +254,7 @@ export default function ThreadDetailPage() {
 
         {/* Actions */}
         {canDelete && (
-          <div className="flex justify-end mt-6 pt-4 border-t border-white/10">
+          <div className="flex justify-end mt-6 pt-4 border-t border-default">
             <button
               onClick={handleDeleteThread}
               disabled={isPending}
@@ -269,7 +269,7 @@ export default function ThreadDetailPage() {
 
       {/* Replies */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+        <h2 className="text-lg font-semibold text-primary mb-4">
           {t('replies')} ({thread.replyCount})
         </h2>
         <ReplyList replies={replies} onDeleteReply={handleDeleteReply} />

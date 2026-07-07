@@ -171,20 +171,20 @@ export function BulkInviteForm() {
   // Success view
   if (success && results) {
     return (
-      <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+      <div className="p-6 rounded-2xl bg-card border border-default">
         <div className="text-center py-8">
           <div className="w-20 h-20 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-brand-400" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-2">{t('completed')}</h3>
-          <p className="text-white/60 mb-6">
+          <h3 className="text-2xl font-bold text-primary mb-2">{t('completed')}</h3>
+          <p className="text-secondary mb-6">
             {t('accountsCreated', { count: results.created })}
           </p>
 
           {results.errors.length > 0 && (
             <div className="text-left p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
               <p className="text-amber-400 font-medium mb-2">{t('failedAccounts')}</p>
-              <ul className="text-sm text-white/60 space-y-1">
+              <ul className="text-sm text-secondary space-y-1">
                 {results.errors.slice(0, 5).map((err, i) => (
                   <li key={i}>• {err}</li>
                 ))}
@@ -217,7 +217,7 @@ export function BulkInviteForm() {
           'relative p-8 rounded-2xl border-2 border-dashed transition-all text-center',
           isDragging
             ? 'border-blue-400 bg-blue-500/10'
-            : 'border-white/20 bg-white/5 hover:border-white/30'
+            : 'border-white/20 bg-card hover:border-white/30'
         )}
       >
         <input
@@ -229,11 +229,11 @@ export function BulkInviteForm() {
 
         <Upload className={cn(
           'w-12 h-12 mx-auto mb-4 transition-colors',
-          isDragging ? 'text-brand-400' : 'text-white/30'
+          isDragging ? 'text-brand-400' : 'text-muted'
         )} />
-        <p className="text-white font-medium mb-2">{t('dropTitle')}</p>
-        <p className="text-white/50 text-sm">{t('dropSubtitle')}</p>
-        <p className="text-white/30 text-xs mt-4">
+        <p className="text-primary font-medium mb-2">{t('dropTitle')}</p>
+        <p className="text-muted text-sm">{t('dropSubtitle')}</p>
+        <p className="text-muted text-xs mt-4">
           {t('format')}: firstName, lastName, email, role
         </p>
       </div>
@@ -248,50 +248,50 @@ export function BulkInviteForm() {
 
       {/* File Info */}
       {file && !success && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-default">
           <div className="p-2 rounded-lg bg-green-500/20">
             <FileSpreadsheet className="w-5 h-5 text-green-400" />
           </div>
           <div className="flex-1">
-            <p className="text-white font-medium">{file.name}</p>
-            <p className="text-white/50 text-sm">{preview.length} users found</p>
+            <p className="text-primary font-medium">{file.name}</p>
+            <p className="text-muted text-sm">{preview.length} users found</p>
           </div>
           <button
             onClick={resetForm}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg bg-card hover:bg-card-muted transition-colors"
           >
-            <X className="w-5 h-5 text-white/60" />
+            <X className="w-5 h-5 text-secondary" />
           </button>
         </div>
       )}
 
       {/* Preview Table */}
       {preview.length > 0 && (
-        <div className="rounded-xl border border-white/10 overflow-hidden">
+        <div className="rounded-xl border border-default overflow-hidden">
           <div className="overflow-x-auto max-h-80">
             <table className="w-full text-sm">
-              <thead className="bg-white/5">
+              <thead className="bg-card">
                 <tr>
-                  <th className="text-left p-3 text-white/60 font-medium">#</th>
-                  <th className="text-left p-3 text-white/60 font-medium">{t('firstName')}</th>
-                  <th className="text-left p-3 text-white/60 font-medium">{t('lastName')}</th>
-                  <th className="text-left p-3 text-white/60 font-medium">{t('email')}</th>
-                  <th className="text-left p-3 text-white/60 font-medium">{t('role')}</th>
-                  <th className="text-left p-3 text-white/60 font-medium">Status</th>
+                  <th className="text-left p-3 text-secondary font-medium">#</th>
+                  <th className="text-left p-3 text-secondary font-medium">{t('firstName')}</th>
+                  <th className="text-left p-3 text-secondary font-medium">{t('lastName')}</th>
+                  <th className="text-left p-3 text-secondary font-medium">{t('email')}</th>
+                  <th className="text-left p-3 text-secondary font-medium">{t('role')}</th>
+                  <th className="text-left p-3 text-secondary font-medium">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {preview.slice(0, 20).map((user, i) => (
                   <tr key={i} className={cn(
-                    'hover:bg-white/5',
+                    'hover:bg-card',
                     !user.valid && 'bg-red-500/5'
                   )}>
-                    <td className="p-3 text-white/40">{i + 1}</td>
-                    <td className="p-3 text-white">{user.firstName}</td>
-                    <td className="p-3 text-white">{user.lastName}</td>
-                    <td className="p-3 text-white/70">{user.email}</td>
+                    <td className="p-3 text-muted">{i + 1}</td>
+                    <td className="p-3 text-primary">{user.firstName}</td>
+                    <td className="p-3 text-primary">{user.lastName}</td>
+                    <td className="p-3 text-secondary">{user.email}</td>
                     <td className="p-3">
-                      <span className="px-2 py-1 rounded-lg bg-white/10 text-white/70 text-xs">
+                      <span className="px-2 py-1 rounded-lg bg-white/10 text-secondary text-xs">
                         {user.role}
                       </span>
                     </td>
@@ -311,7 +311,7 @@ export function BulkInviteForm() {
             </table>
           </div>
           {preview.length > 20 && (
-            <p className="p-3 text-center text-white/40 text-sm border-t border-white/10">
+            <p className="p-3 text-center text-muted text-sm border-t border-default">
               {t('showing20', { total: preview.length })}
             </p>
           )}
@@ -323,7 +323,7 @@ export function BulkInviteForm() {
         <div className="flex gap-3">
           <button
             onClick={resetForm}
-            className="flex-1 px-4 py-3 rounded-xl bg-white/5 text-white font-medium hover:bg-white/10 transition-all"
+            className="flex-1 px-4 py-3 rounded-xl bg-card text-primary font-medium hover:bg-card-muted transition-all"
           >
             {t('cancel')}
           </button>

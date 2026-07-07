@@ -52,7 +52,7 @@ export default function GlobalSearch() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white text-sm"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-default text-secondary hover:text-primary text-sm"
         aria-label={locale === 'fr' ? 'Rechercher' : 'Search'}
         aria-expanded={open}
       >
@@ -67,9 +67,9 @@ export default function GlobalSearch() {
           aria-modal="true"
           aria-label={locale === 'fr' ? 'Recherche globale' : 'Global search'}
         >
-          <div className="w-full max-w-xl bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center gap-2 p-4 border-b border-white/10">
-              <Search className="w-5 h-5 text-white/40" aria-hidden />
+          <div className="w-full max-w-xl bg-surface border border-default rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center gap-2 p-4 border-b border-default">
+              <Search className="w-5 h-5 text-muted" aria-hidden />
               <input
                 autoFocus
                 value={query}
@@ -80,12 +80,12 @@ export default function GlobalSearch() {
                     : 'Resources, events, forum, members…'
                 }
                 aria-label={locale === 'fr' ? 'Terme de recherche' : 'Search term'}
-                className="flex-1 bg-transparent text-white outline-none placeholder:text-white/40"
+                className="flex-1 bg-transparent text-primary outline-none placeholder:text-muted"
               />
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-white/40 hover:text-white p-1"
+                className="text-muted hover:text-primary p-1"
                 aria-label={locale === 'fr' ? 'Fermer' : 'Close'}
               >
                 <X className="w-5 h-5" />
@@ -93,20 +93,20 @@ export default function GlobalSearch() {
             </div>
             <div className="max-h-80 overflow-y-auto p-2">
               {loading && (
-                <p className="text-white/40 text-sm text-center py-4" aria-live="polite">
+                <p className="text-muted text-sm text-center py-4" aria-live="polite">
                   …
                 </p>
               )}
               {!loading && query && !hasResults && (
-                <p className="text-white/40 text-sm text-center py-4">
+                <p className="text-muted text-sm text-center py-4">
                   {locale === 'fr' ? 'Aucun résultat' : 'No results'}
                 </p>
               )}
               {results?.members.map((m) => (
-                <div key={m.id} className="p-3 rounded-xl text-sm text-white/80">
-                  <span className="text-white/40 text-xs">Membre · </span>
+                <div key={m.id} className="p-3 rounded-xl text-sm text-secondary">
+                  <span className="text-muted text-xs">Membre · </span>
                   {m.name}
-                  <span className="text-white/30 text-xs ml-2">({m.role})</span>
+                  <span className="text-muted text-xs ml-2">({m.role})</span>
                 </div>
               ))}
               {results?.projects.map((p) => (
@@ -114,10 +114,10 @@ export default function GlobalSearch() {
                   key={p.id}
                   href={`/projects/${p.id}`}
                   onClick={() => setOpen(false)}
-                  className="block p-3 rounded-xl hover:bg-white/5 text-sm"
+                  className="block p-3 rounded-xl hover:bg-card text-sm"
                 >
-                  <span className="text-white/40 text-xs">Projet · </span>
-                  <span className="text-white">
+                  <span className="text-muted text-xs">Projet · </span>
+                  <span className="text-primary">
                     {locale === 'fr' ? p.titleFr : p.titleEn}
                   </span>
                 </Link>
@@ -127,10 +127,10 @@ export default function GlobalSearch() {
                   key={t.id}
                   href={`/forum/${t.id}`}
                   onClick={() => setOpen(false)}
-                  className="block p-3 rounded-xl hover:bg-white/5 text-sm"
+                  className="block p-3 rounded-xl hover:bg-card text-sm"
                 >
-                  <span className="text-white/40 text-xs">Forum · </span>
-                  <span className="text-white">{t.title}</span>
+                  <span className="text-muted text-xs">Forum · </span>
+                  <span className="text-primary">{t.title}</span>
                 </Link>
               ))}
               {results?.events.map((e) => (
@@ -138,10 +138,10 @@ export default function GlobalSearch() {
                   key={e.id}
                   href={`/events/${e.id}`}
                   onClick={() => setOpen(false)}
-                  className="block p-3 rounded-xl hover:bg-white/5 text-sm"
+                  className="block p-3 rounded-xl hover:bg-card text-sm"
                 >
-                  <span className="text-white/40 text-xs">Event · </span>
-                  <span className="text-white">{e.title}</span>
+                  <span className="text-muted text-xs">Event · </span>
+                  <span className="text-primary">{e.title}</span>
                 </Link>
               ))}
               {results?.resources.map((r) => (
@@ -149,10 +149,10 @@ export default function GlobalSearch() {
                   key={r.id}
                   href={`/resources/${r.id}`}
                   onClick={() => setOpen(false)}
-                  className="block p-3 rounded-xl hover:bg-white/5 text-sm"
+                  className="block p-3 rounded-xl hover:bg-card text-sm"
                 >
-                  <span className="text-white/40 text-xs">Resource · </span>
-                  <span className="text-white">{r.title}</span>
+                  <span className="text-muted text-xs">Resource · </span>
+                  <span className="text-primary">{r.title}</span>
                 </Link>
               ))}
             </div>

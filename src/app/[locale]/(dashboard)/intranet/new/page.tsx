@@ -33,11 +33,11 @@ export default function CreateActivityPage() {
   if (!canCreate) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
-        <Calendar className="w-16 h-16 text-white/20 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-white mb-2">
+        <Calendar className="w-16 h-16 text-muted mx-auto mb-4" />
+        <h1 className="text-2xl font-bold text-primary mb-2">
           {locale === 'fr' ? 'Accès refusé' : 'Access Denied'}
         </h1>
-        <p className="text-white/60 mb-6">
+        <p className="text-secondary mb-6">
           {locale === 'fr'
             ? 'Vous n\'avez pas la permission de créer des activités.'
             : 'You don\'t have permission to create activities.'}
@@ -114,16 +114,16 @@ export default function CreateActivityPage() {
       {/* Back Link */}
       <Link
         href={`/${locale}/intranet`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         {locale === 'fr' ? 'Retour à l\'intranet' : 'Back to Intranet'}
       </Link>
 
-      <h1 className="text-3xl font-bold text-white mb-2">
+      <h1 className="text-3xl font-bold text-primary mb-2">
         {locale === 'fr' ? 'Nouvelle activité' : 'New Activity'}
       </h1>
-      <p className="text-white/60 mb-8">
+      <p className="text-secondary mb-8">
         {locale === 'fr'
           ? 'La deadline d\'inscription sera automatiquement fixée à 24h avant l\'activité.'
           : 'Registration deadline will be automatically set to 24h before the activity.'}
@@ -140,7 +140,7 @@ export default function CreateActivityPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             {locale === 'fr' ? 'Titre *' : 'Title *'}
           </label>
           <input
@@ -148,14 +148,14 @@ export default function CreateActivityPage() {
             value={form.title}
             onChange={(e) => updateForm('title', e.target.value)}
             placeholder={locale === 'fr' ? 'Nom de l\'activité' : 'Activity name'}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
             required
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             {locale === 'fr' ? 'Description *' : 'Description *'}
           </label>
           <textarea
@@ -163,7 +163,7 @@ export default function CreateActivityPage() {
             onChange={(e) => updateForm('description', e.target.value)}
             placeholder={locale === 'fr' ? 'Décrivez l\'activité...' : 'Describe the activity...'}
             rows={4}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors resize-none"
             required
           />
         </div>
@@ -175,13 +175,13 @@ export default function CreateActivityPage() {
               type="checkbox"
               checked={form.isMandatory}
               onChange={(e) => updateForm('isMandatory', e.target.checked)}
-              className="rounded border-white/20"
+              className="rounded border-default"
             />
-            <span className="text-white/70 text-sm font-medium">
+            <span className="text-secondary text-sm font-medium">
               {locale === 'fr' ? 'Activité obligatoire' : 'Mandatory activity'}
             </span>
           </label>
-          <span className="text-white/40 text-xs">
+          <span className="text-muted text-xs">
             {locale === 'fr'
               ? '(les absences non-justifiées seront comptabilisées)'
               : '(unexcused absences will be tracked)'}
@@ -191,7 +191,7 @@ export default function CreateActivityPage() {
         {/* Date / End Date */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-white/70 text-sm font-medium mb-2">
+            <label className="block text-secondary text-sm font-medium mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
               {locale === 'fr' ? 'Date de début *' : 'Start date *'}
             </label>
@@ -199,12 +199,12 @@ export default function CreateActivityPage() {
               type="datetime-local"
               value={form.date}
               onChange={(e) => updateForm('date', e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-brand-500/40 transition-colors"
               required
             />
           </div>
           <div>
-            <label className="block text-white/70 text-sm font-medium mb-2">
+            <label className="block text-secondary text-sm font-medium mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
               {locale === 'fr' ? 'Date de fin' : 'End date'}
             </label>
@@ -212,7 +212,7 @@ export default function CreateActivityPage() {
               type="datetime-local"
               value={form.endDate}
               onChange={(e) => updateForm('endDate', e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-brand-500/40 transition-colors"
             />
           </div>
         </div>
@@ -220,16 +220,16 @@ export default function CreateActivityPage() {
         {/* Location / Online */}
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <label className="block text-white/70 text-sm font-medium">
+            <label className="block text-secondary text-sm font-medium">
               <MapPin className="w-4 h-4 inline mr-1" />
               {locale === 'fr' ? 'Lieu *' : 'Location *'}
             </label>
-            <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.isOnline}
                 onChange={(e) => updateForm('isOnline', e.target.checked)}
-                className="rounded border-white/20"
+                className="rounded border-default"
               />
               <Globe className="w-4 h-4" />
               {locale === 'fr' ? 'En ligne' : 'Online'}
@@ -242,7 +242,7 @@ export default function CreateActivityPage() {
             placeholder={form.isOnline
               ? (locale === 'fr' ? 'Ex: Discord, Zoom...' : 'E.g. Discord, Zoom...')
               : (locale === 'fr' ? 'Adresse ou salle' : 'Address or room')}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
             required
           />
           {form.isOnline && (
@@ -251,7 +251,7 @@ export default function CreateActivityPage() {
               value={form.onlineLink}
               onChange={(e) => updateForm('onlineLink', e.target.value)}
               placeholder={locale === 'fr' ? 'Lien de la réunion' : 'Meeting link'}
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full mt-2 px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
             />
           )}
         </div>
@@ -280,7 +280,7 @@ export default function CreateActivityPage() {
           </button>
           <Link
             href={`/${locale}/intranet`}
-            className="px-6 py-3 rounded-xl bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all font-medium"
+            className="px-6 py-3 rounded-xl bg-card text-primary border border-default hover:bg-card-muted transition-all font-medium"
           >
             {locale === 'fr' ? 'Annuler' : 'Cancel'}
           </Link>

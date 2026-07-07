@@ -39,11 +39,11 @@ export default function CreateEventPage() {
   if (!canCreate) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
-        <Calendar className="w-16 h-16 text-white/20 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-white mb-2">
+        <Calendar className="w-16 h-16 text-muted mx-auto mb-4" />
+        <h1 className="text-2xl font-bold text-primary mb-2">
           {locale === 'fr' ? 'Accès refusé' : 'Access Denied'}
         </h1>
-        <p className="text-white/60 mb-6">
+        <p className="text-secondary mb-6">
           {locale === 'fr'
             ? 'Vous n\'avez pas la permission de créer des événements.'
             : 'You don\'t have permission to create events.'}
@@ -134,13 +134,13 @@ export default function CreateEventPage() {
       {/* Back Link */}
       <Link
         href={`/${locale}/events`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         {locale === 'fr' ? 'Retour aux événements' : 'Back to Events'}
       </Link>
 
-      <h1 className="text-3xl font-bold text-white mb-8">
+      <h1 className="text-3xl font-bold text-primary mb-8">
         {locale === 'fr' ? 'Créer un événement' : 'Create Event'}
       </h1>
 
@@ -155,7 +155,7 @@ export default function CreateEventPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             {locale === 'fr' ? 'Titre *' : 'Title *'}
           </label>
           <input
@@ -163,14 +163,14 @@ export default function CreateEventPage() {
             value={form.title}
             onChange={(e) => updateForm('title', e.target.value)}
             placeholder={locale === 'fr' ? 'Nom de l\'événement' : 'Event name'}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
             required
           />
         </div>
 
         {/* Category */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             {locale === 'fr' ? 'Catégorie *' : 'Category *'}
           </label>
           <div className="flex flex-wrap gap-2">
@@ -182,8 +182,8 @@ export default function CreateEventPage() {
                 className={cn(
                   'px-4 py-2 rounded-xl text-sm font-medium transition-all border',
                   form.categoryId === cat.id
-                    ? 'bg-white/20 text-white border-white/40'
-                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'
+                    ? 'bg-white/20 text-primary border-white/40'
+                    : 'bg-card text-secondary border-default hover:bg-card-muted'
                 )}
               >
                 {cat.name[locale as 'en' | 'fr'] || cat.name.en}
@@ -194,7 +194,7 @@ export default function CreateEventPage() {
 
         {/* Description */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             {locale === 'fr' ? 'Description courte *' : 'Short description *'}
           </label>
           <textarea
@@ -202,14 +202,14 @@ export default function CreateEventPage() {
             onChange={(e) => updateForm('description', e.target.value)}
             placeholder={locale === 'fr' ? 'Brève description de l\'événement' : 'Brief event description'}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors resize-none"
             required
           />
         </div>
 
         {/* Content */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             {locale === 'fr' ? 'Contenu détaillé *' : 'Detailed content *'}
           </label>
           <textarea
@@ -217,7 +217,7 @@ export default function CreateEventPage() {
             onChange={(e) => updateForm('content', e.target.value)}
             placeholder={locale === 'fr' ? 'Description complète, agenda, prérequis...' : 'Full description, agenda, prerequisites...'}
             rows={6}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors resize-none"
             required
           />
         </div>
@@ -225,7 +225,7 @@ export default function CreateEventPage() {
         {/* Date / End Date */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-white/70 text-sm font-medium mb-2">
+            <label className="block text-secondary text-sm font-medium mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
               {locale === 'fr' ? 'Date de début *' : 'Start date *'}
             </label>
@@ -233,12 +233,12 @@ export default function CreateEventPage() {
               type="datetime-local"
               value={form.date}
               onChange={(e) => updateForm('date', e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-brand-500/40 transition-colors"
               required
             />
           </div>
           <div>
-            <label className="block text-white/70 text-sm font-medium mb-2">
+            <label className="block text-secondary text-sm font-medium mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
               {locale === 'fr' ? 'Date de fin' : 'End date'}
             </label>
@@ -246,7 +246,7 @@ export default function CreateEventPage() {
               type="datetime-local"
               value={form.endDate}
               onChange={(e) => updateForm('endDate', e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-brand-500/40 transition-colors"
             />
           </div>
         </div>
@@ -254,16 +254,16 @@ export default function CreateEventPage() {
         {/* Location / Online */}
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <label className="block text-white/70 text-sm font-medium">
+            <label className="block text-secondary text-sm font-medium">
               <MapPin className="w-4 h-4 inline mr-1" />
               {locale === 'fr' ? 'Lieu *' : 'Location *'}
             </label>
-            <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.isOnline}
                 onChange={(e) => updateForm('isOnline', e.target.checked)}
-                className="rounded border-white/20"
+                className="rounded border-default"
               />
               <Globe className="w-4 h-4" />
               {locale === 'fr' ? 'En ligne' : 'Online'}
@@ -276,7 +276,7 @@ export default function CreateEventPage() {
             placeholder={form.isOnline
               ? (locale === 'fr' ? 'Ex: Discord, Zoom...' : 'E.g. Discord, Zoom...')
               : (locale === 'fr' ? 'Adresse ou salle' : 'Address or room')}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
             required
           />
           {form.isOnline && (
@@ -285,14 +285,14 @@ export default function CreateEventPage() {
               value={form.onlineLink}
               onChange={(e) => updateForm('onlineLink', e.target.value)}
               placeholder={locale === 'fr' ? 'Lien de la réunion' : 'Meeting link'}
-              className="w-full mt-2 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full mt-2 px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
             />
           )}
         </div>
 
         {/* Capacity */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             <Users className="w-4 h-4 inline mr-1" />
             {locale === 'fr' ? 'Capacité *' : 'Capacity *'}
           </label>
@@ -302,14 +302,14 @@ export default function CreateEventPage() {
             onChange={(e) => updateForm('capacity', parseInt(e.target.value) || 1)}
             min={1}
             max={10000}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary focus:outline-none focus:border-brand-500/40 transition-colors"
             required
           />
         </div>
 
         {/* Image URL */}
         <div>
-          <label className="block text-white/70 text-sm font-medium mb-2">
+          <label className="block text-secondary text-sm font-medium mb-2">
             <Image className="w-4 h-4 inline mr-1" />
             {locale === 'fr' ? 'URL de l\'image (optionnel)' : 'Image URL (optional)'}
           </label>
@@ -318,10 +318,10 @@ export default function CreateEventPage() {
             value={form.imageUrl}
             onChange={(e) => updateForm('imageUrl', e.target.value)}
             placeholder="https://... (Google Drive, Dropbox, lien direct)"
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:outline-none focus:border-brand-500/40 transition-colors"
           />
           {form.imageUrl.trim() && (
-            <div className="mt-3 rounded-xl overflow-hidden border border-white/10 h-40">
+            <div className="mt-3 rounded-xl overflow-hidden border border-default h-40">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={normalizeImageUrl(form.imageUrl) || form.imageUrl}
@@ -334,7 +334,7 @@ export default function CreateEventPage() {
               />
             </div>
           )}
-          <p className="text-white/40 text-xs mt-2">
+          <p className="text-muted text-xs mt-2">
             {locale === 'fr'
               ? 'Utilise un lien direct ou un partage Google Drive / Dropbox.'
               : 'Use a direct link or Google Drive / Dropbox share URL.'}
@@ -358,7 +358,7 @@ export default function CreateEventPage() {
           </button>
           <Link
             href={`/${locale}/events`}
-            className="px-6 py-3 rounded-xl bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all font-medium"
+            className="px-6 py-3 rounded-xl bg-card text-primary border border-default hover:bg-card-muted transition-all font-medium"
           >
             {locale === 'fr' ? 'Annuler' : 'Cancel'}
           </Link>

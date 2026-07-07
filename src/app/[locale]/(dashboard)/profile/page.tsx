@@ -19,6 +19,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { PageHeader, Card } from '@/components/ui';
 
 export default function ProfilePage() {
   const params = useParams();
@@ -59,8 +60,8 @@ export default function ProfilePage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full mx-auto mb-4" />
-          <p className="text-white/60">Loading profile...</p>
+          <div className="animate-spin w-8 h-8 border-2 border-default border-t-brand-500 rounded-full mx-auto mb-4" />
+          <p className="text-secondary">Loading profile...</p>
         </div>
       </div>
     );
@@ -76,16 +77,16 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
-          <p className="text-white/60">
-            {locale === 'fr' ? 'Gérez vos informations personnelles et vos préférences.' : 'Manage your personal information and preferences.'}
-          </p>
-        </div>
+        <PageHeader
+          title="Profile"
+          description={
+            locale === 'fr'
+              ? 'Gérez vos informations personnelles et vos préférences.'
+              : 'Manage your personal information and preferences.'
+          }
+        />
 
-        {/* Profile Card */}
-        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+        <Card>
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             {/* Avatar */}
             <div className="relative group">
@@ -93,11 +94,11 @@ export default function ProfilePage() {
                 <img
                   src={user.imageUrl}
                   alt={userName}
-                  className="w-24 h-24 rounded-2xl object-cover border-2 border-white/20"
+                  className="w-24 h-24 rounded-2xl object-cover border-2 border-default"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-                  <User className="w-10 h-10 text-white/60" />
+                <div className="w-24 h-24 rounded-2xl bg-card-muted border border-default flex items-center justify-center">
+                  <User className="w-10 h-10 text-secondary" />
                 </div>
               )}
 
@@ -107,8 +108,8 @@ export default function ProfilePage() {
                 className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"
               >
                 <div className="text-center">
-                  <Camera className="w-6 h-6 text-white mx-auto mb-1" />
-                  <span className="text-white text-xs font-medium">
+                  <Camera className="w-6 h-6 text-primary mx-auto mb-1" />
+                  <span className="text-primary text-xs font-medium">
                     {locale === 'fr' ? 'Modifier' : 'Edit'}
                   </span>
                 </div>
@@ -130,23 +131,23 @@ export default function ProfilePage() {
             <div className="flex-1">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
                     {userName}
                     {user?.emailAddresses[0]?.verification?.status === 'verified' && (
                       <BadgeCheck className="w-5 h-5 text-brand-400" />
                     )}
                   </h2>
-                  <p className="text-white/60">{userEmail}</p>
+                  <p className="text-secondary">{userEmail}</p>
                 </div>
               </div>
 
               {/* Role Badge */}
               <div className="flex items-center gap-3 mb-6 flex-wrap">
-                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 ${roleColor}`}>
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card border border-default ${roleColor}`}>
                   <Shield className="w-4 h-4" />
                   <span className="font-medium">{roleName}</span>
                 </span>
-                <span className="text-white/40 text-sm">
+                <span className="text-muted text-sm">
                   Level {roleLevel}
                 </span>
                 {isAdmin && (
@@ -157,84 +158,80 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Personal Info */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">
+          <Card>
+            <h3 className="text-lg font-semibold text-primary mb-4">
               {locale === 'fr' ? 'Informations Personnelles' : 'Personal Information'}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-white/40" />
+                <Mail className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wide">Email</p>
-                  <p className="text-white">{userEmail}</p>
+                  <p className="text-muted text-xs uppercase tracking-wide">Email</p>
+                  <p className="text-primary">{userEmail}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-white/40" />
+                <Calendar className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wide">
+                  <p className="text-muted text-xs uppercase tracking-wide">
                     {locale === 'fr' ? 'Membre depuis' : 'Member since'}
                   </p>
-                  <p className="text-white">{joinedDate}</p>
+                  <p className="text-primary">{joinedDate}</p>
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
 
-          {/* Team Info */}
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">
+          <Card>
+            <h3 className="text-lg font-semibold text-primary mb-4">
               {locale === 'fr' ? 'Équipe & Pôle' : 'Team & Department'}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Building2 className="w-5 h-5 text-white/40" />
+                <Building2 className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wide">
+                  <p className="text-muted text-xs uppercase tracking-wide">
                     {locale === 'fr' ? 'Pôle' : 'Department'}
                   </p>
-                  <p className="text-white">{memberData?.pole || 'Not assigned'}</p>
+                  <p className="text-primary">{memberData?.pole || 'Not assigned'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Users className="w-5 h-5 text-white/40" />
+                <Users className="w-5 h-5 text-muted" />
                 <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wide">
+                  <p className="text-muted text-xs uppercase tracking-wide">
                     {locale === 'fr' ? 'Équipe' : 'Team'}
                   </p>
-                  <p className="text-white">{memberData?.team || 'Not assigned'}</p>
+                  <p className="text-primary">{memberData?.team || 'Not assigned'}</p>
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
-        {/* Permissions */}
-        {role && role.permissions && role.permissions.length > 0 && (
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">Permissions</h3>
+        {role && role.permissions && role.permissions.length > 0 ? (
+          <Card>
+            <h3 className="text-lg font-semibold text-primary mb-4">Permissions</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {role.permissions.map((permission) => (
                 <div
                   key={permission}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-white/80 text-sm"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card text-secondary text-sm"
                 >
                   <Shield className="w-4 h-4 text-brand-400" />
                   <span className="capitalize">{permission.replace('.', ': ')}</span>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          </Card>
+        ) : null}
 
         <Link
           href="/settings"
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-all text-sm font-medium"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-card-muted border border-default text-primary hover:bg-card transition-all text-sm font-medium"
         >
           <Settings className="w-4 h-4" />
           {locale === 'fr' ? 'Gérer mon compte Clerk' : 'Manage Clerk account'}

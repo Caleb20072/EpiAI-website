@@ -52,8 +52,8 @@ export function CategoryFilter({ className }: CategoryFilterProps) {
         className={cn(
           'px-4 py-2 rounded-xl text-sm font-medium transition-all',
           selectedCategory === 'all'
-            ? 'bg-white/20 text-white border border-white/40'
-            : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10'
+            ? 'bg-white/20 text-primary border border-white/40'
+            : 'bg-card text-secondary hover:text-primary hover:bg-card-muted border border-default'
         )}
       >
         All
@@ -70,8 +70,8 @@ export function CategoryFilter({ className }: CategoryFilterProps) {
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all',
               isSelected
-                ? 'bg-white/20 text-white border border-white/40'
-                : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10'
+                ? 'bg-white/20 text-primary border border-white/40'
+                : 'bg-card text-secondary hover:text-primary hover:bg-card-muted border border-default'
             )}
           >
             <Icon className={cn('w-4 h-4', category.color)} />

@@ -49,21 +49,21 @@ export default function NewBlogPostPage() {
 
   const field = (name: keyof typeof empty, label: string, multiline = false) => (
     <div>
-      <label className="block text-sm text-white/70 mb-1">{label}</label>
+      <label className="block text-sm text-secondary mb-1">{label}</label>
       {multiline ? (
         <textarea
           required={name.includes('title') || name.includes('content')}
           rows={name.includes('content') ? 8 : 3}
           value={form[name] as string}
           onChange={(e) => setForm({ ...form, [name]: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-blue-500/50"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary outline-none focus:border-blue-500/50"
         />
       ) : (
         <input
           required={name.includes('title') || name === 'authorName'}
           value={form[name] as string}
           onChange={(e) => setForm({ ...form, [name]: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-blue-500/50"
+          className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary outline-none focus:border-blue-500/50"
         />
       )}
     </div>
@@ -74,12 +74,12 @@ export default function NewBlogPostPage() {
       <div className="flex items-center gap-3">
         <Link
           href={`/${locale}/admin/blog`}
-          className="p-2 rounded-lg bg-white/5 text-white/70 hover:text-white"
+          className="p-2 rounded-lg bg-card text-secondary hover:text-primary"
           aria-label="Back"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-primary">
           {locale === 'fr' ? 'Nouvel article' : 'New post'}
         </h1>
       </div>
@@ -96,13 +96,13 @@ export default function NewBlogPostPage() {
         {field('imageUrl', 'URL image (optionnel)')}
 
         <div>
-          <label className="block text-sm text-white/70 mb-1">Status</label>
+          <label className="block text-sm text-secondary mb-1">Status</label>
           <select
             value={form.status}
             onChange={(e) =>
               setForm({ ...form, status: e.target.value as 'draft' | 'published' })
             }
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white"
+            className="w-full px-4 py-3 rounded-xl bg-card border border-default text-primary"
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>

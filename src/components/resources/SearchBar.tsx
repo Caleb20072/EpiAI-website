@@ -49,7 +49,7 @@ export function SearchBar({
       <Search
         className={cn(
           'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors',
-          isPending ? 'text-white/30' : 'text-white/40'
+          isPending ? 'text-muted' : 'text-muted'
         )}
       />
       <input
@@ -58,9 +58,9 @@ export function SearchBar({
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          'w-full pl-10 pr-10 py-2.5 rounded-xl bg-white/5 border border-white/10',
-          'text-white placeholder:text-white/40',
-          'focus:outline-none focus:border-white/30 focus:bg-white/10',
+          'w-full pl-10 pr-10 py-2.5 rounded-xl bg-card border border-default',
+          'text-primary placeholder:text-muted',
+          'focus:outline-none focus:border-brand-500/40 focus:bg-card-muted',
           'transition-all'
         )}
       />
@@ -68,7 +68,7 @@ export function SearchBar({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary transition-colors"
         >
           <X className="w-5 h-5" />
         </button>

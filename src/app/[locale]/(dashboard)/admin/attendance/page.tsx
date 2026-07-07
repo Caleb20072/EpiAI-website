@@ -51,10 +51,10 @@ export default function AttendanceReportPage() {
     <PermissionGate permission="attendance.manage">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-primary mb-2">
             {locale === 'fr' ? 'Rapport de Présence' : 'Attendance Report'}
           </h1>
-          <p className="text-white/60">
+          <p className="text-secondary">
             {locale === 'fr'
               ? 'Consultez le rapport de présence de chaque membre.'
               : 'View attendance reports for each member.'}
@@ -63,34 +63,34 @@ export default function AttendanceReportPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={locale === 'fr' ? 'Rechercher un membre...' : 'Search member...'}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-white/30 outline-none"
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-card border border-default text-primary placeholder:text-muted focus:border-brand-500/40 outline-none"
           />
         </div>
 
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10 animate-pulse">
-                <div className="h-5 w-40 bg-white/10 rounded" />
+              <div key={i} className="p-4 rounded-xl bg-card border border-default animate-pulse">
+                <div className="h-5 w-40 bg-card-muted rounded" />
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-white/5 border border-white/10 text-center">
-            <Users className="w-12 h-12 text-white/30 mx-auto mb-4" />
-            <p className="text-white/60">
+          <div className="p-8 rounded-2xl bg-card border border-default text-center">
+            <Users className="w-12 h-12 text-muted mx-auto mb-4" />
+            <p className="text-secondary">
               {locale === 'fr' ? 'Aucune donnée de présence' : 'No attendance data'}
             </p>
           </div>
         ) : (
           <div className="space-y-2">
             {/* Header */}
-            <div className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-4 py-2 text-xs text-white/40 font-semibold uppercase">
+            <div className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-4 py-2 text-xs text-muted font-semibold uppercase">
               <span>{locale === 'fr' ? 'Membre' : 'Member'}</span>
               <span className="text-center">{locale === 'fr' ? 'Présent' : 'Present'}</span>
               <span className="text-center">{locale === 'fr' ? 'Absent' : 'Absent'}</span>
@@ -101,15 +101,15 @@ export default function AttendanceReportPage() {
               <div key={member.userId}>
                 <button
                   onClick={() => loadUserDetails(member.userId)}
-                  className="w-full grid grid-cols-[1fr_80px_80px_80px] gap-4 items-center px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all text-left"
+                  className="w-full grid grid-cols-[1fr_80px_80px_80px] gap-4 items-center px-4 py-3 rounded-xl bg-card border border-default hover:border-brand-500/25 transition-all text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-8 h-8 rounded-full bg-card-muted flex items-center justify-center text-primary text-sm font-bold">
                       {member.userName.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-white text-sm font-medium">{member.userName}</p>
-                      <p className="text-white/40 text-xs">{member.userEmail}</p>
+                      <p className="text-primary text-sm font-medium">{member.userName}</p>
+                      <p className="text-muted text-xs">{member.userEmail}</p>
                       {member.attendanceRate < 50 && member.totalPresent + member.totalAbsent > 2 && (
                         <span className="text-amber-400 text-xs" role="status">
                           {locale === 'fr' ? '⚠ Absences répétées' : '⚠ Low attendance'}
@@ -117,9 +117,9 @@ export default function AttendanceReportPage() {
                       )}
                     </div>
                     {expandedUser === member.userId ? (
-                      <ChevronUp className="w-4 h-4 text-white/30 ml-auto" />
+                      <ChevronUp className="w-4 h-4 text-muted ml-auto" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-white/30 ml-auto" />
+                      <ChevronDown className="w-4 h-4 text-muted ml-auto" />
                     )}
                   </div>
                   <span className="text-center text-brand-400 font-bold">{member.totalPresent}</span>
@@ -131,15 +131,15 @@ export default function AttendanceReportPage() {
 
                 {/* Expanded Details */}
                 {expandedUser === member.userId && selectedUserDetails && (
-                  <div className="mt-1 ml-12 space-y-1 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                  <div className="mt-1 ml-12 space-y-1 p-3 rounded-xl bg-card-muted border border-subtle">
                     {selectedUserDetails.details.length === 0 ? (
-                      <p className="text-white/40 text-xs">{locale === 'fr' ? 'Aucun détail' : 'No details'}</p>
+                      <p className="text-muted text-xs">{locale === 'fr' ? 'Aucun détail' : 'No details'}</p>
                     ) : (
                       selectedUserDetails.details.map((d, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
+                        <div key={i} className="flex items-center justify-between text-xs py-1.5 border-b border-subtle last:border-0">
                           <div>
-                            <span className="text-white/80">{d.activityTitle}</span>
-                            <span className="text-white/30 ml-2">
+                            <span className="text-secondary">{d.activityTitle}</span>
+                            <span className="text-muted ml-2">
                               {d.activityDate ? new Date(d.activityDate).toLocaleDateString(locale) : ''}
                             </span>
                           </div>

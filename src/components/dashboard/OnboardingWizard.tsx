@@ -107,11 +107,11 @@ export default function OnboardingWizard() {
       aria-modal="true"
       aria-labelledby="onboarding-title"
     >
-      <div className="w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl p-6 shadow-2xl relative">
+      <div className="w-full max-w-md bg-surface border border-default rounded-2xl p-6 shadow-2xl relative">
         <button
           type="button"
           onClick={() => void finish(true)}
-          className="absolute top-4 right-4 text-white/40 hover:text-white p-1"
+          className="absolute top-4 right-4 text-muted hover:text-primary p-1"
           aria-label={t('skip')}
         >
           <X className="w-5 h-5" />
@@ -119,16 +119,16 @@ export default function OnboardingWizard() {
         <p className="text-xs text-brand-400 font-semibold uppercase tracking-wider mb-2">
           {t('label')} {step + 1}/{STEP_KEYS.length}
         </p>
-        <h2 id="onboarding-title" className="text-xl font-bold text-white mb-3">
+        <h2 id="onboarding-title" className="text-xl font-bold text-primary mb-3">
           {t(`steps.${key}.title`)}
         </h2>
-        <p className="text-white/60 text-sm mb-6">{t(`steps.${key}.body`)}</p>
+        <p className="text-secondary text-sm mb-6">{t(`steps.${key}.body`)}</p>
         <div className="flex gap-3 flex-wrap">
           {action && (
             <Link
               href={action.href}
               onClick={() => void finish(false)}
-              className="inline-flex items-center gap-1 flex-1 justify-center py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm font-medium min-w-[120px]"
+              className="inline-flex items-center gap-1 flex-1 justify-center py-2.5 rounded-xl bg-card-muted hover:bg-card text-primary text-sm font-medium min-w-[120px]"
             >
               {action.label}
               <ChevronRight className="w-4 h-4" aria-hidden />
@@ -154,7 +154,7 @@ export default function OnboardingWizard() {
           <button
             type="button"
             onClick={() => void finish(true)}
-            className="px-4 py-2.5 rounded-xl bg-white/5 text-white/60 hover:text-white text-sm"
+            className="px-4 py-2.5 rounded-xl bg-card text-secondary hover:text-primary text-sm"
           >
             {t('skip')}
           </button>

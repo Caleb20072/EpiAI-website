@@ -47,10 +47,10 @@ export default function EventDetailPage() {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="animate-pulse space-y-6">
-          <div className="h-10 w-48 bg-white/10 rounded" />
-          <div className="h-64 bg-white/10 rounded-2xl" />
-          <div className="h-8 w-3/4 bg-white/10 rounded" />
-          <div className="h-4 w-full bg-white/10 rounded" />
+          <div className="h-10 w-48 bg-card-muted rounded" />
+          <div className="h-64 bg-card-muted rounded-2xl" />
+          <div className="h-8 w-3/4 bg-card-muted rounded" />
+          <div className="h-4 w-full bg-card-muted rounded" />
         </div>
       </div>
     );
@@ -59,11 +59,11 @@ export default function EventDetailPage() {
   if (error || !event) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
-        <Calendar className="w-16 h-16 text-white/20 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-white mb-2">
+        <Calendar className="w-16 h-16 text-muted mx-auto mb-4" />
+        <h1 className="text-2xl font-bold text-primary mb-2">
           Event Not Found
         </h1>
-        <p className="text-white/60 mb-6">
+        <p className="text-secondary mb-6">
           {error || 'This event does not exist or has been deleted.'}
         </p>
         <Link
@@ -82,7 +82,7 @@ export default function EventDetailPage() {
       {/* Back Link */}
       <Link
         href={`/${locale}/events`}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
+        className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         {t('backToEvents')}
@@ -90,9 +90,9 @@ export default function EventDetailPage() {
 
       {/* Countdown for upcoming events */}
       {!event.isPast && (
-        <div className="mb-8 p-6 rounded-2xl bg-white/5 border border-white/10">
+        <div className="mb-8 p-6 rounded-2xl bg-card border border-default">
           <div className="text-center mb-4">
-            <p className="text-white/60 text-sm uppercase tracking-wide">
+            <p className="text-secondary text-sm uppercase tracking-wide">
               {t('startsIn')}
             </p>
           </div>
@@ -123,7 +123,7 @@ export default function EventDetailPage() {
           <div className="flex gap-2">
             <Link
               href={`/${locale}/events/${event.id}/edit`}
-              className="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors text-sm"
+              className="px-4 py-2 rounded-lg bg-card-muted text-primary hover:bg-card-muted transition-colors text-sm"
             >
               Edit Event
             </Link>
