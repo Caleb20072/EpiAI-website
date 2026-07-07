@@ -79,6 +79,16 @@ html.light .text-amber-400 {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-page: var(--bg-page);
+  --color-card: var(--bg-card);
+  --color-card-muted: var(--bg-card-muted);
+  --color-input: var(--bg-input);
+  --color-overlay: var(--bg-overlay);
+  --color-default: var(--border-default);
+  --color-subtle: var(--border-subtle);
   --color-brand-50: var(--brand-50);
   --color-brand-100: var(--brand-100);
   --color-brand-200: var(--brand-200);
@@ -142,18 +152,37 @@ iframe {
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-elevated { box-shadow: var(--shadow-md); }
 
-  /* Dashboard nav */
+  /* Dashboard nav — plain CSS (semantic tokens are not @apply-able as component classes) */
   .nav-item {
-    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 150ms, background-color 150ms, border-color 150ms;
   }
   .nav-item-active {
-    @apply bg-brand-500/10 text-primary border-l-2 border-brand-600 pl-[10px];
+    background-color: color-mix(in srgb, var(--brand-500) 10%, transparent);
+    color: var(--text-primary);
+    border-left: 2px solid var(--brand-600);
+    padding-left: 10px;
   }
   .nav-item-inactive {
-    @apply text-secondary hover:text-primary hover:bg-card-muted border-l-2 border-transparent pl-[10px];
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+  }
+  .nav-item-inactive:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-card-muted);
   }
   .nav-item-admin-active {
-    @apply bg-card-muted text-primary border-l-2 border-amber-600 pl-[10px];
+    background-color: var(--bg-card-muted);
+    color: var(--text-primary);
+    border-left: 2px solid var(--brand-700);
+    padding-left: 10px;
   }
 
   .surface-card {
