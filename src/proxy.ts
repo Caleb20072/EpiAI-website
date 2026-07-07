@@ -18,6 +18,7 @@ const isProtectedRoute = createRouteMatcher([
   '/my-resources(.*)',
   '/attendance(.*)',
   '/api/notifications(.*)',
+  '/api/push/subscribe(.*)',
   '/api/onboarding(.*)',
   '/api/admin/resend-credentials(.*)',
   '/api/dashboard(.*)',
@@ -82,6 +83,7 @@ export default clerkMiddleware(async (auth, req) => {
   // Exclure les fichiers statiques (assets, images, uploads, etc.)
   const pathname = req.nextUrl.pathname;
   if (
+    pathname === '/push-sw.js' ||
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/uploads/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|pdf|docx?|xlsx?|pptx?|zip|rar|gz|tar|mp4|webm|mp3|wav|csv|json|xml|txt)$/)

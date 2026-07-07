@@ -13,9 +13,11 @@
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:seed": "dotenv -e .env.local -- tsx scripts/seed.ts",
     "db:seed:team": "dotenv -e .env.local -- tsx scripts/seed-team.ts",
+    "db:seed:projects": "dotenv -e .env.local -- tsx scripts/seed-projects.ts",
     "db:migrate-roles": "dotenv -e .env.local -- tsx scripts/migrate-member-role.ts",
     "db:deploy": "prisma db push",
     "test": "vitest run",
+    "push:vapid": "node -e \"const w=require('web-push');const k=w.generateVAPIDKeys();console.log('VAPID_PUBLIC_KEY='+k.publicKey);console.log('VAPID_PRIVATE_KEY='+k.privateKey);console.log('NEXT_PUBLIC_VAPID_PUBLIC_KEY='+k.publicKey);\"",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -36,6 +38,7 @@
     "stream-chat-react": "^13.14.1",
     "svix": "^1.96.0",
     "tailwind-merge": "^3.4.0",
+    "web-push": "^3.6.7",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -43,6 +46,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "dotenv-cli": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",

@@ -115,6 +115,7 @@ export async function POST(
         title: 'Bienvenue chez Epi\'AI',
         message: 'Ta candidature a été approuvée. Explore le dashboard !',
         link: '/dashboard',
+        skipEmail: true,
       });
 
       console.log('[Approve API] Application approved successfully');

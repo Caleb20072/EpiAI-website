@@ -7,6 +7,7 @@ export type NotificationCounts = {
   event: number;
   activity: number;
   membership: number;
+  chat: number;
   system: number;
 };
 
@@ -16,6 +17,7 @@ const EMPTY_COUNTS: NotificationCounts = {
   event: 0,
   activity: 0,
   membership: 0,
+  chat: 0,
   system: 0,
 };
 

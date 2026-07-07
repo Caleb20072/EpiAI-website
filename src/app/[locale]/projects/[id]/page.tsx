@@ -6,7 +6,8 @@ import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import { useParams } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText } from 'lucide-react';
+import { isRoadmapUrl } from '@/lib/projects/links';
 
 interface Project {
   _id: string;
@@ -64,6 +65,9 @@ export default function ProjectDetailPage() {
   const title = project.title?.[lang] || project.title?.en || '';
   const desc = project.description?.[lang] || project.description?.en || '';
   const content = project.content?.[lang] || project.content?.en || desc;
+  const discoveryIsRoadmap = project.discoveryUrl
+    ? isRoadmapUrl(project.discoveryUrl)
+    : false;
 
   return (
     <div className="relative min-h-screen font-[family-name:var(--font-geist-sans)] text-white overflow-x-hidden">
@@ -122,8 +126,15 @@ export default function ProjectDetailPage() {
                 </a>
               )}
               {project.discoveryUrl && (
-                <a href={project.discoveryUrl} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-xl bg-blue-600 text-sm hover:bg-blue-500 transition-all">
-                  {t('demo_btn')}
+                <a href={project.discoveryUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-sm hover:bg-blue-500 transition-all">
+                  {discoveryIsRoadmap ? (
+                    <>
+                      <FileText className="w-4 h-4" />
+                      {t('roadmap_btn')}
+                    </>
+                  ) : (
+                    t('demo_btn')
+                  )}
                 </a>
               )}
             </div>

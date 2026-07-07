@@ -11,6 +11,7 @@ const EMPTY: NotificationCounts = {
   event: 0,
   activity: 0,
   membership: 0,
+  chat: 0,
   system: 0,
 };
 
@@ -33,6 +34,7 @@ export function useNotificationCounts(enabled = true) {
         event: data.event ?? 0,
         activity: data.activity ?? 0,
         membership: data.membership ?? 0,
+        chat: data.chat ?? 0,
         system: data.system ?? 0,
       });
     } catch {

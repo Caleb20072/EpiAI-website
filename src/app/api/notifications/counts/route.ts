@@ -18,6 +18,7 @@ export async function GET() {
         event: 0,
         activity: 0,
         membership: 0,
+        chat: 0,
         system: 0,
       });
     }

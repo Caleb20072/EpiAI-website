@@ -35,6 +35,7 @@ import { userButtonProps } from '@/lib/clerk/user-button';
 import { getRoleName } from '@/lib/roles/utils';
 import GlobalSearch from '@/components/dashboard/GlobalSearch';
 import NotificationBell from '@/components/dashboard/NotificationBell';
+import PushNotificationManager from '@/components/dashboard/PushNotificationManager';
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileBottomNav from '@/components/dashboard/MobileBottomNav';
@@ -391,6 +392,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <NotificationBell />
               <ThemeToggle />
             </div>
+            <PushNotificationManager />
             {children}
           </main>
         </div>

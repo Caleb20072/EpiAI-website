@@ -12,8 +12,6 @@ import type { CreateReplyInput } from '@/lib/forum/types';
 import { rateLimit } from '@/lib/rate-limit';
 import { getThreadById } from '@/lib/forum/repository';
 import { notifyUser } from '@/lib/notifications/service';
-import { sendForumReplyEmail } from '@/lib/email/resend';
-import { prisma } from '@/lib/prisma';
 import { getDisplayNameForClerkId } from '@/lib/users/display-name';
 
 // GET /api/forum/replies?threadId=xxx
@@ -84,19 +82,14 @@ export async function POST(request: NextRequest) {
 
     const thread = await getThreadById(body.threadId);
     if (thread && thread.authorId !== userId) {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
-      const threadLink = `${siteUrl}/fr/forum/${thread.id}`;
       await notifyUser({
         clerkId: thread.authorId,
         type: 'forum',
-        title: 'Nouvelle réponse',
+        title: 'Nouvelle réponse sur le forum',
         message: `${authorName} a répondu à « ${thread.title} »`,
         link: `/forum/${thread.id}`,
+        emailActionLabel: 'Lire la discussion',
       });
-      const authorDb = await prisma.user.findUnique({ where: { clerkId: thread.authorId } });
-      if (authorDb?.email) {
-        sendForumReplyEmail(authorDb.email, thread.title, authorName, threadLink).catch(() => {});
-      }
     }
 
     return NextResponse.json(reply, { status: 201 });

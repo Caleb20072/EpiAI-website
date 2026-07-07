@@ -3,9 +3,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
 import { getActivities, createActivity } from '@/lib/activities/repository';
 import type { CreateActivityInput } from '@/lib/activities/types';
-import { notifyAllActiveMembers, NOTIFIABLE_MEMBER_STATUSES } from '@/lib/notifications/service';
-import { sendMandatoryActivityEmail } from '@/lib/email/resend';
-import { prisma } from '@/lib/prisma';
+import { notifyAllActiveMembers } from '@/lib/notifications/service';
 
 // GET /api/activities - Liste des activités (membres connectés)
 export async function GET(request: NextRequest) {
@@ -64,22 +62,8 @@ export async function POST(request: NextRequest) {
         title: 'Activité obligatoire',
         message: `${activity.title} — ${dateStr}`,
         link,
+        emailActionLabel: "Voir l'activité",
       });
-      const members = await prisma.user.findMany({
-        where: { memberStatus: { in: NOTIFIABLE_MEMBER_STATUSES } },
-        select: { email: true, firstName: true },
-        take: 200,
-      });
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
-      for (const m of members) {
-        sendMandatoryActivityEmail(
-          m.email,
-          m.firstName || 'Membre',
-          activity.title,
-          dateStr,
-          `${siteUrl}/fr${link}`
-        ).catch(() => {});
-      }
     }
 
     return NextResponse.json(activity, { status: 201 });

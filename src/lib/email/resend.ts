@@ -160,6 +160,53 @@ interface GenericEmailParams {
   html: string;
 }
 
+export interface PlatformAlertEmailParams {
+  email: string;
+  firstName: string;
+  category: string;
+  title: string;
+  message: string;
+  actionUrl?: string;
+  actionLabel?: string;
+}
+
+/** Email d'alerte hors ligne — même contenu que la cloche in-app, avec lien direct. */
+export async function sendPlatformAlertEmail({
+  email,
+  firstName,
+  category,
+  title,
+  message,
+  actionUrl,
+  actionLabel = "Voir sur Epi'AI",
+}: PlatformAlertEmailParams) {
+  const subject = `[Epi'AI — ${category}] ${title}`;
+  const button = actionUrl
+    ? `<a href="${actionUrl}" style="display:inline-block;background:#10b981;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;margin-top:16px;">${actionLabel}</a>`
+    : '';
+
+  return sendGenericEmail({
+    email,
+    subject,
+    html: `
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;background:#18181b;border-radius:12px;overflow:hidden;">
+        <div style="padding:24px 32px;background:#27272a;border-bottom:1px solid #3f3f46;">
+          <p style="margin:0 0 8px 0;font-size:12px;font-weight:600;color:#10b981;text-transform:uppercase;letter-spacing:0.05em;">${category}</p>
+          <h1 style="margin:0;font-size:20px;color:#fff;">${title}</h1>
+        </div>
+        <div style="padding:32px;">
+          <p style="margin:0 0 16px 0;color:#a1a1aa;font-size:14px;">Bonjour ${firstName},</p>
+          <p style="margin:0 0 8px 0;color:#d4d4d8;font-size:16px;line-height:1.6;">${message}</p>
+          ${button}
+        </div>
+        <div style="padding:20px 32px;background:#18181b;text-align:center;">
+          <p style="margin:0;color:#52525b;font-size:12px;">Epi'AI — Tu reçois cet email car une activité t'a concerné sur la plateforme.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
 export async function sendGenericEmail({ email, subject, html }: GenericEmailParams) {
   const resend = getResendClient();
   if (!resend) {

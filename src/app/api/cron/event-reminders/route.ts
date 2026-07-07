@@ -43,6 +43,8 @@ export async function GET(request: NextRequest) {
           title: 'Rappel événement demain',
           message: event.title,
           link: `/events/${event.id}`,
+          skipEmail: true,
+          emailActionLabel: "Voir l'événement",
         });
 
         const dateStr = event.date.toLocaleDateString('fr-FR', {
