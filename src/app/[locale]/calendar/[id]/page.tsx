@@ -43,7 +43,7 @@ export default async function PublicEventDetailPage({
         </Link>
 
         <div className="rounded-2xl bg-black/40 border border-white/10 p-4 sm:p-8 backdrop-blur-sm">
-          <EventDetail event={event} />
+          <EventDetail event={event} showRegistrationStats={false} />
         </div>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 items-start">
