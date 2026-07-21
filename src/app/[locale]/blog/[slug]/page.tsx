@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import Footer from '@/components/Footer';
+import { BlogMarkdown } from '@/components/blog/BlogMarkdown';
 import { getPostBySlug } from '@/lib/blog/repository';
 import { notFound } from 'next/navigation';
 
@@ -60,9 +61,7 @@ export default async function BlogDetailPage({
           <div className="relative aspect-video rounded-[2.5rem] overflow-hidden border border-white/10 mb-16">
             <Image src={image} alt={title} fill className="object-cover" priority />
           </div>
-          <div className="prose prose-invert max-w-none whitespace-pre-wrap text-gray-300 leading-relaxed">
-            {content}
-          </div>
+          <BlogMarkdown content={content} />
           <footer className="mt-20 pt-12 border-t border-white/10 flex items-center justify-between">
             <div>
               <div className="text-sm font-bold text-white">{post.authorName}</div>
