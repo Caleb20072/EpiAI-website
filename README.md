@@ -28,63 +28,92 @@ Voir `.env.example` pour la liste complète.
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` | URI PostgreSQL (Prisma) |
+| `DATABASE_URL` | URI PostgreSQL (Prisma) — Neon en prod |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clé publique Clerk |
 | `CLERK_SECRET_KEY` | Clé secrète Clerk |
 | `CLERK_WEBHOOK_SECRET` | Secret webhook Clerk (Svix) |
 | `RESEND_API_KEY` | API Resend pour les emails d'adhésion |
-| `NEXT_PUBLIC_SITE_URL` | URL publique du site (ex. `https://epiai.eu`) |
-| `CRON_SECRET` | Secret pour le cron Vercel (rappels événements) |
+| `NEXT_PUBLIC_SITE_URL` | URL publique du site (ex. `https://epiai.netlify.app` ou `https://epiai.eu`) |
+| `CRON_SECRET` | Secret pour le cron (rappels événements) |
 | `NEXT_PUBLIC_STREAM_API_KEY` | Clé publique Stream Chat (optionnel) |
 | `STREAM_API_SECRET` | Secret Stream Chat (optionnel) |
+| `OPENAI_API_KEY` | Chatbot + génération blog depuis events (optionnel) |
 
-## Déploiement Vercel (recommandé)
+## Déploiement Netlify (recommandé)
+
+Le projet est prêt pour Netlify (`netlify.toml` + cron Scheduled Function). Next.js 16 App Router est supporté via l’adapter OpenNext (auto-détecté).
 
 ### 1. Base PostgreSQL (Neon)
 
-1. Crée un projet sur [neon.tech](https://neon.tech)
-2. Copie la `DATABASE_URL` (connection string)
-3. Initialise le schéma une fois :
+1. Crée / réutilise un projet sur [neon.tech](https://neon.tech)
+2. Copie la `DATABASE_URL` (connection string, SSL)
+3. Initialise le schéma une fois (en local, avec l’URL Neon) :
 
 ```bash
 DATABASE_URL="postgresql://..." npx prisma db push
 DATABASE_URL="postgresql://..." npm run db:seed
+# Talks / projets / ressources si besoin :
+DATABASE_URL="postgresql://..." npm run db:seed:talks:prod
 ```
 
-### 2. Projet Vercel
+### 2. Projet Netlify
 
-1. Va sur [vercel.com/new](https://vercel.com/new) → importe le repo GitHub `EpiAI-website`
-2. Framework : **Next.js** (détecté automatiquement)
-3. Ajoute les variables d'environnement (Settings → Environment Variables) — reprends `.env.example`
-4. Deploy
+1. Va sur [app.netlify.com](https://app.netlify.com) → **Add new site** → **Import an existing project**
+2. Connecte le repo GitHub `EpiAI-website` (branche `main`)
+3. Build settings (déjà dans `netlify.toml`) :
+   - **Build command** : `npm run build`
+   - **Publish directory** : `.next`
+   - **Node** : 20
+4. **Site configuration → Environment variables** — ajoute au minimum :
 
-Vercel exécute `prisma generate && next build` automatiquement (`postinstall` + script `build`).
+| Key | Notes |
+|-----|--------|
+| `DATABASE_URL` | Neon prod |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | `pk_live_...` en prod |
+| `CLERK_SECRET_KEY` | `sk_live_...` |
+| `CLERK_WEBHOOK_SECRET` | après config webhook |
+| `NEXT_PUBLIC_SITE_URL` | URL Netlify (`https://xxx.netlify.app`) puis domaine custom |
+| `CRON_SECRET` | chaîne aléatoire longue |
+| `RESEND_API_KEY` / `RESEND_FROM_EMAIL` | si emails |
+| Stream / VAPID / OpenAI | selon les features utilisées |
+
+5. Deploy
+
+Netlify exécute `prisma generate` via `postinstall` puis `next build`.
 
 ### 3. Clerk (production)
 
-Dans le dashboard Clerk :
+Dans le dashboard Clerk, ajoute le domaine Netlify :
 
-- Domaine : ton URL Vercel ou `epiai.eu`
-- Redirect URLs : `https://ton-domaine/fr/sign-in`, `/fr/dashboard`, etc.
-- Webhook : `https://ton-domaine/api/webhooks/clerk` → copie le secret dans `CLERK_WEBHOOK_SECRET`
+- Allowed origins / redirect URLs : `https://ton-site.netlify.app`, `/fr/sign-in`, `/fr/dashboard`, etc.
+- Webhook endpoint : `https://ton-site.netlify.app/api/webhooks/clerk` → copie le secret dans `CLERK_WEBHOOK_SECRET`
+- Après domaine custom (`epiai.eu`), mets à jour Clerk + `NEXT_PUBLIC_SITE_URL`
 
 ### 4. Domaine custom (optionnel)
 
-Vercel → Project → Domains → ajoute `epiai.eu` et configure les DNS chez ton registrar.
+Netlify → Domain management → Add domain → configure les DNS chez ton registrar.
 
 ### 5. Cron (rappels événements J-1)
 
-Déjà configuré dans `vercel.json` (tous les jours à 8h UTC). Définis `CRON_SECRET` dans Vercel.
+Configuré dans `netlify.toml` + `netlify/functions/event-reminders.mts` (tous les jours à **08:00 UTC**).
+
+- Définis `CRON_SECRET` dans Netlify
+- Test manuel : Netlify → Functions → `event-reminders` → **Run now**
 
 ### Checklist rapide
 
 - [ ] `DATABASE_URL` → Neon
-- [ ] Clerk en mode **production** (`pk_live_...`)
-- [ ] `NEXT_PUBLIC_SITE_URL` = URL réelle
-- [ ] `db:push` + `db:seed` exécutés sur la base prod
+- [ ] Clerk en mode **production** (`pk_live_...`) + domaine Netlify autorisé
+- [ ] `NEXT_PUBLIC_SITE_URL` = URL réelle Netlify
+- [ ] `db:push` (+ seeds) exécutés sur la base prod
 - [ ] Webhook Clerk configuré
+- [ ] `CRON_SECRET` défini
 
-> **Note :** les uploads admin (PDF, photos équipe) vont dans `public/uploads/` et ne persistent pas entre redéploiements sur Vercel. Le contenu seedé et les assets dans `public/assets/` fonctionnent normalement.
+> **Note :** les uploads admin (PDF, photos) dans `public/uploads/` ne persistent pas entre builds sur Netlify (filesystem éphémère). Préférer des URLs ou des assets commités dans `public/assets/`.
+
+### Ancien déploiement Vercel
+
+`vercel.json` (cron Vercel) reste dans le repo pour référence, mais le chemin recommandé est **Netlify**. Si tu reviens sur Vercel plus tard, le cron Vercel continue de pointer vers `/api/cron/event-reminders`.
 
 ## Premier administrateur
 
@@ -99,6 +128,7 @@ Déjà configuré dans `vercel.json` (tous les jours à 8h UTC). Définis `CRON_
 - `src/lib/` — Repositories, rôles, permissions
 - `prisma/schema.prisma` — Schéma PostgreSQL
 - `messages/` — Traductions FR/EN
+- `netlify.toml` + `netlify/functions/` — Build & cron Netlify
 
 ## Scripts
 

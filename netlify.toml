@@ -1,0 +1,27 @@
+# Netlify — Next.js (App Router) via OpenNext adapter (auto-détecté)
+# Docs: https://docs.netlify.com/integrations/frameworks/next-js/overview/
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Prisma a besoin de ces binaires sur les builders Netlify
+  PRISMA_CLI_BINARY_TARGETS = "native,rhel-openssl-3.0.x"
+
+# Ne pas pinner @netlify/plugin-nextjs : Netlify injecte / met à jour l’adapter OpenNext à chaque build.
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Rappels événements J-1 — tous les jours à 08:00 UTC
+[functions."event-reminders"]
+  schedule = "0 8 * * *"
+
+# Headers de sécurité de base (les headers Next/middleware restent prioritaires pour les routes app)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

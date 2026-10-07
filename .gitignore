@@ -37,8 +37,9 @@ yarn-error.log*
 # user uploads (keep folder via .gitkeep if needed)
 /public/uploads/events/
 
-# vercel
+# vercel / netlify
 .vercel
+.netlify
 
 # typescript
 *.tsbuildinfo
