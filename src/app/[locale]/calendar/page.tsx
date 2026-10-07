@@ -5,14 +5,18 @@ import { prisma } from '@/lib/prisma';
 import { Link } from '@/i18n/routing';
 import { normalizeImageUrl } from '@/lib/utils/image-url';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CalendarPage() {
   const locale = await getLocale();
   const fr = locale === 'fr';
-  const events = await prisma.event.findMany({
-    where: { isPublished: true },
-    orderBy: { date: 'desc' },
-    take: 50,
-  });
+  const events = await prisma.event
+    .findMany({
+      where: { isPublished: true },
+      orderBy: { date: 'desc' },
+      take: 50,
+    })
+    .catch(() => []);
 
   const now = new Date();
   const upcoming = events.filter((e) => e.date >= now).sort((a, b) => a.date.getTime() - b.date.getTime());

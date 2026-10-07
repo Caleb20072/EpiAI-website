@@ -6,6 +6,8 @@ import { BlogMarkdown } from '@/components/blog/BlogMarkdown';
 import { getPostBySlug } from '@/lib/blog/repository';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BlogDetailPage({
   params,
 }: {

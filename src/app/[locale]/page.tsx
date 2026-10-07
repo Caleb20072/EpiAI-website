@@ -14,12 +14,15 @@ import { getTeamMembersForDisplay } from '@/lib/team/repository';
 import { getProjects } from '@/lib/projects/repository';
 import { getPublicEvents } from '@/lib/events/repository';
 
+/** Toujours rendu à la demande — nécessite DATABASE_URL (Neon) au runtime Netlify */
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const locale = (await getLocale()) as 'fr' | 'en';
   const [teamMembers, projects, events] = await Promise.all([
-    getTeamMembersForDisplay(),
-    getProjects(true),
-    getPublicEvents(6),
+    getTeamMembersForDisplay().catch(() => []),
+    getProjects(true).catch(() => []),
+    getPublicEvents(6).catch(() => []),
   ]);
 
   return (

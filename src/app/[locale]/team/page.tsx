@@ -4,9 +4,11 @@ import Footer from '@/components/Footer';
 import TeamSection from '@/components/TeamSection';
 import { getTeamMembersForDisplay } from '@/lib/team/repository';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TeamPage() {
   const locale = (await getLocale()) as 'fr' | 'en';
-  const teamMembers = await getTeamMembersForDisplay();
+  const teamMembers = await getTeamMembersForDisplay().catch(() => []);
 
   return (
     <div className="relative min-h-screen text-white font-[family-name:var(--font-geist-sans)] overflow-x-hidden">

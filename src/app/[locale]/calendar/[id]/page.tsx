@@ -7,6 +7,8 @@ import { getEventById } from '@/lib/events/repository';
 import { EventDetail } from '@/components/events/EventDetail';
 import { ArrowLeft } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PublicEventDetailPage({
   params,
 }: {
