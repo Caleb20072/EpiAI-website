@@ -7,8 +7,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  # Prisma a besoin de ces binaires sur les builders Netlify
-  PRISMA_CLI_BINARY_TARGETS = "native,rhel-openssl-3.0.x"
+  # Ne pas définir PRISMA_CLI_BINARY_TARGETS ici : "native" n'y est pas valide et casse `prisma generate`.
+  # Les targets sont dans prisma/schema.prisma (native + rhel-openssl-3.0.x).
   # Les secrets serveur sont injectés dans les bundles Functions Next.js — attendu, pas une fuite publique.
   # https://docs.netlify.com/build/environment-variables/secrets-controller/
   SECRETS_SCAN_OMIT_KEYS = "DATABASE_URL,CLERK_SECRET_KEY,CLERK_WEBHOOK_SECRET,CRON_SECRET,RESEND_API_KEY,STREAM_API_SECRET,OPENAI_API_KEY,GEMINI_API_KEY,VAPID_PRIVATE_KEY,E_URL"
