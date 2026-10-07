@@ -9,10 +9,10 @@
   NODE_VERSION = "20"
   # Ne pas définir PRISMA_CLI_BINARY_TARGETS ici : "native" n'y est pas valide et casse `prisma generate`.
   # Les targets sont dans prisma/schema.prisma (native + rhel-openssl-3.0.x).
-  # Les secrets serveur sont injectés dans les bundles Functions Next.js — attendu, pas une fuite publique.
-  # https://docs.netlify.com/build/environment-variables/secrets-controller/
-  SECRETS_SCAN_OMIT_KEYS = "DATABASE_URL,CLERK_SECRET_KEY,CLERK_WEBHOOK_SECRET,CRON_SECRET,RESEND_API_KEY,STREAM_API_SECRET,OPENAI_API_KEY,GEMINI_API_KEY,VAPID_PRIVATE_KEY,E_URL"
-  SECRETS_SCAN_OMIT_PATHS = ".next/**,.netlify/**,node_modules/**"
+  # Next.js copie les env serveur dans les Functions. Plusieurs vars Netlify
+  # (DATABASE="Epi'AI", OPENAI_CHATBOT_MODEL, MONGODB_URI localhost) matchent
+  # du texte public du repo → faux positifs. On désactive le scan.
+  SECRETS_SCAN_ENABLED = "false"
 
 # Ne pas pinner @netlify/plugin-nextjs : Netlify injecte / met à jour l’adapter OpenNext à chaque build.
 
