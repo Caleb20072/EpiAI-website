@@ -2,6 +2,7 @@
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { NextIntlClientProvider } from 'next-intl';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export function Providers({
   children,
@@ -31,7 +32,7 @@ export function Providers({
       afterSignOutUrl={`/${locale}`}
     >
       <NextIntlClientProvider locale={locale} messages={messages} timeZone="Europe/Paris">
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </NextIntlClientProvider>
     </ClerkProvider>
   );

@@ -512,6 +512,10 @@
         "uploadMore": "Upload More"
     },
     "Theme": {
+        "label": "Appearance",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System",
         "to_light": "Switch to light theme",
         "to_dark": "Switch to dark theme"
     }

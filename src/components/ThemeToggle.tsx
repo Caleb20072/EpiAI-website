@@ -1,34 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
+import type { ThemePreference } from '@/lib/theme';
+
+const options: { id: ThemePreference; icon: typeof Sun; label: 'light' | 'dark' | 'system' }[] = [
+  { id: 'light', icon: Sun, label: 'light' },
+  { id: 'system', icon: Monitor, label: 'system' },
+  { id: 'dark', icon: Moon, label: 'dark' },
+];
 
 export default function ThemeToggle() {
   const t = useTranslations('Theme');
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    const isDark = localStorage.getItem('epiai-theme') === 'dark';
-    setDark(isDark);
-    document.documentElement.classList.toggle('dark', isDark);
-  }, []);
-
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    localStorage.setItem('epiai-theme', next ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', next);
-  };
+  const { preference, setPreference } = useTheme();
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      className="inline-flex items-center justify-center w-11 h-11 rounded-lg text-secondary hover:text-primary hover:bg-card-muted active:scale-[0.98] transition-[color,background-color,transform] duration-[160ms]"
-      aria-label={dark ? t('to_light') : t('to_dark')}
+    <div
+      role="radiogroup"
+      aria-label={t('label')}
+      className="inline-flex items-center rounded-lg border border-default p-0.5"
     >
-      {dark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
-    </button>
+      {options.map(({ id, icon: Icon, label }) => {
+        const selected = preference === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            aria-label={t(label)}
+            title={t(label)}
+            onClick={() => setPreference(id)}
+            className={`inline-flex items-center justify-center w-9 h-9 rounded-md transition-colors duration-[160ms] ${
+              selected
+                ? 'bg-card text-primary shadow-sm'
+                : 'text-muted hover:text-primary'
+            }`}
+          >
+            <Icon className="w-4 h-4" aria-hidden />
+          </button>
+        );
+      })}
+    </div>
   );
 }

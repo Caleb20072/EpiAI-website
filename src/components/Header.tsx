@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { BrandWordmark } from '@/components/BrandLogo';
+import ThemeToggle from '@/components/ThemeToggle';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
@@ -59,6 +60,7 @@ export default function Header() {
                 </nav>
 
                 <div className="hidden lg:flex items-center gap-2">
+                    <ThemeToggle />
                     <div className="flex items-center rounded-lg border border-default p-0.5" role="group" aria-label={t('language')}>
                         {(['fr', 'en'] as const).map((code) => (
                             <button
@@ -88,15 +90,18 @@ export default function Header() {
                     </Link>
                 </div>
 
-                <button
-                    type="button"
-                    className="lg:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-primary hover:bg-card-muted"
-                    onClick={() => setMobileOpen(!mobileOpen)}
-                    aria-expanded={mobileOpen}
-                    aria-label={mobileOpen ? t('menu_close') : t('menu_open')}
-                >
-                    {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                </button>
+                <div className="lg:hidden flex items-center gap-1">
+                    <ThemeToggle />
+                    <button
+                        type="button"
+                        className="inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-primary hover:bg-card-muted"
+                        onClick={() => setMobileOpen(!mobileOpen)}
+                        aria-expanded={mobileOpen}
+                        aria-label={mobileOpen ? t('menu_close') : t('menu_open')}
+                    >
+                        {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    </button>
+                </div>
             </div>
 
             <AnimatePresence>

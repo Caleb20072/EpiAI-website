@@ -5,6 +5,7 @@ import { getMessages } from 'next-intl/server';
 import Chatbot from '@/components/Chatbot';
 import { Providers } from '@/app/providers';
 import HeaderWrapper from '@/components/HeaderWrapper';
+import { themeBootScript } from '@/lib/theme';
 
 const plex = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -53,7 +54,7 @@ export default async function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('epiai-theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`,
+            __html: themeBootScript,
           }}
         />
       </head>
