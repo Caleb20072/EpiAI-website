@@ -120,19 +120,19 @@ export default function Chatbot() {
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] flex flex-col items-end max-w-[calc(100vw-2rem)]">
       {isOpen && (
-        <div className="mb-3 sm:mb-4 w-[min(100vw-2rem,350px)] h-[min(70dvh,500px)] rounded-[18px] bg-white border border-[#e0e0e0] flex flex-col overflow-hidden text-[#1d1d1f]">
-          <div className="p-4 border-b border-[#f0f0f0] flex items-center justify-between shrink-0">
+        <div className="mb-3 sm:mb-4 w-[min(100vw-2rem,350px)] h-[min(70dvh,500px)] rounded-xl bg-card border border-default shadow-elevated flex flex-col overflow-hidden text-primary">
+          <div className="px-4 py-3 border-b border-subtle flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 shrink-0 rounded-full bg-[#0066cc] flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <div className="w-9 h-9 shrink-0 rounded-lg bg-brand-600 flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               </div>
               <div className="min-w-0">
-                <h3 className="text-[17px] font-semibold text-[#1d1d1f] leading-tight truncate">{t('title')}</h3>
+                <h3 className="text-[15px] font-semibold text-primary leading-tight truncate">{t('title')}</h3>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-                  <span className="text-[12px] text-[#7a7a7a]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-[12px] text-muted">
                     {t('online')}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ export default function Chatbot() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="shrink-0 p-2 -mr-1 text-[#7a7a7a] hover:text-[#1d1d1f] transition-colors"
+              className="shrink-0 inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-muted hover:text-primary hover:bg-card-muted transition-colors"
               aria-label="Close"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -154,17 +154,17 @@ export default function Chatbot() {
             {messages.map((msg, i) => (
               <div key={i}>
                 <div
-                  className={`rounded-[18px] p-3 text-[14px] leading-relaxed max-w-[90%] ${
+                  className={`rounded-xl px-3 py-2.5 text-[14px] leading-relaxed max-w-[90%] ${
                     msg.role === 'user'
-                      ? 'bg-[#0066cc] text-white ml-auto'
-                      : 'bg-[#f5f5f7] text-[#1d1d1f]'
+                      ? 'bg-brand-600 text-white ml-auto rounded-br-sm'
+                      : 'bg-card-muted text-primary rounded-bl-sm'
                   }`}
                 >
                   {msg.text}
                 </div>
                 {msg.suggestions && msg.suggestions.length > 0 && (
                   <div className="mt-2 space-y-1.5">
-                    <p className="text-[12px] text-[#7a7a7a]">
+                    <p className="text-[12px] text-muted">
                       {t('fallbackSuggestions')}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -174,7 +174,7 @@ export default function Chatbot() {
                           type="button"
                           onClick={() => askChip(id, false)}
                           disabled={loading}
-                          className="px-3 py-1 rounded-full border border-[#e0e0e0] text-[#0066cc] text-[12px] disabled:opacity-50"
+                          className="px-3 py-1.5 rounded-lg border border-default text-brand-700 text-[12px] hover:bg-brand-50 transition-colors disabled:opacity-50"
                         >
                           {t(`questions.${id}`)}
                         </button>
@@ -186,7 +186,7 @@ export default function Chatbot() {
             ))}
 
             {loading && (
-              <div className="rounded-[18px] p-3 text-[14px] bg-[#f5f5f7] text-[#7a7a7a] max-w-[90%]">
+              <div className="rounded-xl px-3 py-2.5 text-[14px] bg-card-muted text-muted max-w-[90%]">
                 {t('loading')}
               </div>
             )}
@@ -199,7 +199,7 @@ export default function Chatbot() {
                     type="button"
                     onClick={() => askChip(id)}
                     disabled={loading}
-                    className="px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white/70 text-[11px] hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg bg-card border border-default text-secondary text-[12px] hover:border-brand-300 hover:text-brand-700 transition-colors disabled:opacity-50"
                   >
                     {t(`chips.${id}`)}
                   </button>
@@ -210,7 +210,7 @@ export default function Chatbot() {
             <div ref={bottomRef} />
           </div>
 
-          <div className="p-3 sm:p-4 bg-white/5 border-t border-white/10 shrink-0">
+          <div className="p-3 border-t border-subtle shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -224,12 +224,12 @@ export default function Chatbot() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t('placeholder')}
                 disabled={loading}
-                className="w-full bg-white border border-[#e0e0e0] rounded-full py-3 px-4 text-[17px] text-[#1d1d1f] placeholder:text-[#7a7a7a] focus:outline-none focus:border-[#0066cc] transition-colors pr-12 disabled:opacity-50"
+                className="w-full bg-input border border-default rounded-lg min-h-11 py-2.5 px-3 text-[16px] text-primary placeholder:text-muted focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 transition-colors pr-12 disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="absolute right-1 top-1 p-2 rounded-full bg-[#0066cc] text-white min-w-11 min-h-11 flex items-center justify-center disabled:opacity-40 active:scale-95"
+                className="absolute right-0 top-0 rounded-lg bg-brand-600 text-white min-w-11 min-h-11 flex items-center justify-center disabled:opacity-40 active:scale-[0.98] transition-transform"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -243,10 +243,10 @@ export default function Chatbot() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center border transition-all duration-300 shadow-2xl ${
+        className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center border transition-[background-color,transform] duration-[180ms] shadow-elevated ${
           isOpen
-            ? 'bg-slate-800 border-white/20 scale-90'
-            : 'bg-[#0066cc] border-transparent active:scale-95'
+            ? 'bg-navy border-white/10'
+            : 'bg-brand-600 hover:bg-brand-700 border-transparent active:scale-[0.98]'
         }`}
         aria-label={t('title')}
       >

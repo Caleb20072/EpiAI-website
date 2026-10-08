@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { SOCIAL_LINKS } from '@/lib/team/poles';
+import { BrandWordmark } from '@/components/BrandLogo';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -47,47 +48,57 @@ export default function Footer() {
         },
     ];
 
+    const navLink = 'inline-flex items-center min-h-9 text-[15px] text-[#aab5cf] hover:text-white transition-colors duration-[160ms]';
+
     return (
-        <footer className="py-16 px-6 bg-[#f5f5f7] text-[#333]">
-            <div className="max-w-[1440px] mx-auto grid md:grid-cols-4 gap-10">
-                <div className="col-span-1 md:col-span-2">
-                    <h3 className="text-[17px] font-semibold text-[#1d1d1f] mb-2">EPI&apos;AI</h3>
-                    <p className="text-[#333] text-[12px] font-normal max-w-sm leading-relaxed">
+        <footer className="bg-navy px-6 text-[#e8edf8]">
+            <div className="max-w-[1280px] mx-auto pt-16 pb-10 grid gap-12 md:grid-cols-12">
+                <div className="md:col-span-5">
+                    <BrandWordmark size="lg" />
+                    <p className="mt-5 text-[16px] leading-relaxed text-[#e8edf8] max-w-sm">
+                        {t('tagline')}
+                    </p>
+                    <p className="mt-2 text-[14px] leading-relaxed text-[#aab5cf] max-w-sm">
                         {t('description')}
                     </p>
-                    <div className="mt-6 text-[#7a7a7a] text-[12px]">
-                        &copy; {currentYear} EPI&apos;AI. {t('rights')}
-                    </div>
                 </div>
 
-                <div className="flex flex-col gap-3">
-                    <h4 className="text-[#1d1d1f] font-semibold text-[14px] mb-2">{t('navigation')}</h4>
-                    <a href="#home" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('home')}</a>
-                    <a href="#team" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('team')}</a>
-                    <a href="#projects" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('projects')}</a>
-                    <a href="#events" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('events')}</a>
-                    <Link href="/blog" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('blog')}</Link>
-                    <Link href="/partners" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('partners')}</Link>
-                    <Link href="/calendar" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('calendar')}</Link>
-                    <Link href="/join" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('join')}</Link>
-                </div>
+                <nav className="md:col-span-4" aria-label={t('navigation')}>
+                    <h4 className="text-[14px] font-semibold text-white mb-3">{t('navigation')}</h4>
+                    <ul className="grid grid-cols-2 gap-x-6">
+                        <li><Link href="/" className={navLink}>{t('home')}</Link></li>
+                        <li><Link href="/#team" className={navLink}>{t('team')}</Link></li>
+                        <li><Link href="/#projects" className={navLink}>{t('projects')}</Link></li>
+                        <li><Link href="/#events" className={navLink}>{t('events')}</Link></li>
+                        <li><Link href="/blog" className={navLink}>{t('blog')}</Link></li>
+                        <li><Link href="/partners" className={navLink}>{t('partners')}</Link></li>
+                        <li><Link href="/calendar" className={navLink}>{t('calendar')}</Link></li>
+                        <li><Link href="/join" className={navLink}>{t('join')}</Link></li>
+                        <li><Link href="/sign-in" className={navLink}>{t('member_space')}</Link></li>
+                    </ul>
+                </nav>
 
-                <div className="flex flex-col gap-4">
-                    <h4 className="text-[#1d1d1f] font-semibold text-[14px] mb-2">{t('follow')}</h4>
-                    <div className="flex flex-wrap gap-3">
+                <div className="md:col-span-3">
+                    <h4 className="text-[14px] font-semibold text-white mb-3">{t('follow')}</h4>
+                    <div className="flex flex-wrap gap-2">
                         {socials.map((social) => (
                             <a
                                 key={social.name}
                                 href={social.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-11 h-11 rounded-full bg-white border border-[#e0e0e0] flex items-center justify-center text-[#1d1d1f] hover:text-white hover:bg-[#0066cc] hover:border-[#0066cc] transition-colors"
+                                className="w-11 h-11 rounded-lg border border-white/15 flex items-center justify-center text-[#e8edf8] hover:bg-white/10 hover:text-white transition-colors duration-[160ms]"
                                 aria-label={social.name}
                             >
                                 {social.icon}
                             </a>
                         ))}
                     </div>
+                </div>
+            </div>
+            <div className="border-t border-white/10">
+                <div className="max-w-[1280px] mx-auto py-5 text-[13px] text-[#aab5cf]">
+                    &copy; {currentYear} Epi&apos;AI. {t('rights')}
                 </div>
             </div>
         </footer>

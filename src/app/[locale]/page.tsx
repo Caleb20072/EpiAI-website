@@ -24,10 +24,15 @@ export default async function Home() {
     getPublicEvents(6).catch(() => []),
   ]);
 
+  const nextEvent =
+    events
+      .filter((e) => !e.isPast)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] ?? null;
+
   return (
-    <div className="relative overflow-x-hidden scroll-smooth bg-white text-[#1d1d1f]">
+    <div className="relative overflow-x-hidden bg-paper text-primary">
       <main className="flex flex-col">
-        <HeroSection />
+        <HeroSection nextEvent={nextEvent} />
         <ProblemSection />
         <MissionSection />
         <ExpertiseSection />

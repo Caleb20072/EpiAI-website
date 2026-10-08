@@ -10,7 +10,7 @@ export default async function TeamPage() {
   const teamMembers = await getTeamMembersForDisplay().catch(() => []);
 
   return (
-    <div className="min-h-screen bg-white text-[#1d1d1f] overflow-x-hidden">
+    <div className="min-h-screen bg-card text-primary overflow-x-hidden">
       <main className="pt-20">
         <TeamSection initialMembers={teamMembers} locale={locale} />
       </main>

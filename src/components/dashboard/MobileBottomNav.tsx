@@ -27,7 +27,7 @@ const items: NavItem[] = [
   { href: '/resources', icon: FolderOpen, labelFr: 'Ressources', labelEn: 'Resources', seg: 'resources' },
   { href: '/forum', icon: MessageSquare, labelFr: 'Forum', labelEn: 'Forum', seg: 'forum' },
   { href: '/chat', icon: MessagesSquare, labelFr: 'Chat', labelEn: 'Chat', seg: 'chat' },
-  { href: '/events', icon: Calendar, labelFr: 'Events', labelEn: 'Events', seg: 'events' },
+  { href: '/events', icon: Calendar, labelFr: 'Événements', labelEn: 'Events', seg: 'events' },
 ];
 
 export default function MobileBottomNav() {
@@ -47,10 +47,10 @@ export default function MobileBottomNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-default pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-sm border-t border-default pb-[env(safe-area-inset-bottom)]"
       aria-label={locale === 'fr' ? 'Navigation principale' : 'Main navigation'}
     >
-      <ul className="flex items-center justify-around py-2">
+      <ul className="flex items-center justify-around">
         {items.map(({ href, icon: Icon, labelFr, labelEn, seg }) => {
           const active = pathname.includes(`/${seg}`);
           const badge = badgeFor(seg);
@@ -59,8 +59,10 @@ export default function MobileBottomNav() {
               <Link
                 href={`/${locale}${href}`}
                 className={cn(
-                  'relative flex flex-col items-center gap-0.5 px-2 py-2 text-xs font-medium min-w-[56px] min-h-[52px] justify-center',
-                  active ? 'text-brand-400' : badge > 0 ? 'text-secondary' : 'text-muted'
+                  'relative flex flex-col items-center gap-0.5 px-2 py-2 text-[11px] font-medium min-w-[56px] min-h-[52px] justify-center transition-colors duration-[160ms]',
+                  active
+                    ? 'text-brand-700 before:absolute before:top-0 before:inset-x-3 before:h-0.5 before:rounded-full before:bg-brand-600'
+                    : badge > 0 ? 'text-secondary' : 'text-muted'
                 )}
                 aria-current={active ? 'page' : undefined}
               >

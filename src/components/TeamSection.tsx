@@ -59,7 +59,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
         return (
-            <a href={url} target="_blank" rel="noopener noreferrer" className="text-[#7a7a7a] hover:text-[#0066cc] transition-colors p-1" aria-label={type}>
+            <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-muted hover:text-brand-700 hover:bg-card-muted transition-colors duration-[160ms]" aria-label={type}>
                 {type === 'linkedin' ? (
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
                 ) : (
@@ -70,19 +70,19 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     };
 
     const MemberCard = ({ member, large = false }: { member: ITeamMember; large?: boolean }) => (
-        <div className={`p-6 rounded-[18px] bg-white border border-[#e0e0e0] ${large ? 'max-w-sm mx-auto' : ''}`}>
-            <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-[#f5f5f7] flex items-center justify-center overflow-hidden relative`}>
+        <div className={`p-6 rounded-xl bg-card border border-default shadow-card text-center ${large ? 'w-full max-w-xs mx-auto' : ''}`}>
+            <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-brand-50 flex items-center justify-center overflow-hidden relative`}>
                 {member.photoUrl ? (
                     <Image src={member.photoUrl} alt={member.name} fill className="object-cover" sizes="96px" />
                 ) : (
-                    <span className="text-2xl font-semibold text-[#7a7a7a]">{member.name.charAt(0)}</span>
+                    <span className="text-2xl font-semibold text-brand-700">{member.name.charAt(0)}</span>
                 )}
             </div>
-            <div className="text-[14px] text-[#0066cc] mb-1">{member.role}</div>
-            <div className="text-[17px] font-semibold text-[#1d1d1f] mb-1">{member.name}</div>
-            {member.title && <div className="text-[14px] text-[#7a7a7a] mb-2">{member.title}</div>}
-            {member.description && <p className="text-[14px] text-[#333] mb-3">{member.description}</p>}
-            <div className="flex justify-center gap-4 border-t border-[#f0f0f0] pt-4">
+            <div className="text-[14px] font-medium text-brand-700 mb-1">{member.role}</div>
+            <div className="text-[18px] font-semibold text-primary mb-1">{member.name}</div>
+            {member.title && <div className="text-[14px] text-muted mb-2">{member.title}</div>}
+            {member.description && <p className="text-[14px] leading-relaxed text-secondary mb-3">{member.description}</p>}
+            <div className="flex justify-center gap-1 border-t border-subtle pt-3">
                 <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
                 <SocialLink type="github" url={member.socialLinks.github} />
             </div>
@@ -95,38 +95,38 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
         const mission = poleDef ? (locale === 'fr' ? poleDef.missionFr : poleDef.missionEn) : assigned[0]?.description;
 
         return (
-            <div className="p-4 rounded-[18px] bg-white border border-[#e0e0e0] text-left flex items-start gap-4">
+            <div className="p-4 rounded-xl bg-card border border-default shadow-card text-left flex items-start gap-4">
                 <div className="flex shrink-0">
                     {isVacant ? (
-                        <div className="w-14 h-14 rounded-xl bg-blue-900/40 border border-dashed border-white/20 flex items-center justify-center text-white/30 text-xs font-bold">
+                        <div className="w-14 h-14 rounded-lg bg-card-muted border border-dashed border-default flex items-center justify-center text-muted text-sm font-semibold">
                             ?
                         </div>
                     ) : (
                         assigned.map((m, idx) => (
-                            <div key={m.id} className={`w-14 h-14 rounded-xl bg-[#020617] border border-white/10 flex items-center justify-center overflow-hidden shadow-lg ring-2 ring-[#020617] relative ${idx > 0 ? '-ml-4 z-10' : 'z-20'}`}>
+                            <div key={m.id} className={`w-14 h-14 rounded-lg bg-brand-50 flex items-center justify-center overflow-hidden ring-2 ring-[var(--bg-card)] relative ${idx > 0 ? '-ml-4 z-10' : 'z-20'}`}>
                                 {m.photoUrl ? (
                                     <Image src={m.photoUrl} alt={m.name} fill className="object-cover" sizes="56px" />
                                 ) : (
-                                    <span className="text-lg font-bold text-white/40">{m.name.charAt(0)}</span>
+                                    <span className="text-lg font-semibold text-brand-700">{m.name.charAt(0)}</span>
                                 )}
                             </div>
                         ))
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <h4 className="text-[17px] font-semibold mb-0.5 text-[#1d1d1f] leading-tight">{name}</h4>
-                    <div className="text-[12px] text-[#7a7a7a] mb-0.5">
+                    <h4 className="text-[16px] font-semibold mb-0.5 text-primary leading-tight">{name}</h4>
+                    <div className="text-[13px] text-muted mb-0.5">
                         {isVacant
                             ? (locale === 'fr' ? 'Responsable à nommer' : 'Lead to be assigned')
                             : assigned.length > 1 ? 'Co-Leads' : (assigned[0]?.title || 'Lead')}
                     </div>
                     {!isVacant && (
-                        <div className="text-[#1d1d1f] text-[14px] mb-1 truncate">
+                        <div className="text-primary text-[14px] font-medium mb-1 truncate">
                             {assigned.map(m => m.name).join(' & ')}
                         </div>
                     )}
                     {mission && (
-                        <p className="text-[14px] text-[#333] mb-2 leading-snug">{mission}</p>
+                        <p className="text-[14px] text-secondary leading-snug">{mission}</p>
                     )}
                 </div>
             </div>
@@ -148,16 +148,16 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
 
     if (loading) {
         return (
-            <section id="team" className="py-20 px-4 min-h-[400px] flex items-center justify-center">
-                <div className="animate-spin w-10 h-10 border-2 border-white/20 border-t-blue-400 rounded-full" />
+            <section id="team" className="bg-card py-20 px-4 min-h-[400px] flex items-center justify-center">
+                <div className="animate-spin w-10 h-10 border-2 border-default border-t-brand-600 rounded-full" />
             </section>
         );
     }
 
     if (members.length === 0) {
         return (
-            <section id="team" className="py-20 px-4 text-center">
-                <p className="text-white/40">
+            <section id="team" className="bg-card py-20 px-4 text-center">
+                <p className="text-muted">
                     {locale === 'fr' ? 'Aucun membre de l\'équipe à afficher.' : 'No team members to display.'}
                 </p>
             </section>
@@ -165,19 +165,19 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     }
 
     return (
-            <section id="team" className="tile-canvas py-20 px-6">
+            <section id="team" className="scroll-mt-16 bg-card border-t border-default py-20 lg:py-24 px-6">
 
-            <div className="max-w-6xl mx-auto w-full text-center z-10">
-                <h2 className="text-[40px] font-semibold mb-12 text-[#1d1d1f]">
+            <div className="max-w-[1280px] mx-auto w-full">
+                <h2 className="section-title mb-12 text-primary">
                     {locale === 'fr' ? 'Notre Équipe' : 'Our Team'}
                 </h2>
 
                 {referents.length > 0 && (
                     <div className="mb-16">
-                        <h3 className="text-[21px] font-semibold mb-8 text-[#1d1d1f] pb-3 inline-block">
+                        <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
                             {locale === 'fr' ? 'Notre Référent' : 'Our Referent'}
                         </h3>
-                        <div className="flex justify-center">
+                        <div className="flex justify-start">
                             {referents.map(m => <MemberCard key={m.id} member={m} large />)}
                         </div>
                     </div>
@@ -185,30 +185,30 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
 
                 {executives.length > 0 && (
                     <div className="mb-16">
-                        <h3 className="text-[21px] font-semibold mb-8 text-[#1d1d1f] pb-3 inline-block">
+                        <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
                             {locale === 'fr' ? 'Bureau Exécutif' : 'Executive Board'}
                         </h3>
-                        <div className="flex flex-col md:flex-row justify-center gap-6">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {executives.map(m => <MemberCard key={m.id} member={m} large />)}
                         </div>
                     </div>
                 )}
 
                 <div className="mb-16">
-                    <h3 className="text-[21px] font-semibold mb-4 text-[#1d1d1f] pb-3 inline-block">
+                    <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
                         {locale === 'fr' ? 'Pôles Techniques' : 'Technical Poles'}
                     </h3>
-                    <div className="mb-8 hidden md:block max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 opacity-80">
+                    <div className="mb-8 hidden md:block max-w-3xl rounded-xl overflow-hidden border border-default bg-white">
                         <Image src="/assets/team/charts/poles-tech.png" alt="" width={1024} height={579} className="w-full h-auto" />
                     </div>
                     {renderPoleGrid(techPoles)}
                 </div>
 
                 <div className="mb-16">
-                    <h3 className="text-[21px] font-semibold mb-4 text-[#1d1d1f] pb-3 inline-block">
+                    <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
                         {locale === 'fr' ? 'Pôles Non-Techniques' : 'Non-Technical Poles'}
                     </h3>
-                    <div className="mb-8 hidden md:block max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 opacity-80">
+                    <div className="mb-8 hidden md:block max-w-3xl rounded-xl overflow-hidden border border-default bg-white">
                         <Image src="/assets/team/charts/poles-non-tech.png" alt="" width={1024} height={579} className="w-full h-auto" />
                     </div>
                     {renderPoleGrid(nonTechPoles)}
@@ -216,22 +216,22 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
 
                 {mentors.length > 0 && (
                     <div>
-                        <h3 className="text-[21px] font-semibold mb-8 text-[#1d1d1f] pb-3 inline-block">
+                        <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
                             {locale === 'fr' ? 'Nos Mentors' : 'Our Mentors'}
                         </h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                             {mentors.map(mentor => (
-                                <div key={mentor.id} className="p-4 rounded-[18px] bg-white border border-[#e0e0e0] flex flex-col items-center text-center gap-2">
-                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 relative">
+                                <div key={mentor.id} className="p-4 rounded-xl bg-card border border-default shadow-card flex flex-col items-center text-center gap-2">
+                                    <div className="w-16 h-16 rounded-full overflow-hidden bg-brand-50 relative">
                                         {mentor.photoUrl ? (
                                             <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover" sizes="64px" />
                                         ) : (
-                                            <span className="flex items-center justify-center w-full h-full text-white/40 font-bold">{mentor.name.charAt(0)}</span>
+                                            <span className="flex items-center justify-center w-full h-full text-brand-700 font-semibold">{mentor.name.charAt(0)}</span>
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-[#1d1d1f] text-[14px] font-semibold leading-tight">{mentor.name}</p>
-                                        {mentor.title && <p className="text-[12px] text-[#0066cc] mt-1">{mentor.title}</p>}
+                                        <p className="text-primary text-[14px] font-semibold leading-tight">{mentor.name}</p>
+                                        {mentor.title && <p className="text-[12px] text-brand-700 mt-1">{mentor.title}</p>}
                                     </div>
                                 </div>
                             ))}

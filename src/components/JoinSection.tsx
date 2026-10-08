@@ -6,18 +6,27 @@ export default function JoinSection() {
     const tJoin = useTranslations('Join');
 
     return (
-        <section className="tile-black py-24 px-6">
-            <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-[40px] font-semibold text-white mb-4 leading-[1.1]">{tJoin('cta_text')}</h2>
-                <p className="text-[21px] text-white/80 mb-8 font-normal leading-[1.19]">
-                    {t('tagline')}
-                </p>
-                <Link
-                    href="/join"
-                    className="inline-flex items-center justify-center min-h-12 px-7 rounded-full bg-[#0066cc] text-white text-[18px] font-light active:scale-95 transition-transform"
-                >
-                    {t('join_btn')}
-                </Link>
+        <section className="bg-brand-600 px-6 py-20 text-white dark:bg-[#1b4db0]">
+            <div className="mx-auto flex max-w-[1280px] flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+                <div className="max-w-2xl">
+                    <h2 className="section-title text-white">{tJoin('cta_text')}</h2>
+                    <p className="mt-4 text-[18px] leading-[1.6] text-white">{t('join_text')}</p>
+                    <p className="mt-2 text-[16px] text-[#dce8fd]">{t('tagline')}</p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                    <Link
+                        href="/join"
+                        className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-[17px] font-medium text-[#1b4db0] transition-[background-color,transform] duration-[180ms] hover:bg-[#eef4fe] active:scale-[0.98]"
+                    >
+                        {t('join_btn')}
+                    </Link>
+                    <Link
+                        href="/calendar"
+                        className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/40 px-6 text-[17px] font-medium text-white transition-colors duration-[180ms] hover:bg-white/10"
+                    >
+                        {t('see_calendar')}
+                    </Link>
+                </div>
             </div>
         </section>
     );

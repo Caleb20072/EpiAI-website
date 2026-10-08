@@ -29,11 +29,11 @@ export function EventCoverImage({
     return (
       <div
         className={cn(
-          'relative flex items-center justify-center bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-zinc-900',
+          'relative flex items-center justify-center bg-brand-50',
           className
         )}
       >
-        {fallback ?? <Calendar className="w-12 h-12 text-muted" aria-hidden />}
+        {fallback ?? <Calendar className="w-10 h-10 text-brand-400" aria-hidden />}
       </div>
     );
   }

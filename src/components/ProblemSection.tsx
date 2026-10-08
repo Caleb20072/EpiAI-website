@@ -4,13 +4,13 @@ export default function ProblemSection() {
     const t = useTranslations('About');
 
     return (
-        <section id="about" className="tile-parchment py-20 px-6">
-            <div className="max-w-3xl mx-auto text-center">
-                <p className="text-[14px] text-[#0066cc] mb-3">{t('eyebrow')}</p>
-                <h2 className="text-[34px] md:text-[40px] font-semibold leading-[1.1] mb-6 text-[#1d1d1f]">
-                    {t('motivation_title')}
-                </h2>
-                <p className="text-[17px] text-[#333] leading-[1.47]">
+        <section id="about" className="scroll-mt-16 border-t border-default bg-card px-6 py-20 lg:py-24">
+            <div className="mx-auto grid max-w-[1280px] gap-8 lg:grid-cols-12 lg:gap-16">
+                <div className="lg:col-span-5">
+                    <p className="kicker">{t('eyebrow')}</p>
+                    <h2 className="section-title mt-3 text-primary">{t('motivation_title')}</h2>
+                </div>
+                <p className="text-[19px] leading-[1.6] text-secondary lg:col-span-7 lg:pt-9 sm:text-[21px]">
                     {t('motivation_text')}
                 </p>
             </div>

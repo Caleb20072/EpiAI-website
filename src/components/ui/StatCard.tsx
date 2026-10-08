@@ -18,7 +18,7 @@ export function StatCard({
   value,
   icon: Icon,
   iconClassName = 'text-brand-600',
-  iconBgClassName = 'bg-brand-500/10',
+  iconBgClassName = 'bg-brand-50',
   loading,
   className,
   trend,
@@ -26,7 +26,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-3 p-6 rounded-[18px] bg-card border border-default',
+        'flex items-center justify-between gap-3 px-5 py-4 rounded-xl bg-card border border-default shadow-card',
         className
       )}
     >
@@ -38,10 +38,10 @@ export function StatCard({
           </div>
         ) : (
           <>
-            <p className="text-[14px] font-normal text-muted truncate">
+            <p className="text-[13px] font-medium text-muted truncate">
               {label}
             </p>
-            <p className="text-[28px] font-semibold text-primary tabular-nums leading-none mt-1">
+            <p className="text-[26px] font-semibold text-primary tabular-nums leading-none mt-1.5 tracking-[-0.02em]">
               {value}
             </p>
             {trend ? <p className="text-xs text-muted mt-0.5">{trend}</p> : null}
@@ -65,9 +65,9 @@ interface BadgeProps {
 
 const badgeVariants = {
   default: 'bg-card-muted text-secondary border-default',
-  brand: 'bg-brand-500/10 text-brand-800 border-brand-500/25 dark:text-brand-300',
+  brand: 'bg-brand-50 text-brand-800 border-brand-200',
   amber: 'bg-amber-500/10 text-amber-800 border-amber-500/25 dark:text-amber-300',
-  success: 'bg-brand-500/10 text-brand-800 border-brand-500/25 dark:text-brand-300',
+  success: 'bg-emerald-500/10 text-emerald-800 border-emerald-500/25 dark:text-emerald-300',
   danger: 'bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-400',
   muted: 'bg-card-muted text-muted border-subtle',
 };
@@ -76,7 +76,7 @@ export function Badge({ children, variant = 'default', className }: BadgeProps) 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-normal border',
+        'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[12px] font-medium border',
         badgeVariants[variant],
         className
       )}
@@ -99,12 +99,12 @@ export function ActionCard({ href, icon: Icon, label, iconClassName, className }
     <a
       href={href}
       className={cn(
-        'block p-6 rounded-[18px] border border-default bg-card',
-        'hover:bg-card-muted transition-colors text-left active:scale-[0.98]',
+        'block p-5 rounded-xl border border-default bg-card shadow-card',
+        'hover:border-brand-300 transition-[border-color,transform] duration-[180ms] text-left active:scale-[0.98]',
         className
       )}
     >
-      <Icon className={cn('w-4 h-4 text-brand-600 mb-2', iconClassName)} />
+      <Icon className={cn('w-4 h-4 text-brand-700 mb-2', iconClassName)} />
       <p className="text-primary font-medium text-sm">{label}</p>
     </a>
   );

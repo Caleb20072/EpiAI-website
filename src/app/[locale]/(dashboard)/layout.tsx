@@ -7,7 +7,7 @@ import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { useRouter, usePathname } from 'next/navigation'; // Changed from '@/i18n/routing'
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandWordmark } from '@/components/BrandLogo';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl'; // Added
 import {
@@ -234,7 +234,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-overlay z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -242,23 +242,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            'fixed top-0 left-0 z-50 h-full w-64 bg-surface border-r border-default shadow-sm transform transition-transform duration-300 lg:translate-x-0',
+            'fixed top-0 left-0 z-50 h-full w-64 bg-surface border-r border-default transform transition-transform duration-300 lg:translate-x-0',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
           <div className="flex flex-col h-full">
-            <div className="px-4 py-4 border-b border-subtle">
+            <div className="px-4 h-[60px] flex items-center border-b border-subtle">
               <Link
                 href={dashboardHref}
                 onClick={handleLogoClick}
-                className="flex items-center gap-2.5"
+                className="flex items-center gap-3 rounded-md"
                 aria-label={locale === 'fr' ? 'Tableau de bord EPI\'AI' : 'EPI\'AI dashboard'}
               >
-                <BrandLogo size="md" />
-                <div>
-                  <span className="text-primary font-semibold text-base tracking-tight">EPI&apos;AI</span>
-                  <p className="text-muted text-[12px] font-normal">Espace membre</p>
-                </div>
+                <BrandWordmark size="sm" />
+                <span className="text-muted text-[13px] font-medium">{t('memberSpace')}</span>
               </Link>
             </div>
 
@@ -274,7 +271,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       item.active ? 'nav-item-active' : 'nav-item-inactive'
                     )}
                   >
-                    <Icon className="w-4 h-4 shrink-0 opacity-80" />
+                    <Icon className="w-4 h-4 shrink-0" />
                     <span className="flex-1 truncate">{item.label}</span>
                     {'badge' in item && typeof item.badge === 'number' && item.badge > 0 ? (
                       <UnreadBadge count={item.badge} />
@@ -301,7 +298,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                           item.active ? 'nav-item-admin-active' : 'nav-item-inactive'
                         )}
                       >
-                        <Icon className="w-4 h-4 shrink-0 opacity-80" />
+                        <Icon className="w-4 h-4 shrink-0" />
                         <span className="flex-1 truncate">{item.label}</span>
                         {'badge' in item && typeof item.badge === 'number' && item.badge > 0 ? (
                           <UnreadBadge count={item.badge} />
@@ -314,7 +311,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <div className="px-1 pt-3">
                       <a
                         href={`/${locale}/admin/projects/new`}
-                        className="flex items-center justify-center gap-2 w-full min-h-11 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-white text-[14px] font-normal transition-transform active:scale-95 no-underline"
+                        className="flex items-center justify-center gap-2 w-full min-h-10 rounded-lg bg-brand-600 hover:bg-brand-700 dark:hover:bg-brand-500 text-white text-[14px] font-medium transition-[background-color,transform] duration-[180ms] active:scale-[0.98] no-underline"
                       >
                         <Plus className="w-4 h-4" />
                         <span>{t('newProject')}</span>
@@ -325,7 +322,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </nav>
 
-            <div className="p-3 border-t border-subtle bg-card-muted/30">
+            <div className="p-3 border-t border-subtle">
               <div className="flex items-center gap-2.5 mb-3 px-1">
                 <UserButton
                   {...userButtonProps(locale)}
@@ -347,14 +344,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="space-y-1.5">
                 <Link
                   href={`/${locale}`}
-                  className="flex items-center justify-center gap-2 w-full py-2 rounded-lg border border-default bg-card text-secondary hover:text-primary hover:bg-card-muted transition-colors text-xs font-medium"
+                  className="flex items-center justify-center gap-2 w-full min-h-9 rounded-lg border border-default bg-card text-secondary hover:text-primary hover:bg-card-muted transition-colors duration-[160ms] text-[13px] font-medium"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   {t('backHome')}
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center justify-center gap-2 w-full py-2 rounded-lg text-muted hover:text-primary hover:bg-card transition-colors text-xs font-medium"
+                  className="flex items-center justify-center gap-2 w-full min-h-9 rounded-lg text-muted hover:text-primary hover:bg-card-muted transition-colors duration-[160ms] text-[13px] font-medium"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   {t('signOut')}
@@ -365,16 +362,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         <div className="lg:pl-64 min-h-screen flex flex-col">
-          <header className="sticky top-0 z-30 hidden lg:flex items-center justify-end gap-2 px-6 h-[52px] border-b border-subtle bg-surface">
+          <header className="sticky top-0 z-30 hidden lg:flex items-center justify-end gap-1 px-6 h-[60px] border-b border-subtle bg-surface/95 backdrop-blur-sm">
             <GlobalSearch />
             <NotificationBell />
             <ThemeToggle />
           </header>
 
-          <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-11 bg-surface border-b border-subtle lg:hidden">
+          <header className="sticky top-0 z-30 flex items-center justify-between px-3 h-14 bg-surface border-b border-subtle lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 -ml-1 text-secondary hover:text-primary rounded-lg"
+              className="inline-flex items-center justify-center w-11 h-11 text-secondary hover:text-primary hover:bg-card-muted rounded-lg"
+              aria-label={locale === 'fr' ? 'Ouvrir le menu' : 'Open menu'}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -384,7 +382,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               className="flex items-center"
               aria-label={locale === 'fr' ? 'Tableau de bord' : 'Dashboard'}
             >
-              <BrandLogo size="sm" />
+              <BrandWordmark size="sm" />
             </Link>
             <div className="flex items-center gap-1">
               <GlobalSearch />

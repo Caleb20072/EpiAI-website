@@ -1,82 +1,104 @@
 @import "tailwindcss";
 
-/* Apple-derived system (getdesign.md/apple). One accent, parchment canvas,
-   hairline borders, no chrome shadows. Dark tiles live under html.dark. */
+/* Epi'AI system. Warm paper, ink text, one blue sampled from the logo
+   (#3479F0) plus its navy (#0D1B4A). Darker blue steps carry text and
+   filled buttons so white-on-blue and blue-on-paper stay above 4.5:1. */
 
 :root {
-  --background: #f5f5f7;
-  --foreground: #1d1d1f;
+  --background: #f6f4ef;
+  --foreground: #14171f;
 
-  --bg-page: #f5f5f7;
+  --bg-page: #f6f4ef;
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-muted: #fafafc;
+  --bg-card-muted: #efece5;
   --bg-input: #ffffff;
-  --bg-overlay: rgba(0, 0, 0, 0.4);
+  --bg-overlay: rgba(13, 27, 74, 0.45);
 
-  --text-primary: #1d1d1f;
-  --text-secondary: #333333;
-  --text-muted: #7a7a7a;
+  --text-primary: #14171f;
+  --text-secondary: #3d4350;
+  --text-muted: #5c6270;
 
-  --border-default: #e0e0e0;
-  --border-subtle: #f0f0f0;
+  --border-default: #e2ddd3;
+  --border-subtle: #ece8e0;
 
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-card: none;
-  --shadow-inset: none;
-  --shadow-product: 3px 5px 30px rgba(0, 0, 0, 0.22);
+  --shadow-sm: 0 1px 2px rgba(20, 23, 31, 0.05);
+  --shadow-md: 0 1px 2px rgba(20, 23, 31, 0.04), 0 6px 16px -6px rgba(13, 27, 74, 0.10);
+  --shadow-card: 0 1px 2px rgba(20, 23, 31, 0.05);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --shadow-product: 0 12px 32px -12px rgba(13, 27, 74, 0.25);
 
-  --brand-50: #e8f2ff;
-  --brand-100: #cce4ff;
-  --brand-200: #99c9ff;
-  --brand-300: #66adff;
-  --brand-400: #0071e3;
-  --brand-500: #0071e3;
-  --brand-600: #0066cc;
-  --brand-700: #004c99;
-  --brand-800: #003366;
-  --brand-900: #001a33;
+  --brand-50: #eef4fe;
+  --brand-100: #dce8fd;
+  --brand-200: #b6cefa;
+  --brand-300: #86aef6;
+  --brand-400: #5a92f3;
+  --brand-500: #3479f0;
+  --brand-600: #2361d6;
+  --brand-700: #1b4db0;
+  --brand-800: #173e88;
+  --brand-900: #0d1b4a;
 
   --surface: #ffffff;
   --surface-elevated: #ffffff;
   --surface-card: #ffffff;
 
+  --paper: #f6f4ef;
+  --ink: #14171f;
+  --navy: #0d1b4a;
+  --logo-blue: #3479f0;
+  --on-navy: #e8edf8;
+  --on-navy-muted: #aab5cf;
+
   --canvas: #ffffff;
-  --canvas-parchment: #f5f5f7;
-  --ink: #1d1d1f;
-  --tile-dark: #272729;
+  --canvas-parchment: #f6f4ef;
+  --tile-dark: #0d1b4a;
 }
 
 html.dark {
-  --background: #000000;
-  --foreground: #ffffff;
+  color-scheme: dark;
+  --background: #0a1022;
+  --foreground: #edf0f5;
 
-  --bg-page: #000000;
-  --bg-surface: #1d1d1f;
-  --bg-card: #272729;
-  --bg-card-muted: #2a2a2c;
-  --bg-input: #1d1d1f;
+  --bg-page: #0a1022;
+  --bg-surface: #0f172b;
+  --bg-card: #131c33;
+  --bg-card-muted: #19233d;
+  --bg-input: #0f172b;
   --bg-overlay: rgba(0, 0, 0, 0.6);
 
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --text-muted: #86868b;
+  --text-primary: #edf0f5;
+  --text-secondary: #c3c9d6;
+  --text-muted: #939cb0;
 
-  --border-default: rgba(255, 255, 255, 0.12);
+  --border-default: rgba(255, 255, 255, 0.10);
   --border-subtle: rgba(255, 255, 255, 0.06);
 
-  --brand-400: #2997ff;
-  --brand-500: #2997ff;
-  --brand-600: #2997ff;
-  --brand-700: #66adff;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-inset: none;
 
-  --surface: #1d1d1f;
-  --surface-elevated: #272729;
-  --surface-card: #2a2a2c;
+  --brand-50: #0f1f45;
+  --brand-100: #142858;
+  --brand-200: #1d3a7a;
+  --brand-300: #a9c4f8;
+  --brand-400: #86aef6;
+  --brand-500: #5a92f3;
+  --brand-600: #3479f0;
+  --brand-700: #86aef6;
+  --brand-800: #b6cefa;
+  --brand-900: #dce8fd;
 
-  --canvas: #000000;
-  --ink: #ffffff;
+  --surface: #0f172b;
+  --surface-elevated: #131c33;
+  --surface-card: #131c33;
+
+  --paper: #0a1022;
+  --ink: #edf0f5;
+  --navy: #0d1b4a;
+
+  --canvas: #0a1022;
 }
 
 html.light {
@@ -113,31 +135,41 @@ html.dark .text-amber-400 {
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-card: var(--surface-card);
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-logo: var(--logo-blue);
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-display: var(--font-serif), Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
-  font-size: 17px;
-  line-height: 1.47;
-  letter-spacing: -0.022em;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
-img, video, canvas, svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
+::selection {
+  background: color-mix(in srgb, var(--brand-500) 25%, transparent);
 }
 
+:focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 2px;
+}
+
+/* Image sizing comes from Tailwind preflight (base layer), so utilities such
+   as h-full and next/image `fill` inline styles still win. */
 iframe {
   width: 100%;
   max-width: 100%;
@@ -149,7 +181,7 @@ iframe {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
-  max-width: 1440px;
+  max-width: 1280px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -176,23 +208,30 @@ iframe {
   .border-default { border-color: var(--border-default); }
   .border-subtle { border-color: var(--border-subtle); }
 
-  .shadow-card { box-shadow: none; }
-  .shadow-elevated { box-shadow: none; }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-elevated { box-shadow: var(--shadow-md); }
+
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: 0.625rem;
-    padding: 0.5rem 0.75rem;
+    min-height: 2.25rem;
+    padding: 0.4375rem 0.75rem;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 400;
-    letter-spacing: -0.016em;
+    font-weight: 500;
     transition: color 160ms ease, background-color 160ms ease;
   }
   .nav-item-active {
-    background-color: color-mix(in srgb, var(--brand-600) 10%, transparent);
-    color: var(--brand-600);
+    background-color: var(--brand-50);
+    color: var(--brand-700);
+    box-shadow: inset 2px 0 0 var(--brand-600);
   }
   .nav-item-inactive {
     color: var(--text-secondary);
@@ -204,28 +243,39 @@ iframe {
   .nav-item-admin-active {
     background-color: var(--bg-card-muted);
     color: var(--text-primary);
+    box-shadow: inset 2px 0 0 var(--text-primary);
   }
 
   .surface-card {
     background-color: var(--bg-card);
     border: 1px solid var(--border-default);
-    border-radius: 18px;
-    box-shadow: none;
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
   }
 
   .glass-panel {
     background-color: var(--bg-card);
     border: 1px solid var(--border-default);
     backdrop-filter: none;
-    box-shadow: none;
+    box-shadow: var(--shadow-card);
   }
 
   .btn-brand {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-[17px] font-normal text-white transition-transform hover:bg-brand-500 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-h-11;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-[16px] font-medium text-white transition-[background-color,transform] duration-[180ms] hover:bg-brand-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed min-h-11;
   }
+  html.dark .btn-brand:hover { background-color: var(--brand-500); }
 
   .btn-brand-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-default bg-transparent px-5 py-2.5 text-[17px] font-normal text-brand-600 transition-transform active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-default bg-card px-5 py-2.5 text-[16px] font-medium text-primary transition-[background-color,transform] duration-[180ms] hover:bg-card-muted active:scale-[0.98] min-h-11;
+  }
+
+  /* The one pill: main call to action on public pages. */
+  .btn-cta {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-7 text-[17px] font-medium text-white transition-[background-color,transform] duration-[180ms] hover:bg-brand-700 active:scale-[0.98] min-h-12;
+  }
+
+  .link-quiet {
+    @apply inline-flex items-center gap-2 text-brand-700 font-medium underline decoration-brand-300 underline-offset-4 transition-colors duration-[160ms] hover:decoration-brand-700;
   }
 
   .focus-ring {
@@ -237,33 +287,47 @@ iframe {
   }
 
   .tile-parchment {
-    background: #f5f5f7;
-    color: #1d1d1f;
+    background: var(--paper);
+    color: var(--text-primary);
   }
   .tile-canvas {
-    background: #ffffff;
-    color: #1d1d1f;
+    background: var(--bg-card);
+    color: var(--text-primary);
   }
-  .tile-dark {
-    background: #272729;
-    color: #ffffff;
-  }
+  .tile-dark,
   .tile-black {
-    background: #000000;
-    color: #ffffff;
+    background: var(--navy);
+    color: var(--on-navy);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 2.2vw + 18px, 44px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
   }
 
   .display {
-    font-size: clamp(34px, 4vw, 56px);
+    font-family: var(--font-display);
+    font-size: clamp(38px, 3.6vw + 18px, 64px);
     font-weight: 600;
-    line-height: 1.07;
+    line-height: 1.04;
     letter-spacing: -0.02em;
+  }
+
+  .kicker {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--brand-700);
   }
 }
 
 @layer utilities {
   .text-glow { text-shadow: none; }
-  .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none; }
+  .shadow-sm { box-shadow: var(--shadow-sm); }
+  .shadow-md, .shadow-lg { box-shadow: var(--shadow-md); }
+  .shadow-xl, .shadow-2xl { box-shadow: var(--shadow-md); }
   .product-shadow { box-shadow: var(--shadow-product); }
 }
 
@@ -274,18 +338,23 @@ iframe {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 1px;
-  background: #0066cc;
-  transition: width 0.2s ease;
+  height: 2px;
+  background: var(--brand-600);
+  transition: width 0.18s ease;
 }
 .nav-link-underline:hover::after,
 .nav-link-underline.active::after { width: 100%; }
 
-/* Public pages that were built as dark glass sit on parchment.
+/* Public pages that were built as dark glass sit on paper.
    Overrides only the washed-out white copy and frosted panels. */
 .paper-page {
-  background: #f5f5f7;
-  color: #1d1d1f;
+  background: var(--paper);
+  color: var(--text-primary);
+}
+.paper-page h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 .paper-page .text-white,
 .paper-page .text-gray-200,
@@ -293,28 +362,64 @@ iframe {
 .paper-page .text-zinc-100,
 .paper-page .text-zinc-200,
 .paper-page .text-zinc-300 {
-  color: #1d1d1f;
+  color: var(--text-primary);
+}
+.paper-page .uppercase {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.paper-page .font-bold,
+.paper-page .font-black,
+.paper-page .font-extrabold {
+  font-weight: 600;
+}
+.paper-page .font-light {
+  font-weight: 400;
+}
+.paper-page [class*="bg-brand-"].text-white,
+.paper-page [class*="bg-red-"].text-white {
+  color: #ffffff;
 }
 .paper-page .text-gray-400,
 .paper-page .text-gray-500,
 .paper-page .text-white\/40,
 .paper-page .text-white\/50,
 .paper-page .text-white\/60,
+.paper-page .text-white\/70,
 .paper-page .text-white\/80 {
-  color: #7a7a7a;
+  color: var(--text-muted);
+}
+.paper-page .placeholder\:text-gray-600::placeholder {
+  color: var(--text-muted);
 }
 .paper-page .text-brand-300,
-.paper-page .text-brand-400 {
-  color: #0066cc;
+.paper-page .text-brand-400,
+.paper-page .text-blue-300,
+.paper-page .text-blue-400 {
+  color: var(--brand-700);
 }
 .paper-page .glass-panel,
 .paper-page .bg-white\/5,
+.paper-page .bg-white\/10,
+.paper-page .bg-black\/40,
 .paper-page .bg-white\/\[0\.03\],
 .paper-page .bg-white\/\[0\.05\] {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   backdrop-filter: none;
 }
+.paper-page .glass-panel {
+  border-radius: 12px;
+}
+.paper-page .border-white\/5,
 .paper-page .border-white\/10,
+.paper-page .border-white\/20,
 .paper-page .border-white\/\[0\.08\] {
-  border-color: #e0e0e0;
+  border-color: var(--border-default);
+}
+.paper-page input.bg-white\/5,
+.paper-page textarea.bg-white\/5,
+.paper-page select.bg-white\/5 {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border-radius: 10px;
 }

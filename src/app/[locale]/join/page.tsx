@@ -271,7 +271,7 @@ export default function JoinPage() {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-full min-h-12 rounded-full bg-[#0066cc] text-white font-light text-[18px] active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full min-h-12 rounded-full bg-brand-600 text-white font-medium text-[17px] hover:bg-brand-700 active:scale-[0.98] transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {isLoading ? (
                                             <>

@@ -5,7 +5,32 @@
         "description": "A student association dedicated to strengthening the fundamental skills necessary to master artificial intelligence and data science.",
         "tagline": "Training rigorous minds to build the technologies of tomorrow.",
         "join_btn": "Join Us",
-        "projects_btn": "Discover Our Projects"
+        "projects_btn": "Discover Our Projects",
+        "hero_kicker": "Student association · Epitech Benin",
+        "hero_title": "Mathematics, AI and data, learned together.",
+        "domain_math_text": "Linear algebra, probability and optimisation: the ground every model stands on.",
+        "domain_ai_text": "Machine learning and deep learning, from the equations to working code.",
+        "domain_data_text": "Statistics, visualisation and real datasets, worked through in teams.",
+        "next_event": "Next event",
+        "no_upcoming": "No event scheduled right now.",
+        "see_calendar": "See the calendar",
+        "online": "Online",
+        "past": "Past",
+        "events_title": "Events",
+        "events_intro": "Talks, workshops and meetups run by Epi’AI members, open to every student.",
+        "no_events": "No public events yet.",
+        "view_calendar": "View the full calendar",
+        "projects_intro": "Projects built by our student teams, from first prototype to live tool.",
+        "no_projects": "No projects published yet.",
+        "impact_item_master": "Stronger applications to selective AI Master’s programmes",
+        "impact_item_science": "A visible scientific culture inside the school",
+        "impact_item_growth": "Students who teach each other and grow together",
+        "math_topics": "Linear algebra;Probability and statistics;Optimisation",
+        "ai_topics": "Machine learning;Deep learning;Language models",
+        "data_topics": "Exploratory analysis;Visualisation;Data pipelines",
+        "join_text": "Membership is open to every Epitech Benin student who wants to work seriously on maths, AI and data.",
+        "coming_soon": "Content coming soon.",
+        "domains_heading": "Three subjects, studied in depth"
     },
     "Header": {
         "about": "About",
@@ -17,7 +42,10 @@
         "events": "Events",
         "join": "Join the Association",
         "sign_in": "Sign in",
-        "language": "Language"
+        "language": "Language",
+        "menu_open": "Open menu",
+        "menu_close": "Close menu",
+        "home_label": "Epi’AI home"
     },
     "Footer": {
         "description": "The leading student association for Artificial Intelligence and Data Science within the Epitech network.",
@@ -31,7 +59,9 @@
         "partners": "Partners",
         "calendar": "Calendar",
         "events": "Events",
-        "follow": "Follow us"
+        "follow": "Follow us",
+        "member_space": "Member space",
+        "tagline": "Mathematics, artificial intelligence and data science at Epitech Benin."
     },
     "About": {
         "title": "Our Mission & Vision",
@@ -181,7 +211,8 @@
         "modules": "Modules",
         "fees": "Fees",
         "signIn": "Sign In",
-        "signInRequired": "Sign In Required"
+        "signInRequired": "Sign In Required",
+        "memberSpace": "Member space"
     },
     "Join": {
         "title": "Joining Epi'AI Association",
@@ -479,5 +510,9 @@
         "accountsCreated": "{count, plural, =1 {# account created} other {# accounts created}}",
         "failedAccounts": "Failed accounts:",
         "uploadMore": "Upload More"
+    },
+    "Theme": {
+        "to_light": "Switch to light theme",
+        "to_dark": "Switch to dark theme"
     }
 }
