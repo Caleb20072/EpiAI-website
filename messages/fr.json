@@ -41,7 +41,14 @@
         "approach_title": "Notre Approche",
         "approach_text": "Un apprentissage libre, collaboratif et motivant. Nous réunissons des profils investis et passionnés pour garantir un environnement sérieux et d'excellence.",
         "impact_title": "L'Impact",
-        "impact_text": "Valoriser l'initiative étudiante, renforcer l'image scientifique de l'école et préparer au mieux les dossiers de candidature en Master, notamment pour les parcours sélectifs en IA."
+        "impact_text": "Valoriser l'initiative étudiante, renforcer l'image scientifique de l'école et préparer au mieux les dossiers de candidature en Master, notamment pour les parcours sélectifs en IA.",
+        "eyebrow": "Le défi",
+        "domains_title": "Nos domaines",
+        "domain_math": "Mathématiques",
+        "domain_ai": "Intelligence artificielle",
+        "domain_data": "Data science",
+        "excellence_title": "Excellence",
+        "excellence_text": "Un cadre exigeant, où les étudiants maîtrisent les bases de l’IA et de la science des données."
     },
     "Team": {
         "title": "L'Équipe",

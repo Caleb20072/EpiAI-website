@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandWordmark } from '@/components/BrandLogo';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
@@ -45,7 +45,7 @@ export default function Header() {
         >
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 h-11 flex items-center justify-between">
                 <Link href="/" className="flex items-center shrink-0" aria-label="EPI'AI home">
-                    <BrandLogo size="lg" priority />
+                    <BrandWordmark priority />
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-6" aria-label="Main">

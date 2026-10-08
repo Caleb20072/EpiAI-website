@@ -10,7 +10,7 @@ export default function JoinSection() {
             <div className="max-w-3xl mx-auto text-center">
                 <h2 className="text-[40px] font-semibold text-white mb-4 leading-[1.1]">{tJoin('cta_text')}</h2>
                 <p className="text-[21px] text-white/80 mb-8 font-normal leading-[1.19]">
-                    Une communauté d’étudiants qui travaillent les bases de l’IA et de la science des données.
+                    {t('tagline')}
                 </p>
                 <Link
                     href="/join"

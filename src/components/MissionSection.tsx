@@ -19,9 +19,9 @@ export default function MissionSection() {
                         <p className="text-[17px] text-[#333] leading-[1.47]">{t('approach_text')}</p>
                     </div>
                     <div className="p-6 rounded-[18px] bg-white border border-[#e0e0e0]">
-                        <h3 className="text-[17px] font-semibold mb-2 text-[#1d1d1f]">Excellence</h3>
+                        <h3 className="text-[17px] font-semibold mb-2 text-[#1d1d1f]">{t('excellence_title')}</h3>
                         <p className="text-[17px] text-[#333] leading-[1.47]">
-                            Un cadre exigeant, où les étudiants maîtrisent les bases de l’IA et de la science des données.
+                            {t('excellence_text')}
                         </p>
                     </div>
                 </div>

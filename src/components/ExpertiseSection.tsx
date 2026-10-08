@@ -1,7 +1,10 @@
+import { useTranslations } from 'next-intl';
+
 export default function ExpertiseSection() {
+    const t = useTranslations('About');
     const pillars = [
         {
-            title: "Mathématiques",
+            title: t('domain_math'),
             svg: (
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 mb-4 text-[#0066cc]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 19l6-14 3.5 8.5L20 5" />
@@ -11,7 +14,7 @@ export default function ExpertiseSection() {
             )
         },
         {
-            title: "Intelligence Artificielle",
+            title: t('domain_ai'),
             svg: (
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 mb-4 text-[#0066cc]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
@@ -27,7 +30,7 @@ export default function ExpertiseSection() {
             )
         },
         {
-            title: "Data Science",
+            title: t('domain_data'),
             svg: (
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 mb-4 text-[#0066cc]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 20V10" />
@@ -42,7 +45,7 @@ export default function ExpertiseSection() {
         <section className="tile-dark py-20 px-6">
             <div className="max-w-5xl mx-auto">
                 <div className="text-center mb-12">
-                    <h2 className="text-[40px] font-semibold text-white">Nos domaines</h2>
+                    <h2 className="text-[40px] font-semibold text-white">{t('domains_title')}</h2>
                 </div>
 
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

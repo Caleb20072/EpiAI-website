@@ -16,6 +16,30 @@ interface BrandLogoProps {
   priority?: boolean;
 }
 
+/** Horizontal crop of the square wordmark, for the black public nav. */
+export function BrandWordmark({ priority = false }: { priority?: boolean }) {
+  return (
+    <span className="relative block h-8 w-[7.25rem] overflow-hidden rounded-[6px]">
+      <Image
+        src={BRAND_LOGO_SRC}
+        alt="Epi'AI"
+        width={512}
+        height={512}
+        priority={priority}
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: '9.5rem',
+          height: '9.5rem',
+          maxWidth: 'none',
+          transform: 'translate(-50%, -50%)',
+        }}
+      />
+    </span>
+  );
+}
+
 export function BrandLogo({ size = 'md', className, priority }: BrandLogoProps) {
   return (
     <div

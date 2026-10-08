@@ -41,7 +41,14 @@
         "approach_title": "Our Approach",
         "approach_text": "Free, collaborative, and motivating learning. We gather invested and passionate profiles to ensure a serious environment of excellence.",
         "impact_title": "The Impact",
-        "impact_text": "Enhancing student initiatives, strengthening the school's scientific image, and preparing students for selective Master's programs in AI."
+        "impact_text": "Enhancing student initiatives, strengthening the school's scientific image, and preparing students for selective Master's programs in AI.",
+        "eyebrow": "The challenge",
+        "domains_title": "What we work on",
+        "domain_math": "Mathematics",
+        "domain_ai": "Artificial Intelligence",
+        "domain_data": "Data Science",
+        "excellence_title": "Excellence",
+        "excellence_text": "A demanding setting, where students master the foundations of AI and data science."
     },
     "Team": {
         "title": "Our Team",
