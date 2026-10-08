@@ -1,4 +1,5 @@
 import { getLocale } from 'next-intl/server';
+import Image from 'next/image';
 import Footer from '@/components/Footer';
 import { getActivePartners } from '@/lib/partners/repository';
 
