@@ -210,6 +210,119 @@ Le Talk 002 confirme la mission d'Epi'AI : connecter les étudiants aux leaders 
       category: 'Events',
     },
   },
+  {
+    key: 'ia-etudes',
+    titleFr: 'IA & Études',
+    matchTitles: ['IA & Études', 'IA et Études', 'IA & Etudes'],
+    blogStatus: 'published' as const,
+    data: {
+      title: 'IA & Études',
+      description:
+        "Séance Epi'AI × Epitech pour les collégiens, lycéens et bacheliers : utiliser l'IA pour réussir ses études, sans la laisser réfléchir à sa place. Campus Epitech Bénin, mézzanine.",
+      content: `Epi'AI × Epitech — IA & Études
+
+Une IA qui muscle. Pas une IA qui remplace.
+Apprends à l'utiliser pour réussir, pas pour réfléchir à ta place.
+
+Public : collégiens, lycéens et bacheliers pas encore entrés à l'université.
+Lieu : Mézzanine — Campus Epitech Bénin
+Date : samedi 29 août 2026 · 9h–12h
+Entrée gratuite · places limitées.
+
+Thèmes travaillés en salle :
+• Utiliser l'IA pour apprendre sans en devenir dépendant
+• Écrire un prompt et relire la réponse
+• Faire confiance, ou non, à une réponse produite par une IA
+• La différence entre s'en servir pour apprendre et s'en servir pour tricher
+• Se tromper fait partie du processus
+• Comprendre un cours, réviser et s'entraîner avec l'IA
+
+Séance déjà passée.`,
+      categoryId: 'formation',
+      date: '2026-08-29T08:00:00.000Z',
+      endDate: '2026-08-29T11:00:00.000Z',
+      location: 'Mézzanine — Campus Epitech Bénin',
+      isOnline: false,
+      capacity: 40,
+      imageUrl: '/assets/events/ia-etudes/cover.jpeg',
+      gallery: [
+        '/assets/events/ia-etudes/gallery-01.jpeg',
+        '/assets/events/ia-etudes/gallery-02.jpeg',
+        '/assets/events/ia-etudes/gallery-03.jpeg',
+        '/assets/events/ia-etudes/gallery-04.jpeg',
+        '/assets/events/ia-etudes/gallery-05.jpeg',
+        '/assets/events/ia-etudes/gallery-06.jpeg',
+      ],
+      videoUrls: [] as string[],
+      isPublished: true,
+      isFeatured: true,
+    },
+    blogFallback: {
+      titleEn: 'IA & Studies: using AI to learn, not to skip the work',
+      titleFr: 'IA & Études — utiliser l’IA pour apprendre, pas pour éviter le travail',
+      excerptEn:
+        'On 29 August, Epi’AI and Epitech welcomed secondary-school students for a free session on using AI to study without letting it think for them.',
+      excerptFr:
+        'Le 29 août, Epi’AI et Epitech ont accueilli collégiens, lycéens et bacheliers pour une séance gratuite : utiliser l’IA pour étudier, sans la laisser penser à leur place.',
+      contentEn: `## IA & Studies
+
+On **Saturday 29 August, 9:00–12:00**, Epi'AI and Epitech held **IA & Études** on the mezzanine of Campus Epitech Bénin.
+
+The session was free, with limited seats, and open to secondary-school students and graduates who have not started university yet.
+
+### The line
+
+An AI that trains you. Not an AI that replaces you. Learn to use it to succeed, not to think in your place.
+
+### What the room worked on
+
+- Using AI to learn without becoming dependent on it
+- Writing a prompt and checking the answer
+- Deciding when an AI answer can be trusted
+- The difference between using AI to learn and using it to cheat
+- Making mistakes as part of the process
+- Understanding a lesson, revising, and practicing with AI
+
+### In the room
+
+![Poster](/assets/events/ia-etudes/cover.jpeg)
+
+![The room](/assets/events/ia-etudes/gallery-01.jpeg)
+
+![Live prompts](/assets/events/ia-etudes/gallery-02.jpeg)
+
+![Discussion](/assets/events/ia-etudes/gallery-03.jpeg)`,
+      contentFr: `## IA & Études
+
+Le **samedi 29 août, de 9h à 12h**, Epi'AI et Epitech ont tenu **IA & Études** à la mézzanine du campus Epitech Bénin.
+
+La séance était gratuite, à places limitées, ouverte aux collégiens, lycéens et bacheliers pas encore entrés à l'université.
+
+### La ligne
+
+Une IA qui muscle. Pas une IA qui remplace. Apprendre à l'utiliser pour réussir, pas pour réfléchir à sa place.
+
+### Ce qui a été travaillé
+
+- Utiliser l'IA pour apprendre sans en devenir dépendant
+- Écrire un prompt et vérifier la réponse
+- Savoir quand faire confiance à une réponse produite par une IA
+- La différence entre s'en servir pour apprendre et s'en servir pour tricher
+- Se tromper fait partie du processus
+- Comprendre un cours, réviser et s'entraîner avec l'IA
+
+### Dans la salle
+
+![Affiche](/assets/events/ia-etudes/cover.jpeg)
+
+![La salle](/assets/events/ia-etudes/gallery-01.jpeg)
+
+![Prompts en direct](/assets/events/ia-etudes/gallery-02.jpeg)
+
+![Échange](/assets/events/ia-etudes/gallery-03.jpeg)`,
+      category: 'Events',
+    },
+  },
 ] as const;
 
 async function findExistingEvent(matchTitles: readonly string[]) {
@@ -222,7 +335,9 @@ async function findExistingEvent(matchTitles: readonly string[]) {
 }
 
 export async function seedTalks() {
+  const only = process.env.SEED_TALK;
   for (const talk of TALKS) {
+    if (only && talk.key !== only) continue;
     const existing = await findExistingEvent(talk.matchTitles);
 
     let eventId: string;
@@ -263,12 +378,12 @@ export async function seedTalks() {
     }
 
     const fallback = talk.blogFallback;
+    const blogStatus = 'blogStatus' in talk ? talk.blogStatus : 'draft';
     if (linked) {
       await updatePost(linked.id, {
         ...fallback,
         imageUrl: talk.data.imageUrl,
         authorName: "Epi'AI",
-        status: 'draft',
       });
       console.log(`✓ Blog fallback mis à jour : ${linked.slug}`);
     } else {
@@ -276,7 +391,7 @@ export async function seedTalks() {
         ...fallback,
         imageUrl: talk.data.imageUrl,
         authorName: "Epi'AI",
-        status: 'draft',
+        status: blogStatus,
         createdBy: 'epiai-admin',
         linkedEventId: eventId,
       });

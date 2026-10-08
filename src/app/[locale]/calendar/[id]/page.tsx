@@ -39,12 +39,14 @@ export default async function PublicEventDetailPage({
         </div>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 items-start">
-          <Link
-            href="/sign-in"
-            className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors"
-          >
-            {fr ? 'Se connecter pour s’inscrire' : 'Sign in to register'}
-          </Link>
+          {!event.isPast ? (
+            <Link
+              href="/sign-in"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors"
+            >
+              {fr ? 'Se connecter pour s’inscrire' : 'Sign in to register'}
+            </Link>
+          ) : null}
           <Link
             href="/calendar"
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 text-sm font-medium transition-colors"
