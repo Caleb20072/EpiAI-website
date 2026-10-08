@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
-import Image from 'next/image';
 import BlogSection from '@/components/BlogSection';
 import Footer from '@/components/Footer';
 
@@ -23,17 +22,7 @@ export async function generateMetadata({
 
 export default function Blog() {
   return (
-    <div className="relative min-h-screen text-white overflow-x-hidden">
-      <div className="absolute inset-0 -z-10 bg-gray-900">
-        <Image
-          src="/assets/hero-bg.jpg"
-          alt=""
-          fill
-          quality={100}
-          className="object-cover brightness-[0.4]"
-          priority
-        />
-      </div>
+    <div className="paper-page min-h-screen overflow-x-hidden">
       <main className="pt-20">
         <BlogSection />
       </main>

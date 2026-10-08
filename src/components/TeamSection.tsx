@@ -59,7 +59,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
         return (
-            <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors p-1" aria-label={type}>
+            <a href={url} target="_blank" rel="noopener noreferrer" className="text-[#7a7a7a] hover:text-[#0066cc] transition-colors p-1" aria-label={type}>
                 {type === 'linkedin' ? (
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
                 ) : (
@@ -70,19 +70,19 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     };
 
     const MemberCard = ({ member, large = false }: { member: ITeamMember; large?: boolean }) => (
-        <div className={`p-6 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-brand-500/30 transition-all duration-300 group ${large ? 'max-w-sm mx-auto' : ''}`}>
-            <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-zinc-900 border-2 border-brand-500/25 flex items-center justify-center overflow-hidden group-hover:border-brand-400/50 transition-colors relative`}>
+        <div className={`p-6 rounded-[18px] bg-white border border-[#e0e0e0] ${large ? 'max-w-sm mx-auto' : ''}`}>
+            <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-[#f5f5f7] flex items-center justify-center overflow-hidden relative`}>
                 {member.photoUrl ? (
                     <Image src={member.photoUrl} alt={member.name} fill className="object-cover" sizes="96px" />
                 ) : (
-                    <span className="text-2xl font-bold text-white/40">{member.name.charAt(0)}</span>
+                    <span className="text-2xl font-semibold text-[#7a7a7a]">{member.name.charAt(0)}</span>
                 )}
             </div>
-            <div className="text-sm text-brand-300 font-bold mb-1 tracking-widest uppercase">{member.role}</div>
-            <div className="text-lg font-bold text-white mb-1">{member.name}</div>
-            {member.title && <div className="text-xs text-gray-400 mb-2">{member.title}</div>}
-            {member.description && <p className="text-xs text-gray-400 mb-3">{member.description}</p>}
-            <div className="flex justify-center gap-4 border-t border-white/10 pt-4">
+            <div className="text-[14px] text-[#0066cc] mb-1">{member.role}</div>
+            <div className="text-[17px] font-semibold text-[#1d1d1f] mb-1">{member.name}</div>
+            {member.title && <div className="text-[14px] text-[#7a7a7a] mb-2">{member.title}</div>}
+            {member.description && <p className="text-[14px] text-[#333] mb-3">{member.description}</p>}
+            <div className="flex justify-center gap-4 border-t border-[#f0f0f0] pt-4">
                 <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
                 <SocialLink type="github" url={member.socialLinks.github} />
             </div>
@@ -95,7 +95,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
         const mission = poleDef ? (locale === 'fr' ? poleDef.missionFr : poleDef.missionEn) : assigned[0]?.description;
 
         return (
-            <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 text-left flex items-start gap-4 group hover:-translate-y-1 hover:shadow-xl">
+            <div className="p-4 rounded-[18px] bg-white border border-[#e0e0e0] text-left flex items-start gap-4">
                 <div className="flex shrink-0">
                     {isVacant ? (
                         <div className="w-14 h-14 rounded-xl bg-blue-900/40 border border-dashed border-white/20 flex items-center justify-center text-white/30 text-xs font-bold">
@@ -114,19 +114,19 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold mb-0.5 text-brand-300 group-hover:brightness-125 transition-all leading-tight">{name}</h4>
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 font-bold">
+                    <h4 className="text-[17px] font-semibold mb-0.5 text-[#1d1d1f] leading-tight">{name}</h4>
+                    <div className="text-[12px] text-[#7a7a7a] mb-0.5">
                         {isVacant
                             ? (locale === 'fr' ? 'Responsable à nommer' : 'Lead to be assigned')
                             : assigned.length > 1 ? 'Co-Leads' : (assigned[0]?.title || 'Lead')}
                     </div>
                     {!isVacant && (
-                        <div className="text-white text-sm font-medium mb-1 truncate">
+                        <div className="text-[#1d1d1f] text-[14px] mb-1 truncate">
                             {assigned.map(m => m.name).join(' & ')}
                         </div>
                     )}
                     {mission && (
-                        <p className="text-xs text-gray-400 mb-2 leading-snug min-h-[2.5em]">{mission}</p>
+                        <p className="text-[14px] text-[#333] mb-2 leading-snug">{mission}</p>
                     )}
                 </div>
             </div>
@@ -165,18 +165,16 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     }
 
     return (
-        <section id="team" className="py-16 sm:py-20 px-4 min-h-0 sm:min-h-screen flex flex-col justify-center relative">
-            <div className="absolute top-1/4 left-0 w-96 h-96 bg-brand-900/15 rounded-full blur-[100px] -z-10" />
-            <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-zinc-800/20 rounded-full blur-[100px] -z-10" />
+            <section id="team" className="tile-canvas py-20 px-6">
 
             <div className="max-w-6xl mx-auto w-full text-center z-10">
-                <h2 className="text-2xl md:text-3xl font-bold mb-12 text-white tracking-tight">
+                <h2 className="text-[40px] font-semibold mb-12 text-[#1d1d1f]">
                     {locale === 'fr' ? 'Notre Équipe' : 'Our Team'}
                 </h2>
 
                 {referents.length > 0 && (
                     <div className="mb-16">
-                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                        <h3 className="text-[21px] font-semibold mb-8 text-[#1d1d1f] pb-3 inline-block">
                             {locale === 'fr' ? 'Notre Référent' : 'Our Referent'}
                         </h3>
                         <div className="flex justify-center">
@@ -187,7 +185,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
 
                 {executives.length > 0 && (
                     <div className="mb-16">
-                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                        <h3 className="text-[21px] font-semibold mb-8 text-[#1d1d1f] pb-3 inline-block">
                             {locale === 'fr' ? 'Bureau Exécutif' : 'Executive Board'}
                         </h3>
                         <div className="flex flex-col md:flex-row justify-center gap-6">
@@ -197,7 +195,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                 )}
 
                 <div className="mb-16">
-                    <h3 className="text-xl font-bold mb-4 text-white/90 border-b border-white/10 pb-3 inline-block">
+                    <h3 className="text-[21px] font-semibold mb-4 text-[#1d1d1f] pb-3 inline-block">
                         {locale === 'fr' ? 'Pôles Techniques' : 'Technical Poles'}
                     </h3>
                     <div className="mb-8 hidden md:block max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 opacity-80">
@@ -207,7 +205,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                 </div>
 
                 <div className="mb-16">
-                    <h3 className="text-xl font-bold mb-4 text-white/90 border-b border-white/10 pb-3 inline-block">
+                    <h3 className="text-[21px] font-semibold mb-4 text-[#1d1d1f] pb-3 inline-block">
                         {locale === 'fr' ? 'Pôles Non-Techniques' : 'Non-Technical Poles'}
                     </h3>
                     <div className="mb-8 hidden md:block max-w-3xl mx-auto rounded-2xl overflow-hidden border border-white/10 opacity-80">
@@ -218,12 +216,12 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
 
                 {mentors.length > 0 && (
                     <div>
-                        <h3 className="text-xl font-bold mb-8 text-white/90 border-b border-white/10 pb-3 inline-block">
+                        <h3 className="text-[21px] font-semibold mb-8 text-[#1d1d1f] pb-3 inline-block">
                             {locale === 'fr' ? 'Nos Mentors' : 'Our Mentors'}
                         </h3>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                             {mentors.map(mentor => (
-                                <div key={mentor.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-400/30 transition-all flex flex-col items-center text-center gap-2">
+                                <div key={mentor.id} className="p-4 rounded-[18px] bg-white border border-[#e0e0e0] flex flex-col items-center text-center gap-2">
                                     <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 relative">
                                         {mentor.photoUrl ? (
                                             <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover" sizes="64px" />
@@ -232,8 +230,8 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-white text-sm font-semibold leading-tight">{mentor.name}</p>
-                                        {mentor.title && <p className="text-[10px] text-brand-300/80 mt-1">{mentor.title}</p>}
+                                        <p className="text-[#1d1d1f] text-[14px] font-semibold leading-tight">{mentor.name}</p>
+                                        {mentor.title && <p className="text-[12px] text-[#0066cc] mt-1">{mentor.title}</p>}
                                     </div>
                                 </div>
                             ))}

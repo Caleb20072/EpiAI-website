@@ -171,6 +171,8 @@
         "myAttendance": "Mes présences",
         "blogAdmin": "Blog",
         "eventsAdmin": "Événements",
+        "modules": "Modules",
+        "fees": "Cotisations",
         "signIn": "Se connecter",
         "signInRequired": "Connexion requise"
     },

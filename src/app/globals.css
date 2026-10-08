@@ -1,79 +1,90 @@
 @import "tailwindcss";
 
-/* ─── Dark (default) ─────────────────────────────────────────────────────── */
+/* Apple-derived system (getdesign.md/apple). One accent, parchment canvas,
+   hairline borders, no chrome shadows. Dark tiles live under html.dark. */
+
 :root {
-  --background: #09090b;
-  --foreground: #fafafa;
+  --background: #f5f5f7;
+  --foreground: #1d1d1f;
 
-  --bg-page: #09090b;
-  --bg-surface: #18181b;
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-card-muted: rgba(255, 255, 255, 0.02);
-  --bg-input: rgba(0, 0, 0, 0.35);
-  --bg-overlay: rgba(0, 0, 0, 0.6);
-
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-
-  --brand-50: #f0fdfa;
-  --brand-100: #ccfbf1;
-  --brand-200: #99f6e4;
-  --brand-300: #5eead4;
-  --brand-400: #2dd4bf;
-  --brand-500: #14b8a6;
-  --brand-600: #0d9488;
-  --brand-700: #0f766e;
-  --brand-800: #115e59;
-  --brand-900: #134e4a;
-
-  --surface: #09090b;
-  --surface-elevated: #18181b;
-  --surface-card: #1c1c1f;
-}
-
-/* ─── Light (warm paper — Refero / Steep inspired) ─────────────────────── */
-html.light {
-  --background: #f4f4f0;
-  --foreground: #18181b;
-
-  --bg-page: #f4f4f0;
+  --bg-page: #f5f5f7;
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-muted: #fafaf8;
-  --bg-input: #f8f8f6;
-  --bg-overlay: rgba(24, 24, 27, 0.45);
+  --bg-card-muted: #fafafc;
+  --bg-input: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
 
-  --text-primary: #18181b;
-  --text-secondary: #52525b;
-  --text-muted: #a1a1aa;
+  --text-primary: #1d1d1f;
+  --text-secondary: #333333;
+  --text-muted: #7a7a7a;
 
-  --border-default: #e4e4e7;
-  --border-subtle: #f0f0ec;
+  --border-default: #e0e0e0;
+  --border-subtle: #f0f0f0;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-card: none;
+  --shadow-inset: none;
+  --shadow-product: 3px 5px 30px rgba(0, 0, 0, 0.22);
+
+  --brand-50: #e8f2ff;
+  --brand-100: #cce4ff;
+  --brand-200: #99c9ff;
+  --brand-300: #66adff;
+  --brand-400: #0071e3;
+  --brand-500: #0071e3;
+  --brand-600: #0066cc;
+  --brand-700: #004c99;
+  --brand-800: #003366;
+  --brand-900: #001a33;
 
   --surface: #ffffff;
   --surface-elevated: #ffffff;
   --surface-card: #ffffff;
 
-  /* Admin / status accents readable on light */
-  --color-amber-readable: #b45309;
+  --canvas: #ffffff;
+  --canvas-parchment: #f5f5f7;
+  --ink: #1d1d1f;
+  --tile-dark: #272729;
 }
 
-html.light .text-amber-400 {
-  color: #b45309;
+html.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+
+  --bg-page: #000000;
+  --bg-surface: #1d1d1f;
+  --bg-card: #272729;
+  --bg-card-muted: #2a2a2c;
+  --bg-input: #1d1d1f;
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #86868b;
+
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  --brand-400: #2997ff;
+  --brand-500: #2997ff;
+  --brand-600: #2997ff;
+  --brand-700: #66adff;
+
+  --surface: #1d1d1f;
+  --surface-elevated: #272729;
+  --surface-card: #2a2a2c;
+
+  --canvas: #000000;
+  --ink: #ffffff;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+html.dark .text-amber-400 {
+  color: #ffd60a;
 }
 
 @theme inline {
@@ -102,15 +113,23 @@ html.light .text-amber-400 {
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-card: var(--surface-card);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.022em;
   overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 img, video, canvas, svg {
@@ -130,10 +149,18 @@ iframe {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
-  max-width: 1280px;
+  max-width: 1440px;
 }
 
-/* ─── Semantic utilities (theme-aware) ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @layer components {
   .bg-page { background-color: var(--bg-page); }
   .bg-surface { background-color: var(--bg-surface); }
@@ -149,30 +176,26 @@ iframe {
   .border-default { border-color: var(--border-default); }
   .border-subtle { border-color: var(--border-subtle); }
 
-  .shadow-card { box-shadow: var(--shadow-card); }
-  .shadow-elevated { box-shadow: var(--shadow-md); }
+  .shadow-card { box-shadow: none; }
+  .shadow-elevated { box-shadow: none; }
 
-  /* Dashboard nav — plain CSS (semantic tokens are not @apply-able as component classes) */
   .nav-item {
     display: flex;
     align-items: center;
     gap: 0.625rem;
     padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 150ms, background-color 150ms, border-color 150ms;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.016em;
+    transition: color 160ms ease, background-color 160ms ease;
   }
   .nav-item-active {
-    background-color: color-mix(in srgb, var(--brand-500) 10%, transparent);
-    color: var(--text-primary);
-    border-left: 2px solid var(--brand-600);
-    padding-left: 10px;
+    background-color: color-mix(in srgb, var(--brand-600) 10%, transparent);
+    color: var(--brand-600);
   }
   .nav-item-inactive {
     color: var(--text-secondary);
-    border-left: 2px solid transparent;
-    padding-left: 10px;
   }
   .nav-item-inactive:hover {
     color: var(--text-primary);
@@ -181,81 +204,68 @@ iframe {
   .nav-item-admin-active {
     background-color: var(--bg-card-muted);
     color: var(--text-primary);
-    border-left: 2px solid var(--brand-700);
-    padding-left: 10px;
   }
 
   .surface-card {
     background-color: var(--bg-card);
     border: 1px solid var(--border-default);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-sm);
+    border-radius: 18px;
+    box-shadow: none;
   }
 
   .glass-panel {
     background-color: var(--bg-card);
     border: 1px solid var(--border-default);
-    backdrop-filter: blur(12px);
-    box-shadow: var(--shadow-sm);
+    backdrop-filter: none;
+    box-shadow: none;
   }
 
   .btn-brand {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-[17px] font-normal text-white transition-transform hover:bg-brand-500 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-h-11;
   }
 
   .btn-brand-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-5 py-2.5 text-sm font-semibold text-brand-600 transition-colors hover:bg-brand-500/15;
-  }
-
-  html.light .btn-brand-outline {
-    color: var(--brand-700);
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-default bg-transparent px-5 py-2.5 text-[17px] font-normal text-brand-600 transition-transform active:scale-95;
   }
 
   .focus-ring {
-    @apply focus:outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20;
+    @apply focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/30;
   }
 
   .glow-border {
-    @apply hover:border-brand-500/40 transition-all duration-300;
+    @apply transition-colors duration-200;
+  }
+
+  .tile-parchment {
+    background: #f5f5f7;
+    color: #1d1d1f;
+  }
+  .tile-canvas {
+    background: #ffffff;
+    color: #1d1d1f;
+  }
+  .tile-dark {
+    background: #272729;
+    color: #ffffff;
+  }
+  .tile-black {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  .display {
+    font-size: clamp(34px, 4vw, 56px);
+    font-weight: 600;
+    line-height: 1.07;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
   .text-glow { text-shadow: none; }
+  .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none; }
+  .product-shadow { box-shadow: var(--shadow-product); }
 }
-
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.animate-float { animation: float 6s ease-in-out infinite; }
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
-}
-
-.animate-pulse-slow { animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
-
-.blob {
-  position: absolute;
-  filter: blur(80px);
-  z-index: -1;
-  opacity: 0.25;
-  animation: float 10s infinite alternate;
-}
-
-.math-formula:hover { color: rgba(255, 255, 255, 0.9); }
 
 .nav-link-underline { position: relative; }
 .nav-link-underline::after {
@@ -264,9 +274,47 @@ iframe {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 2px;
-  background: var(--brand-400);
-  transition: width 0.3s ease;
+  height: 1px;
+  background: #0066cc;
+  transition: width 0.2s ease;
 }
 .nav-link-underline:hover::after,
 .nav-link-underline.active::after { width: 100%; }
+
+/* Public pages that were built as dark glass sit on parchment.
+   Overrides only the washed-out white copy and frosted panels. */
+.paper-page {
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+.paper-page .text-white,
+.paper-page .text-gray-200,
+.paper-page .text-gray-300,
+.paper-page .text-zinc-100,
+.paper-page .text-zinc-200,
+.paper-page .text-zinc-300 {
+  color: #1d1d1f;
+}
+.paper-page .text-gray-400,
+.paper-page .text-gray-500,
+.paper-page .text-white\/40,
+.paper-page .text-white\/50,
+.paper-page .text-white\/60,
+.paper-page .text-white\/80 {
+  color: #7a7a7a;
+}
+.paper-page .text-brand-300,
+.paper-page .text-brand-400 {
+  color: #0066cc;
+}
+.paper-page .glass-panel,
+.paper-page .bg-white\/5,
+.paper-page .bg-white\/\[0\.03\],
+.paper-page .bg-white\/\[0\.05\] {
+  background-color: #ffffff;
+  backdrop-filter: none;
+}
+.paper-page .border-white\/10,
+.paper-page .border-white\/\[0\.08\] {
+  border-color: #e0e0e0;
+}

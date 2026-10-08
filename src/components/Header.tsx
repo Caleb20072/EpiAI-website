@@ -10,7 +10,7 @@ import { Menu, X } from 'lucide-react';
 
 const dashboardRoutes = [
     '/dashboard', '/admin', '/profile', '/settings',
-    '/resources', '/forum', '/events', '/my-registrations',
+    '/resources', '/forum', '/events', '/modules', '/presence', '/my-registrations',
     '/my-resources', '/change-password', '/intranet', '/chat', '/attendance',
 ];
 
@@ -38,28 +38,22 @@ export default function Header() {
 
     return (
         <motion.header
-            className="fixed top-0 left-0 right-0 z-50"
-            style={{
-                background: 'rgba(0,0,0,0.3)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                borderBottom: '1px solid rgba(255,255,255,0.08)',
-            }}
-            initial={{ y: -100 }}
+            className="fixed top-0 left-0 right-0 z-50 bg-black text-white"
+            initial={{ y: -44 }}
             animate={{ y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
         >
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 h-11 flex items-center justify-between">
                 <Link href="/" className="flex items-center shrink-0" aria-label="EPI'AI home">
                     <BrandLogo size="lg" priority />
                 </Link>
 
-                <nav className="hidden lg:flex items-center gap-8" aria-label="Main">
+                <nav className="hidden lg:flex items-center gap-6" aria-label="Main">
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}
                             href={link.href}
-                            className="text-white/80 hover:text-white transition-colors font-medium text-sm"
+                            className="text-white/80 hover:text-white transition-colors font-normal text-[12px]"
                         >
                             {link.label}
                         </Link>
@@ -70,19 +64,19 @@ export default function Header() {
                         }}
                         defaultValue={locale}
                         aria-label={t('language')}
-                        className="bg-transparent text-white/80 border border-white/20 rounded-lg px-2 py-1 text-sm"
+                        className="bg-transparent text-white/80 text-[12px]"
                     >
                         <option value="en" className="text-black">EN</option>
                         <option value="fr" className="text-black">FR</option>
                     </select>
                     <Link
                         href="/join"
-                        className="text-white/80 hover:text-white text-sm font-medium"
+                        className="text-white/80 hover:text-white text-[12px]"
                     >
                         {t('join')}
                     </Link>
                     <Link href="/sign-in">
-                        <span className="px-5 py-2 rounded-full text-sm font-semibold text-white bg-white/15 border border-white/30">
+                        <span className="inline-flex items-center min-h-8 px-4 rounded-full text-[12px] font-normal text-white bg-[#0066cc]">
                             {t('sign_in')}
                         </span>
                     </Link>

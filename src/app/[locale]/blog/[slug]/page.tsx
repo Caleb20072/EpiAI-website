@@ -37,10 +37,7 @@ export default async function BlogDetailPage({
     : '';
 
   return (
-    <div className="relative min-h-screen text-white overflow-x-hidden">
-      <div className="fixed inset-0 -z-10">
-        <Image src="/assets/hero-bg.jpg" alt="" fill className="object-cover brightness-[0.2]" priority />
-      </div>
+    <div className="paper-page min-h-screen overflow-x-hidden">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-32 relative z-10">
         <Link
           href="/blog"

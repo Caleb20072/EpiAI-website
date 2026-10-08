@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { getLocale } from 'next-intl/server';
 import HeroSection from '@/components/HeroSection';
 import ProblemSection from '@/components/ProblemSection';
@@ -26,19 +25,7 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="relative font-[family-name:var(--font-geist-sans)] text-white overflow-x-hidden scroll-smooth">
-      {/* Background Image */}
-      <div className="fixed inset-0 -z-10">
-        <Image
-          src="/assets/hero-bg.jpg"
-          alt="Background"
-          fill
-          className="object-cover"
-          priority
-          quality={100}
-        />
-      </div>
-
+    <div className="relative overflow-x-hidden scroll-smooth bg-white text-[#1d1d1f]">
       <main className="flex flex-col">
         <HeroSection />
         <ProblemSection />

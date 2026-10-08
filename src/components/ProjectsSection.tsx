@@ -46,15 +46,12 @@ export default function ProjectsSection({ initialProjects = [] }: ProjectsSectio
     };
 
     return (
-        <section id="projects" className="py-24 px-4 min-h-screen flex flex-col justify-center relative bg-black/20">
-            {/* Tech Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] -z-10 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]"></div>
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-600/10 rounded-full blur-[120px] -z-10"></div>
+        <section id="projects" className="tile-dark py-20 px-6">
 
             <div className="max-w-7xl mx-auto w-full">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight">{tHeader('projects')}</h2>
-                    <p className="text-gray-400 max-w-xl mx-auto text-sm font-light">
+                    <h2 className="text-[40px] font-semibold mb-3 text-white">{tHeader('projects')}</h2>
+                    <p className="text-white/70 max-w-xl mx-auto text-[17px]">
                         {locale === 'fr'
                             ? 'Découvrez les solutions innovantes et les défis techniques relevés par nos équipes étudiantes.'
                             : 'Discover the innovative solutions and technical challenges tackled by our student teams.'}
@@ -79,7 +76,7 @@ export default function ProjectsSection({ initialProjects = [] }: ProjectsSectio
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {projects.map((project) => (
-                            <div key={project._id} className="group relative rounded-2xl bg-surface-card border border-white/[0.06] hover:border-brand-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] overflow-hidden flex flex-col h-full">
+                            <div key={project._id} className="group relative rounded-[18px] bg-[#2a2a2c] border border-white/10 overflow-hidden flex flex-col h-full">
                                 {/* Main Link Overlay */}
                                 <Link href={`/projects/${project._id}`} className="absolute inset-0 z-0" aria-label={project.title[locale]} />
 

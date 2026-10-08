@@ -182,13 +182,18 @@ model Activity {
   createdBy            String   @map("created_by")
   createdByName        String   @map("created_by_name")
   linkedEventId        String?  @unique @map("linked_event_id")
+  moduleId             String?  @map("module_id")
+  attendanceCode       String?  @map("attendance_code")
+  attendanceCodeExpiresAt DateTime? @map("attendance_code_expires_at")
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
 
   registrations        ActivityRegistration[]
   attendances          Attendance[]
+  module               LearningModule? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
 
   @@index([date, isActive])
+  @@index([moduleId])
   @@map("activities")
 }
 
@@ -246,6 +251,137 @@ model Attendance {
 
   @@unique([activityId, userId])
   @@map("attendances")
+}
+
+// ─── Modules pédagogiques (en plus de l'intra / events existants) ────────────
+
+model LearningModule {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  leadUserId  String   @map("lead_user_id")
+  leadName    String   @map("lead_name")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  enrollments ModuleEnrollment[]
+  projects    ModuleProject[]
+  activities  Activity[]
+
+  @@index([leadUserId])
+  @@map("learning_modules")
+}
+
+model ModuleEnrollment {
+  id         String   @id @default(cuid())
+  moduleId   String   @map("module_id")
+  userId     String   @map("user_id")
+  userName   String   @map("user_name")
+  userEmail      String   @map("user_email")
+  githubUsername String?  @map("github_username")
+  level          Int      @default(0)
+  enrolledAt     DateTime @default(now()) @map("enrolled_at")
+  forced         Boolean  @default(false)
+
+  module     LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, userId])
+  @@index([userId])
+  @@map("module_enrollments")
+}
+
+model ModuleProject {
+  id          String   @id @default(cuid())
+  moduleId    String   @map("module_id")
+  title       String
+  description String   @default("")
+  pdfUrl      String?  @map("pdf_url")
+  startsAt    DateTime @map("starts_at")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  module      LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  submissions ModuleSubmission[]
+  repos       ModuleProjectRepo[]
+
+  @@index([moduleId, startsAt])
+  @@map("module_projects")
+}
+
+model ModuleSubmission {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  userId    String   @map("user_id")
+  notes     String   @default("")
+  fileUrl   String?  @map("file_url")
+  points    Int      @default(10)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project   ModuleProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("module_submissions")
+}
+
+model ModuleProjectRepo {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  userId    String   @map("user_id")
+  repoUrl   String   @map("repo_url")
+  repoName  String   @map("repo_name")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project   ModuleProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("module_project_repos")
+}
+
+model GithubActivity {
+  id          String   @id @default(cuid())
+  repoId      String   @map("repo_id")
+  userId      String   @map("user_id")
+  projectId   String   @map("project_id")
+  sha         String   @unique
+  message     String
+  additions   Int      @default(0)
+  deletions   Int      @default(0)
+  committedAt DateTime @map("committed_at")
+  burst       Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([userId, projectId, committedAt])
+  @@map("github_activities")
+}
+
+model MemberContract {
+  id         String   @id @default(cuid())
+  userId     String   @unique @map("user_id")
+  version    String
+  acceptedAt DateTime @default(now()) @map("accepted_at")
+
+  @@map("member_contracts")
+}
+
+model MembershipDue {
+  id         String    @id @default(cuid())
+  userId     String    @map("user_id")
+  userName   String    @map("user_name")
+  userEmail  String    @map("user_email")
+  period     String
+  baseAmount Int       @default(2000) @map("base_amount")
+  lateFee    Int       @default(0) @map("late_fee")
+  status     String    @default("pending")
+  dueDate    DateTime  @map("due_date")
+  paidAt     DateTime? @map("paid_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@unique([userId, period])
+  @@index([status, dueDate])
+  @@map("membership_dues")
 }
 
 // ─── Forum ───────────────────────────────────────────────────────────────────

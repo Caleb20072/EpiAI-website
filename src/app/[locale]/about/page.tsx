@@ -1,22 +1,10 @@
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 
 export default function About() {
   const t = useTranslations('About');
 
   return (
-    <div className="relative min-h-screen font-[family-name:var(--font-geist-sans)] text-white overflow-hidden">
-      {/* Reusing the background for consistency */}
-      <div className="absolute inset-0 -z-10 bg-gray-900">
-        <Image
-          src="/assets/hero-bg.jpg"
-          alt="Background"
-          fill
-          quality={100}
-          className="object-cover brightness-[0.4]"
-          priority
-        />
-      </div>
+    <div className="paper-page min-h-screen overflow-hidden">
 
       <main className="pt-24 sm:pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">

@@ -94,8 +94,8 @@ export default function IntranetPage() {
         title={locale === 'fr' ? 'Intranet — Activités' : 'Intranet — Activities'}
         description={
           locale === 'fr'
-            ? "Consultez et inscrivez-vous aux activités. Inscription obligatoire au moins 24h avant."
-            : 'View and register for association activities. Registration is mandatory at least 24h before.'
+            ? 'Planning visible par tous les membres, qu’ils soient inscrits à un module ou non. Inscription au moins 24h avant.'
+            : 'Schedule visible to every member, whether or not they are enrolled in a module. Register at least 24h before.'
         }
         actions={
           canCreate ? (
@@ -243,12 +243,20 @@ export default function IntranetPage() {
 
                   {/* Admin link */}
                   {isAdmin && (
-                    <Link
-                      href={`/${locale}/intranet/${activity.id}`}
-                      className="text-xs text-amber-400 hover:text-amber-300 text-center transition-colors"
-                    >
-                      {locale === 'fr' ? 'Gérer' : 'Manage'}
-                    </Link>
+                    <>
+                      <Link
+                        href={`/${locale}/intranet/${activity.id}`}
+                        className="text-xs text-amber-400 hover:text-amber-300 text-center transition-colors"
+                      >
+                        {locale === 'fr' ? 'Gérer' : 'Manage'}
+                      </Link>
+                      <Link
+                        href={`/${locale}/admin/attendance/live/${activity.id}`}
+                        className="text-xs text-brand-500 hover:underline text-center"
+                      >
+                        QR
+                      </Link>
+                    </>
                   )}
                 </div>
               </div>

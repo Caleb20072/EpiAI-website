@@ -19,17 +19,15 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
   return (
     <section
       id="events"
-      className="py-24 px-4 min-h-screen flex flex-col justify-center relative bg-black/25"
+      className="tile-canvas py-20 px-6"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] -z-10 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
-      <div className="absolute top-0 right-0 w-[480px] h-[480px] bg-brand-600/10 rounded-full blur-[120px] -z-10" />
 
       <div className="max-w-7xl mx-auto w-full">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight">
+          <h2 className="text-[40px] font-semibold mb-3 text-[#1d1d1f]">
             {fr ? 'Événements' : 'Events'}
           </h2>
-          <p className="text-gray-400 max-w-xl mx-auto text-sm font-light">
+          <p className="text-[#333] max-w-xl mx-auto text-[17px]">
             {fr
               ? 'Talks, workshops et rencontres organisés par Epi’AI — ouverts à tous.'
               : 'Talks, workshops and meetups organized by Epi’AI — open to everyone.'}
@@ -41,7 +39,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
             <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
               <Calendar className="w-10 h-10 text-white/20" />
             </div>
-            <p className="text-white/40">
+            <p className="text-[#7a7a7a]">
               {fr ? 'Aucun événement public pour le moment' : 'No public events yet'}
             </p>
           </div>
@@ -50,7 +48,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
             {events.map((event) => (
               <article
                 key={event.id}
-                className="group relative rounded-2xl bg-surface-card border border-white/[0.06] hover:border-brand-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] overflow-hidden flex flex-col h-full"
+                className="group relative rounded-[18px] bg-white border border-[#e0e0e0] overflow-hidden flex flex-col h-full"
               >
                 <Link
                   href={`/calendar/${event.id}`}
@@ -73,10 +71,10 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
                 </div>
 
                 <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-brand-400 transition-colors">
+                  <h3 className="text-[17px] font-semibold mb-2 text-[#1d1d1f] group-hover:text-[#0066cc] transition-colors">
                     {event.title}
                   </h3>
-                  <div className="flex flex-wrap gap-3 text-xs text-gray-400 mb-4">
+                  <div className="flex flex-wrap gap-3 text-[14px] text-[#7a7a7a] mb-4">
                     <span className="inline-flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5" />
                       {formatDate(event.date)}
@@ -96,7 +94,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
                       </span>
                     </span>
                   </div>
-                  <p className="text-gray-400 leading-relaxed font-light text-sm line-clamp-3 mt-auto">
+                  <p className="text-[#333] leading-[1.47] text-[17px] line-clamp-3 mt-auto">
                     {event.description}
                   </p>
                 </div>
@@ -108,7 +106,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
         <div className="text-center mt-12 relative z-10">
           <Link
             href="/calendar"
-            className="inline-flex items-center gap-2 text-sm font-medium text-brand-400 hover:text-brand-300 transition-colors"
+            className="inline-flex items-center gap-2 text-[17px] text-[#0066cc]"
           >
             {fr ? 'Voir tout le calendrier' : 'View full calendar'}
             <span aria-hidden>→</span>

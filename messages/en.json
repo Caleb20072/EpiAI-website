@@ -171,6 +171,8 @@
         "myAttendance": "My attendance",
         "blogAdmin": "Blog",
         "eventsAdmin": "Events",
+        "modules": "Modules",
+        "fees": "Fees",
         "signIn": "Sign In",
         "signInRequired": "Sign In Required"
     },

@@ -29,7 +29,6 @@ export default async function BlogSection() {
 
   return (
     <section id="blog" className="py-24 px-4 min-h-screen relative">
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-brand-900/15 to-transparent -z-10" />
       <div className="max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white tracking-tight">

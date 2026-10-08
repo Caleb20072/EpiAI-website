@@ -17,6 +17,8 @@ const isProtectedRoute = createRouteMatcher([
   '/my-registrations(.*)',
   '/my-resources(.*)',
   '/attendance(.*)',
+  '/modules(.*)',
+  '/presence(.*)',
   '/api/notifications(.*)',
   '/api/push/subscribe(.*)',
   '/api/onboarding(.*)',
@@ -28,6 +30,9 @@ const isProtectedRoute = createRouteMatcher([
   '/api/resources(.*)',
   '/api/events(.*)',
   '/api/activities(.*)',
+  '/api/modules(.*)',
+  '/api/me(.*)',
+  '/api/admin/fees(.*)',
   '/api/chat(.*)',
   '/api/stats(.*)',
   '/api/users(.*)',
@@ -44,6 +49,8 @@ const isProtectedRoute = createRouteMatcher([
   '/(fr|en)/my-registrations(.*)',
   '/(fr|en)/my-resources(.*)',
   '/(fr|en)/attendance(.*)',
+  '/(fr|en)/modules(.*)',
+  '/(fr|en)/presence(.*)',
   '/(fr|en)/change-password(.*)',
 ]);
 

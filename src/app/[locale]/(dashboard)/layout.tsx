@@ -28,6 +28,8 @@ import {
   UsersRound,
   MessagesSquare,
   BookOpen,
+  GraduationCap,
+  Wallet,
 } from 'lucide-react';
 import { UserButton, useClerk, useUser } from '@clerk/nextjs';
 import { userButtonProps } from '@/lib/clerk/user-button';
@@ -137,6 +139,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       badge: notifCounts.activity,
     },
     {
+      label: t('modules'),
+      href: `/${locale}/modules`,
+      icon: GraduationCap,
+      active: pathname.startsWith(`/${locale}/modules`),
+    },
+    {
       label: t('profile'),
       href: `/${locale}/profile`,
       icon: User,
@@ -195,6 +203,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       adminOnly: true,
     },
     {
+      label: t('fees'),
+      href: `/${locale}/admin/fees`,
+      icon: Wallet,
+      active: pathname.startsWith(`/${locale}/admin/fees`),
+      adminOnly: true,
+    },
+    {
       label: t('admin'),
       href: `/${locale}/admin`,
       icon: Users,
@@ -242,7 +257,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <BrandLogo size="md" />
                 <div>
                   <span className="text-primary font-semibold text-base tracking-tight">EPI&apos;AI</span>
-                  <p className="text-muted text-[11px] font-medium uppercase tracking-wider">Dashboard</p>
+                  <p className="text-muted text-[12px] font-normal">Espace membre</p>
                 </div>
               </Link>
             </div>
@@ -271,7 +286,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {isAdmin && (
                 <>
                   <div className="pt-4 pb-1.5">
-                    <p className="px-3 text-[10px] font-bold text-muted uppercase tracking-widest">
+                    <p className="px-3 text-[12px] font-semibold text-muted">
                       {t('adminSection')}
                     </p>
                   </div>
@@ -299,7 +314,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <div className="px-1 pt-3">
                       <a
                         href={`/${locale}/admin/projects/new`}
-                        className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition-colors no-underline"
+                        className="flex items-center justify-center gap-2 w-full min-h-11 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-white text-[14px] font-normal transition-transform active:scale-95 no-underline"
                       >
                         <Plus className="w-4 h-4" />
                         <span>{t('newProject')}</span>
@@ -350,13 +365,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         <div className="lg:pl-64 min-h-screen flex flex-col">
-          <header className="sticky top-0 z-30 hidden lg:flex items-center justify-end gap-2 px-6 h-14 border-b border-subtle bg-surface/90 backdrop-blur-md">
+          <header className="sticky top-0 z-30 hidden lg:flex items-center justify-end gap-2 px-6 h-[52px] border-b border-subtle bg-surface">
             <GlobalSearch />
             <NotificationBell />
             <ThemeToggle />
           </header>
 
-          <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-surface/95 backdrop-blur-md border-b border-subtle lg:hidden">
+          <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-11 bg-surface border-b border-subtle lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
               className="p-2 -ml-1 text-secondary hover:text-primary rounded-lg"

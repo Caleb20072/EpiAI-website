@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import Footer from '@/components/Footer';
 import { Loader2 } from 'lucide-react';
 
@@ -57,22 +56,12 @@ export default function JoinPage() {
     };
 
     return (
-        <div className="relative min-h-screen font-[family-name:var(--font-geist-sans)] text-white overflow-x-hidden">
-            {/* Background Image */}
-            <div className="fixed inset-0 -z-10">
-                <Image
-                    src="/assets/hero-bg.jpg"
-                    alt="Background"
-                    fill
-                    className="object-cover brightness-[0.2] scale-105"
-                    priority
-                />
-            </div>
+        <div className="paper-page min-h-screen overflow-x-hidden">
 
             <main className="max-w-5xl mx-auto px-4 sm:px-6 py-24 sm:py-32 relative z-10">
                 {/* Intro Section */}
                 <div className="text-center mb-20 animate-fade-in-up">
-                    <h1 className="text-4xl md:text-6xl font-black mb-8 text-white tracking-tight">
+                    <h1 className="text-[40px] md:text-[56px] font-semibold mb-6 leading-[1.07]">
                         {t('title')}
                     </h1>
                     <div className="glass-panel p-8 md:p-12 rounded-[2.5rem] border border-white/10 bg-white/5 backdrop-blur-xl max-w-4xl mx-auto shadow-2xl transition-all duration-500 hover:border-white/20">
@@ -282,7 +271,7 @@ export default function JoinPage() {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full min-h-12 rounded-full bg-[#0066cc] text-white font-light text-[18px] active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {isLoading ? (
                                             <>

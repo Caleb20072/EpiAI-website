@@ -4,15 +4,13 @@ export default function ProblemSection() {
     const t = useTranslations('About');
 
     return (
-        <section className="py-20 px-4 bg-black/40 relative overflow-hidden">
-            <div className="max-w-4xl mx-auto text-center relative z-10">
-                <div className="inline-block px-3 py-1 rounded-full border border-red-500/30 bg-red-500/10 text-red-300 text-[10px] font-bold mb-4 tracking-widest uppercase">
-                    The Challenge
-                </div>
-                <h2 className="text-2xl md:text-4xl font-bold mb-6 text-white tracking-tight">
+        <section className="tile-parchment py-20 px-6">
+            <div className="max-w-3xl mx-auto text-center">
+                <p className="text-[14px] text-[#0066cc] mb-3">Le défi</p>
+                <h2 className="text-[34px] md:text-[40px] font-semibold leading-[1.1] mb-6 text-[#1d1d1f]">
                     {t('motivation_title')}
                 </h2>
-                <p className="text-base md:text-lg text-gray-300 leading-relaxed font-light">
+                <p className="text-[17px] text-[#333] leading-[1.47]">
                     {t('motivation_text')}
                 </p>
             </div>

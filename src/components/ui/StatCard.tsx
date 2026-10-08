@@ -26,8 +26,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-3 p-4 rounded-xl bg-card border border-default shadow-card',
-        'hover:border-brand-500/20 transition-colors',
+        'flex items-center justify-between gap-3 p-6 rounded-[18px] bg-card border border-default',
         className
       )}
     >
@@ -39,10 +38,10 @@ export function StatCard({
           </div>
         ) : (
           <>
-            <p className="text-[11px] font-semibold text-muted uppercase tracking-wider truncate">
+            <p className="text-[14px] font-normal text-muted truncate">
               {label}
             </p>
-            <p className="text-2xl font-semibold text-primary tabular-nums tracking-tight mt-0.5">
+            <p className="text-[28px] font-semibold text-primary tabular-nums leading-none mt-1">
               {value}
             </p>
             {trend ? <p className="text-xs text-muted mt-0.5">{trend}</p> : null}
@@ -77,7 +76,7 @@ export function Badge({ children, variant = 'default', className }: BadgeProps) 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border',
+        'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[12px] font-normal border',
         badgeVariants[variant],
         className
       )}
@@ -100,8 +99,8 @@ export function ActionCard({ href, icon: Icon, label, iconClassName, className }
     <a
       href={href}
       className={cn(
-        'block p-4 rounded-xl border border-default bg-card shadow-card',
-        'hover:bg-card-muted hover:border-brand-500/20 transition-all text-left',
+        'block p-6 rounded-[18px] border border-default bg-card',
+        'hover:bg-card-muted transition-colors text-left active:scale-[0.98]',
         className
       )}
     >

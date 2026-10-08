@@ -120,19 +120,19 @@ export default function Chatbot() {
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] flex flex-col items-end max-w-[calc(100vw-2rem)]">
       {isOpen && (
-        <div className="mb-3 sm:mb-4 w-[min(100vw-2rem,350px)] h-[min(70dvh,500px)] rounded-2xl sm:rounded-[2rem] bg-slate-900/95 backdrop-blur-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden glass-panel">
-          <div className="p-4 sm:p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-b border-white/10 flex items-center justify-between shrink-0">
+        <div className="mb-3 sm:mb-4 w-[min(100vw-2rem,350px)] h-[min(70dvh,500px)] rounded-[18px] bg-white border border-[#e0e0e0] flex flex-col overflow-hidden text-[#1d1d1f]">
+          <div className="p-4 border-b border-[#f0f0f0] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center border border-white/20 shadow-lg">
+              <div className="w-10 h-10 shrink-0 rounded-full bg-[#0066cc] flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
               <div className="min-w-0">
-                <h3 className="text-sm font-bold text-white leading-tight truncate">{t('title')}</h3>
+                <h3 className="text-[17px] font-semibold text-[#1d1d1f] leading-tight truncate">{t('title')}</h3>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-                  <span className="text-[10px] text-brand-400/80 font-medium uppercase tracking-wider">
+                  <span className="text-[12px] text-[#7a7a7a]">
                     {t('online')}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ export default function Chatbot() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="shrink-0 p-2 -mr-1 text-gray-400 hover:text-white transition-colors"
+              className="shrink-0 p-2 -mr-1 text-[#7a7a7a] hover:text-[#1d1d1f] transition-colors"
               aria-label="Close"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -154,17 +154,17 @@ export default function Chatbot() {
             {messages.map((msg, i) => (
               <div key={i}>
                 <div
-                  className={`rounded-2xl p-3 text-xs sm:text-sm leading-relaxed max-w-[90%] ${
+                  className={`rounded-[18px] p-3 text-[14px] leading-relaxed max-w-[90%] ${
                     msg.role === 'user'
-                      ? 'bg-brand-600/20 border border-brand-500/25 text-blue-100 ml-auto'
-                      : 'bg-white/5 border border-white/10 text-gray-200'
+                      ? 'bg-[#0066cc] text-white ml-auto'
+                      : 'bg-[#f5f5f7] text-[#1d1d1f]'
                   }`}
                 >
                   {msg.text}
                 </div>
                 {msg.suggestions && msg.suggestions.length > 0 && (
                   <div className="mt-2 space-y-1.5">
-                    <p className="text-[10px] text-white/40 uppercase tracking-wider">
+                    <p className="text-[12px] text-[#7a7a7a]">
                       {t('fallbackSuggestions')}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -174,7 +174,7 @@ export default function Chatbot() {
                           type="button"
                           onClick={() => askChip(id, false)}
                           disabled={loading}
-                          className="px-2.5 py-1 rounded-lg bg-brand-500/15 border border-brand-500/30 text-brand-300 text-[11px] hover:bg-brand-500/25 transition-colors disabled:opacity-50"
+                          className="px-3 py-1 rounded-full border border-[#e0e0e0] text-[#0066cc] text-[12px] disabled:opacity-50"
                         >
                           {t(`questions.${id}`)}
                         </button>
@@ -186,7 +186,7 @@ export default function Chatbot() {
             ))}
 
             {loading && (
-              <div className="rounded-2xl p-3 text-xs sm:text-sm bg-white/5 border border-white/10 text-white/50 max-w-[90%]">
+              <div className="rounded-[18px] p-3 text-[14px] bg-[#f5f5f7] text-[#7a7a7a] max-w-[90%]">
                 {t('loading')}
               </div>
             )}
@@ -224,12 +224,12 @@ export default function Chatbot() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t('placeholder')}
                 disabled={loading}
-                className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors pr-12 disabled:opacity-50"
+                className="w-full bg-white border border-[#e0e0e0] rounded-full py-3 px-4 text-[17px] text-[#1d1d1f] placeholder:text-[#7a7a7a] focus:outline-none focus:border-[#0066cc] transition-colors pr-12 disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="absolute right-2 top-1.5 p-2 rounded-lg bg-brand-600/80 hover:bg-brand-600 text-white transition-all min-w-[44px] min-h-[44px] flex items-center justify-center disabled:opacity-40"
+                className="absolute right-1 top-1 p-2 rounded-full bg-[#0066cc] text-white min-w-11 min-h-11 flex items-center justify-center disabled:opacity-40 active:scale-95"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -246,7 +246,7 @@ export default function Chatbot() {
         className={`w-14 h-14 min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center border transition-all duration-300 shadow-2xl ${
           isOpen
             ? 'bg-slate-800 border-white/20 scale-90'
-            : 'bg-gradient-to-tr from-blue-600 to-indigo-600 border-white/10 hover:scale-110 active:scale-95'
+            : 'bg-[#0066cc] border-transparent active:scale-95'
         }`}
         aria-label={t('title')}
       >

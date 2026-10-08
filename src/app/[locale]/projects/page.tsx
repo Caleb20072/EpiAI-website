@@ -1,26 +1,13 @@
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 
 export default function Projects() {
   const t = useTranslations('Header');
 
   return (
-    <div className="relative min-h-screen text-white font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
-      <div className="absolute inset-0 -z-10 bg-gray-900">
-        <Image
-          src="/assets/hero-bg.jpg"
-          alt="Background"
-          fill
-          quality={100}
-          className="object-cover brightness-[0.4]"
-          priority
-        />
-      </div>
-      <main className="pt-24 sm:pt-32 px-4 max-w-7xl mx-auto flex flex-col items-center">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-8">{t('projects')}</h1>
-        <div className="p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
-          <p className="text-xl text-gray-300">Content coming soon...</p>
-        </div>
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] overflow-x-hidden">
+      <main className="pt-24 sm:pt-32 px-4 max-w-3xl mx-auto">
+        <h1 className="text-[40px] font-semibold mb-4">{t('projects')}</h1>
+        <p className="text-[17px] text-[#333]">Content coming soon...</p>
       </main>
     </div>
   );

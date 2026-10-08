@@ -1,5 +1,4 @@
 import { getLocale } from 'next-intl/server';
-import Image from 'next/image';
 import Footer from '@/components/Footer';
 import { getActivePartners } from '@/lib/partners/repository';
 
@@ -8,10 +7,7 @@ export default async function PartnersPage() {
   const partners = await getActivePartners();
 
   return (
-    <div className="relative min-h-screen text-white overflow-x-hidden">
-      <div className="absolute inset-0 -z-10 bg-gray-900">
-        <Image src="/assets/hero-bg.jpg" alt="" fill className="object-cover brightness-[0.35]" priority />
-      </div>
+    <div className="paper-page min-h-screen overflow-x-hidden">
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center">
           {locale === 'fr' ? 'Partenaires & Alumni' : 'Partners & Alumni'}

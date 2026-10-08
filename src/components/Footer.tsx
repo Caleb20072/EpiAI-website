@@ -48,32 +48,32 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="py-12 px-4 border-t border-white/10 bg-black/40 backdrop-blur-md">
-            <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+        <footer className="py-16 px-6 bg-[#f5f5f7] text-[#333]">
+            <div className="max-w-[1440px] mx-auto grid md:grid-cols-4 gap-10">
                 <div className="col-span-1 md:col-span-2">
-                    <h3 className="text-xl font-bold text-white mb-2 tracking-wide">EPI&apos;AI</h3>
-                    <p className="text-gray-400 text-xs font-light max-w-sm leading-relaxed">
+                    <h3 className="text-[17px] font-semibold text-[#1d1d1f] mb-2">EPI&apos;AI</h3>
+                    <p className="text-[#333] text-[12px] font-normal max-w-sm leading-relaxed">
                         {t('description')}
                     </p>
-                    <div className="mt-4 text-gray-600 text-[10px]">
+                    <div className="mt-6 text-[#7a7a7a] text-[12px]">
                         &copy; {currentYear} EPI&apos;AI. {t('rights')}
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
-                    <h4 className="text-white font-bold text-sm mb-1">{t('navigation')}</h4>
-                    <a href="#home" className="text-gray-400 hover:text-white transition-colors text-xs">{t('home')}</a>
-                    <a href="#team" className="text-gray-400 hover:text-white transition-colors text-xs">{t('team')}</a>
-                    <a href="#projects" className="text-gray-400 hover:text-white transition-colors text-xs">{t('projects')}</a>
-                    <a href="#events" className="text-gray-400 hover:text-white transition-colors text-xs">{t('events')}</a>
-                    <Link href="/blog" className="text-gray-400 hover:text-white transition-colors text-xs">{t('blog')}</Link>
-                    <Link href="/partners" className="text-gray-400 hover:text-white transition-colors text-xs">{t('partners')}</Link>
-                    <Link href="/calendar" className="text-gray-400 hover:text-white transition-colors text-xs">{t('calendar')}</Link>
-                    <Link href="/join" className="text-gray-400 hover:text-white transition-colors text-xs">{t('join')}</Link>
+                    <h4 className="text-[#1d1d1f] font-semibold text-[14px] mb-2">{t('navigation')}</h4>
+                    <a href="#home" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('home')}</a>
+                    <a href="#team" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('team')}</a>
+                    <a href="#projects" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('projects')}</a>
+                    <a href="#events" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('events')}</a>
+                    <Link href="/blog" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('blog')}</Link>
+                    <Link href="/partners" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('partners')}</Link>
+                    <Link href="/calendar" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('calendar')}</Link>
+                    <Link href="/join" className="text-[#333] hover:text-[#0066cc] transition-colors text-[17px] leading-[2.2]">{t('join')}</Link>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <h4 className="text-white font-bold text-sm mb-1">{t('follow')}</h4>
+                    <h4 className="text-[#1d1d1f] font-semibold text-[14px] mb-2">{t('follow')}</h4>
                     <div className="flex flex-wrap gap-3">
                         {socials.map((social) => (
                             <a
@@ -81,7 +81,7 @@ export default function Footer() {
                                 href={social.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-600 hover:border-brand-500 transition-all duration-300"
+                                className="w-11 h-11 rounded-full bg-white border border-[#e0e0e0] flex items-center justify-center text-[#1d1d1f] hover:text-white hover:bg-[#0066cc] hover:border-[#0066cc] transition-colors"
                                 aria-label={social.name}
                             >
                                 {social.icon}

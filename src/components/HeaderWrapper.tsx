@@ -3,7 +3,7 @@ import Header from './Header';
 
 const DASHBOARD_SEGMENTS = [
     'dashboard', 'admin', 'profile', 'settings',
-    'resources', 'forum', 'events', 'my-registrations',
+    'resources', 'forum', 'events', 'modules', 'presence', 'my-registrations',
     'my-resources', 'change-password', 'intranet', 'chat', 'attendance',
 ];
 

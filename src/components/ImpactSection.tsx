@@ -25,18 +25,16 @@ export default function ImpactSection() {
     const t = useTranslations('About');
 
     return (
-        <section className="py-20 px-4 relative overflow-hidden">
-            <div className="absolute right-0 top-1/2 w-96 h-96 bg-brand-600/8 rounded-full blur-[100px] -z-10" />
-
+        <section className="tile-parchment py-20 px-6">
             <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-                <div className="flex-1 text-center md:text-left z-10">
-                    <h2 className="text-2xl md:text-4xl font-bold mb-6 text-white">{t('impact_title')}</h2>
-                    <p className="text-lg text-zinc-400 leading-relaxed font-light mb-8">
+                <div className="flex-1 text-center md:text-left">
+                    <h2 className="text-[40px] font-semibold mb-4 text-[#1d1d1f]">{t('impact_title')}</h2>
+                    <p className="text-[17px] text-[#333] leading-[1.47] mb-8">
                         {t('impact_text')}
                     </p>
                     <div className="flex flex-col gap-4">
                         {impactItems.map((item) => (
-                            <div key={item.label} className="flex items-center gap-4 text-zinc-200">
+                            <div key={item.label} className="flex items-center gap-4 text-[#1d1d1f]">
                                 <div className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/25 flex items-center justify-center">
                                     <svg className="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         {item.icon}
@@ -48,31 +46,6 @@ export default function ImpactSection() {
                     </div>
                 </div>
 
-                <div className="flex-1 w-full relative flex justify-center">
-                    <div className="relative w-64 h-64">
-                        <div className="absolute inset-0 bg-brand-500/10 rounded-full blur-[60px]" />
-                        <svg className="w-full h-full text-white/10 animate-float" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M100 10L177.942 55V145L100 190L22.0577 145V55L100 10Z" stroke="url(#impact-gradient-0)" strokeWidth="2" />
-                            <path d="M100 30L160.622 65V135L100 170L39.3782 135V65L100 30Z" stroke="url(#impact-gradient-1)" strokeWidth="2" opacity="0.6" />
-                            <path d="M100 50L143.301 75V125L100 150L56.6987 125V75L100 50Z" stroke="url(#impact-gradient-2)" strokeWidth="2" opacity="0.3" />
-                            <circle cx="100" cy="100" r="8" fill="#14b8a6" className="opacity-80" />
-                            <defs>
-                                <linearGradient id="impact-gradient-0" x1="100" y1="10" x2="100" y2="190" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#2dd4bf" />
-                                    <stop offset="1" stopColor="#0f766e" />
-                                </linearGradient>
-                                <linearGradient id="impact-gradient-1" x1="100" y1="30" x2="100" y2="170" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#2dd4bf" />
-                                    <stop offset="1" stopColor="#0f766e" />
-                                </linearGradient>
-                                <linearGradient id="impact-gradient-2" x1="100" y1="50" x2="100" y2="150" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#2dd4bf" />
-                                    <stop offset="1" stopColor="#0f766e" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </div>
-                </div>
             </div>
         </section>
     );

@@ -4,25 +4,24 @@ export default function MissionSection() {
     const t = useTranslations('About');
 
     return (
-        <section className="py-20 px-4 relative">
+        <section className="tile-canvas py-20 px-6">
             <div className="max-w-5xl mx-auto text-center">
-                <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white tracking-tight">
+                <h2 className="text-[40px] font-semibold leading-[1.1] mb-4 text-[#1d1d1f]">
                     {t('title')}
                 </h2>
-                <p className="text-base md:text-lg text-zinc-300 leading-relaxed max-w-2xl mx-auto font-light">
+                <p className="text-[17px] text-[#333] leading-[1.47] max-w-2xl mx-auto">
                     {t('intro')}
                 </p>
 
-                <div className="mt-12 grid md:grid-cols-2 gap-6 text-left">
-                    <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-brand-500/25 transition-all">
-                        <h3 className="text-xl font-semibold mb-3 text-brand-300">{t('approach_title')}</h3>
-                        <p className="text-sm text-zinc-400 font-light leading-relaxed">{t('approach_text')}</p>
+                <div className="mt-12 grid md:grid-cols-2 gap-4 text-left">
+                    <div className="p-6 rounded-[18px] bg-white border border-[#e0e0e0]">
+                        <h3 className="text-[17px] font-semibold mb-2 text-[#1d1d1f]">{t('approach_title')}</h3>
+                        <p className="text-[17px] text-[#333] leading-[1.47]">{t('approach_text')}</p>
                     </div>
-
-                    <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-brand-500/25 transition-all">
-                        <h3 className="text-xl font-semibold mb-3 text-brand-300">Excellence</h3>
-                        <p className="text-sm text-zinc-400 font-light leading-relaxed">
-                            We foster a rigorous environment where students master the theoretical foundations of AI and Data Science.
+                    <div className="p-6 rounded-[18px] bg-white border border-[#e0e0e0]">
+                        <h3 className="text-[17px] font-semibold mb-2 text-[#1d1d1f]">Excellence</h3>
+                        <p className="text-[17px] text-[#333] leading-[1.47]">
+                            Un cadre exigeant, où les étudiants maîtrisent les bases de l’IA et de la science des données.
                         </p>
                     </div>
                 </div>

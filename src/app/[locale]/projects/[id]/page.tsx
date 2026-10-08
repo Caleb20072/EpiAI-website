@@ -70,16 +70,7 @@ export default function ProjectDetailPage() {
     : false;
 
   return (
-    <div className="relative min-h-screen font-[family-name:var(--font-geist-sans)] text-white overflow-x-hidden">
-      <div className="fixed inset-0 -z-10">
-        <Image
-          src="/assets/hero-bg.jpg"
-          alt="Background"
-          fill
-          className="object-cover brightness-[0.2] scale-105"
-          priority
-        />
-      </div>
+    <div className="paper-page min-h-screen overflow-x-hidden">
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-24 sm:py-32 relative z-10">
         <Link href="/#projects" className="inline-flex items-center gap-2 text-brand-400 hover:text-brand-300 transition-colors mb-12 group">

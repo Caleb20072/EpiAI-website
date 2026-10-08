@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { PageHeader, Panel, Badge } from '@/components/ui';
+import { WorkspaceCard } from '@/components/modules/WorkspaceCard';
 
 export default function ProfilePage() {
   const params = useParams();
@@ -207,6 +208,8 @@ export default function ProfilePage() {
             </div>
           </Panel>
         </div>
+
+        <WorkspaceCard locale={locale} />
 
         {role && role.permissions && role.permissions.length > 0 ? (
           <Panel title="Permissions">

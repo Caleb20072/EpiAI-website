@@ -1,5 +1,4 @@
 import { getLocale } from 'next-intl/server';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
 import { Link } from '@/i18n/routing';
@@ -24,16 +23,7 @@ export default async function PublicEventDetailPage({
   }
 
   return (
-    <div className="relative min-h-screen text-white overflow-x-hidden">
-      <div className="absolute inset-0 -z-10 bg-gray-900">
-        <Image
-          src="/assets/hero-bg.jpg"
-          alt=""
-          fill
-          className="object-cover brightness-[0.35]"
-          priority
-        />
-      </div>
+    <div className="paper-page min-h-screen overflow-x-hidden">
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
         <Link
