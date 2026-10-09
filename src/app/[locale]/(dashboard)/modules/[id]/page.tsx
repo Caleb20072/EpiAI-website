@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { PageHeader, Panel, Button, Badge } from '@/components/ui';
+import { MemberPicker } from '@/components/members/MemberPicker';
 
 interface Enrollment {
   id: string;
@@ -155,6 +156,9 @@ export default function ModuleDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [github, setGithub] = useState('');
+  const [enrollId, setEnrollId] = useState('');
+  const [enrollName, setEnrollName] = useState('');
+  const [enrollKey, setEnrollKey] = useState(0);
   const [myGithub, setMyGithub] = useState('');
   const [project, setProject] = useState({ title: '', description: '', startsAt: '' });
   const [projectFile, setProjectFile] = useState<File | null>(null);
@@ -287,6 +291,10 @@ export default function ModuleDetailPage() {
             className="flex flex-col sm:flex-row gap-2 mt-4"
             onSubmit={async (ev) => {
               ev.preventDefault();
+              if (!email) {
+                setError(fr ? 'Choisis l’étudiant dans les suggestions.' : 'Pick the student from the suggestions.');
+                return;
+              }
               const ok = await post(`/api/modules/${id}/enroll`, {
                 force: true,
                 email,
@@ -295,17 +303,27 @@ export default function ModuleDetailPage() {
               if (ok.ok) {
                 setEmail('');
                 setGithub('');
+                setEnrollId('');
+                setEnrollName('');
+                setEnrollKey((key) => key + 1);
               }
             }}
           >
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@etudiant"
-              className="flex-1 rounded-lg border border-default bg-card px-3 py-2 text-sm"
+            <div className="flex-1 min-w-[12rem]">
+            <MemberPicker
+              key={enrollKey}
+              locale={locale}
+              selectedId={enrollId}
+              selectedName={enrollName}
+              placeholder={fr ? 'Nom de l’étudiant' : 'Student name'}
+              onSelect={(member) => {
+                setEnrollId(member?.id || '');
+                setEnrollName(member?.name || '');
+                setEmail(member?.email || '');
+                setGithub(member?.githubUsername || '');
+              }}
             />
+            </div>
             <input
               value={github}
               onChange={(e) => setGithub(e.target.value)}
@@ -324,15 +342,20 @@ export default function ModuleDetailPage() {
               ev.preventDefault();
               const ok = await post(`/api/modules/${id}`, { leadGithub }, 'PATCH');
               if (ok.ok) {
+                const repos = Number(ok.data?.repos || 0);
                 const refused = Number(ok.data?.refused || 0);
                 setAccessNote(
-                  refused > 0
+                  repos === 0
                     ? fr
-                      ? 'Pseudo enregistré, mais GitHub a refusé l’accès à certains dépôts.'
-                      : 'Username saved, but GitHub refused access to some repositories.'
-                    : fr
-                      ? 'Invitation envoyée. Accepte-la sur GitHub, puis ouvre le dépôt pour lire le code.'
-                      : 'Invite sent. Accept it on GitHub, then open the repository to read the code.'
+                      ? 'Pseudo enregistré. L’invitation part quand un étudiant a un dépôt : crée un projet, puis inscris-le avec son pseudo GitHub.'
+                      : 'Username saved. The invite goes out once a student has a repository: create a project, then enroll them with their GitHub username.'
+                    : refused > 0
+                      ? fr
+                        ? 'Pseudo enregistré, mais GitHub a refusé l’accès à certains dépôts.'
+                        : 'Username saved, but GitHub refused access to some repositories.'
+                      : fr
+                        ? 'Invitation envoyée. Accepte-la sur GitHub, puis ouvre le dépôt pour lire le code.'
+                        : 'Invite sent. Accept it on GitHub, then open the repository to read the code.'
                 );
               }
             }}

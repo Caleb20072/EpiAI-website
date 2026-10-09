@@ -2,6 +2,7 @@ export interface MemberSuggestion {
   id: string;
   name: string;
   email: string;
+  githubUsername?: string | null;
 }
 
 export function foldText(value: string): string {

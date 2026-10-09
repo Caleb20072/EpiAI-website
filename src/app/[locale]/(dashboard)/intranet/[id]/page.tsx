@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import type { IActivity, IActivityRegistration, IAttendance } from '@/lib/activities/types';
 import { PageHeader, Panel, Button, Badge } from '@/components/ui';
+import { MemberPicker } from '@/components/members/MemberPicker';
 
 export default function ActivityDetailPage() {
   const params = useParams();
@@ -39,6 +40,7 @@ export default function ActivityDetailPage() {
   const [forceUserId, setForceUserId] = useState('');
   const [forceUserName, setForceUserName] = useState('');
   const [forceUserEmail, setForceUserEmail] = useState('');
+  const [forceKey, setForceKey] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -121,6 +123,7 @@ export default function ActivityDetailPage() {
         setForceUserId('');
         setForceUserName('');
         setForceUserEmail('');
+        setForceKey((key) => key + 1);
         fetchData();
       } else {
         const data = await res.json();
@@ -228,26 +231,19 @@ export default function ActivityDetailPage() {
               <h4 className="text-sm font-semibold text-primary">
                 {locale === 'fr' ? 'Inscription forcée' : 'Force Registration'}
               </h4>
-              <div className="grid grid-cols-3 gap-3">
-                <input
-                  value={forceUserId}
-                  onChange={(e) => setForceUserId(e.target.value)}
-                  placeholder="User ID (Clerk)"
-                  className="px-3 py-2 rounded-lg bg-input border border-default text-primary text-sm placeholder:text-muted focus:border-blue-500/50 outline-none"
-                />
-                <input
-                  value={forceUserName}
-                  onChange={(e) => setForceUserName(e.target.value)}
-                  placeholder={locale === 'fr' ? 'Nom complet' : 'Full name'}
-                  className="px-3 py-2 rounded-lg bg-input border border-default text-primary text-sm placeholder:text-muted focus:border-blue-500/50 outline-none"
-                />
-                <input
-                  value={forceUserEmail}
-                  onChange={(e) => setForceUserEmail(e.target.value)}
-                  placeholder="Email"
-                  className="px-3 py-2 rounded-lg bg-input border border-default text-primary text-sm placeholder:text-muted focus:border-blue-500/50 outline-none"
-                />
-              </div>
+              <MemberPicker
+                key={forceKey}
+                locale={locale}
+                selectedId={forceUserId}
+                selectedName={forceUserName}
+                placeholder={locale === 'fr' ? 'Nom du membre' : 'Member name'}
+                onSelect={(member) => {
+                  setForceUserId(member?.id || '');
+                  setForceUserName(member?.name || '');
+                  setForceUserEmail(member?.email || '');
+                }}
+              />
+              {forceUserEmail ? <p className="text-xs text-muted">{forceUserEmail}</p> : null}
               <button
                 onClick={handleForceRegister}
                 className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"

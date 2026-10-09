@@ -9,9 +9,10 @@ interface MemberPickerProps {
   selectedId: string;
   selectedName: string;
   onSelect: (member: MemberSuggestion | null) => void;
+  placeholder?: string;
 }
 
-export function MemberPicker({ locale, selectedId, selectedName, onSelect }: MemberPickerProps) {
+export function MemberPicker({ locale, selectedId, selectedName, onSelect, placeholder }: MemberPickerProps) {
   const fr = locale === 'fr';
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -101,7 +102,7 @@ export function MemberPicker({ locale, selectedId, selectedName, onSelect }: Mem
         aria-expanded={showList}
         aria-controls={listId}
         aria-autocomplete="list"
-        placeholder={fr ? 'Nom du lead' : 'Lead name'}
+        placeholder={placeholder || (fr ? 'Nom du lead' : 'Lead name')}
         ref={inputRef}
         value={query}
         autoComplete="off"
@@ -159,7 +160,11 @@ export function MemberPicker({ locale, selectedId, selectedName, onSelect }: Mem
                   }`}
                 >
                   <span className="text-sm text-primary">{member.name}</span>
-                  {member.email ? <span className="text-xs text-muted">{member.email}</span> : null}
+                  {member.email || member.githubUsername ? (
+                    <span className="text-xs text-muted">
+                      {[member.email, member.githubUsername ? `@${member.githubUsername}` : ''].filter(Boolean).join(' · ')}
+                    </span>
+                  ) : null}
                 </button>
               </li>
             ))
