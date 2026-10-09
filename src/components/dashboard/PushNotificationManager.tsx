@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Bell, BellOff, X } from 'lucide-react';
 
 function urlBase64ToUint8Array(base64String: string) {
@@ -13,10 +14,13 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export default function PushNotificationManager() {
+  const params = useParams();
+  const fr = ((params.locale as string) || 'fr') === 'fr';
   const [supported, setSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const ok =
@@ -33,16 +37,40 @@ export default function PushNotificationManager() {
 
   const subscribe = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const keyRes = await fetch('/api/push/vapid-key');
-      if (!keyRes.ok) throw new Error('Push not configured');
+      if (!keyRes.ok) {
+        setError(
+          fr
+            ? 'Les alertes ne sont pas encore activées sur le serveur. Rien n’a été enregistré.'
+            : 'Alerts are not configured on the server yet. Nothing was saved.'
+        );
+        return;
+      }
       const { publicKey } = await keyRes.json();
+      if (!publicKey) {
+        setError(
+          fr
+            ? 'Les alertes ne sont pas encore activées sur le serveur. Rien n’a été enregistré.'
+            : 'Alerts are not configured on the server yet. Nothing was saved.'
+        );
+        return;
+      }
 
       const reg = await navigator.serviceWorker.register('/push-sw.js');
       await navigator.serviceWorker.ready;
 
       const perm = await Notification.requestPermission();
       setPermission(perm);
+      if (perm === 'denied') {
+        setError(
+          fr
+            ? 'Le navigateur a bloqué les notifications. Autorise-les dans les paramètres du site, puis réessaie.'
+            : 'The browser blocked notifications. Allow them in the site settings, then try again.'
+        );
+        return;
+      }
       if (perm !== 'granted') return;
 
       const sub = await reg.pushManager.subscribe({
@@ -51,7 +79,7 @@ export default function PushNotificationManager() {
       });
 
       const json = sub.toJSON();
-      await fetch('/api/push/subscribe', {
+      const saveRes = await fetch('/api/push/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -59,15 +87,28 @@ export default function PushNotificationManager() {
           keys: json.keys,
         }),
       });
+      if (!saveRes.ok) {
+        setError(
+          fr
+            ? 'Le navigateur a accepté, mais l’enregistrement a échoué. Réessaie.'
+            : 'The browser allowed it, but saving failed. Try again.'
+        );
+        return;
+      }
 
       localStorage.removeItem('epiai-push-dismissed');
       setDismissed(true);
     } catch (err) {
       console.warn('[Push] Subscription failed:', err);
+      setError(
+        fr
+          ? 'L’activation a échoué. Rien n’a été enregistré.'
+          : 'Activation failed. Nothing was saved.'
+      );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fr]);
 
   const dismiss = () => {
     localStorage.setItem('epiai-push-dismissed', 'true');
@@ -82,12 +123,14 @@ export default function PushNotificationManager() {
         <Bell className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" />
         <div>
           <p className="text-sm font-medium text-primary">
-            Activer les alertes hors ligne
+            {fr ? 'Activer les alertes hors ligne' : 'Turn on alerts'}
           </p>
           <p className="text-xs text-secondary mt-0.5">
-            Reçois une notification sur ton appareil quand il y a une réponse forum,
-            un événement ou un message chat — même sans ouvrir Epi&apos;AI.
+            {fr
+              ? 'Reçois une notification sur ton appareil quand il y a une réponse forum, un événement ou un message chat — même sans ouvrir Epi’AI.'
+              : 'Get a notification on your device for a forum reply, an event, or a chat message — even when Epi’AI is closed.'}
           </p>
+          {error ? <p className="text-xs text-red-400 mt-1">{error}</p> : null}
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
@@ -97,7 +140,7 @@ export default function PushNotificationManager() {
           disabled={loading}
           className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-brand-500 disabled:opacity-50"
         >
-          {loading ? 'Activation…' : 'Activer'}
+          {loading ? (fr ? 'Activation…' : 'Turning on…') : fr ? 'Activer' : 'Turn on'}
         </button>
         <button
           type="button"
