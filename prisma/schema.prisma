@@ -267,6 +267,7 @@ model LearningModule {
   description String   @default("")
   leadUserId  String   @map("lead_user_id")
   leadName    String   @map("lead_name")
+  leadGithub  String?  @map("lead_github")
   createdBy   String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -274,6 +275,7 @@ model LearningModule {
   enrollments ModuleEnrollment[]
   projects    ModuleProject[]
   activities  Activity[]
+  materials   ModuleMaterial[]
 
   @@index([leadUserId])
   @@map("learning_modules")
@@ -311,9 +313,31 @@ model ModuleProject {
   module      LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   submissions ModuleSubmission[]
   repos       ModuleProjectRepo[]
+  materials   ModuleMaterial[]
 
   @@index([moduleId, startsAt])
   @@map("module_projects")
+}
+
+model ModuleMaterial {
+  id        String   @id @default(cuid())
+  moduleId  String   @map("module_id")
+  projectId String?  @map("project_id")
+  kind      String
+  title     String
+  url       String?
+  fileName  String?  @map("file_name")
+  mimeType  String?  @map("mime_type")
+  fileSize  Int?     @map("file_size")
+  bytes     Bytes?
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  module  LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  project ModuleProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId, createdAt])
+  @@map("module_materials")
 }
 
 model ModuleSubmission {

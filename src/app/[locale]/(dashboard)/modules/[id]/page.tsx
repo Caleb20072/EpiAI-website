@@ -11,6 +11,8 @@ interface Enrollment {
   userName: string;
   userEmail: string;
   level: number;
+  todayCount?: number;
+  lastMessage?: string | null;
 }
 interface Repo {
   userId: string;
@@ -35,6 +37,15 @@ interface Activity {
   date: string;
   location: string;
 }
+interface Material {
+  id: string;
+  projectId: string | null;
+  kind: 'file' | 'link' | 'video' | string;
+  title: string;
+  url: string | null;
+  fileName: string | null;
+}
+
 interface GithubEvent {
   id: string;
   userId: string;
@@ -50,13 +61,89 @@ interface ModuleDetail {
   name: string;
   description: string;
   leadName: string;
+  leadGithub: string | null;
   canManage: boolean;
   enrolled: boolean;
   myLevel: number;
   enrollments: Enrollment[];
   projects: Project[];
+  materials: Material[];
   activities: Activity[];
   githubActivity: GithubEvent[];
+}
+
+function videoEmbed(url: string) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, '');
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      const id = parsed.searchParams.get('v');
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (host === 'youtu.be') {
+      const id = parsed.pathname.split('/').filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (host === 'vimeo.com') {
+      const id = parsed.pathname.split('/').filter(Boolean).pop();
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function MaterialList({
+  items,
+  fr,
+  canManage,
+  onDelete,
+}: {
+  items: Material[];
+  fr: boolean;
+  canManage: boolean;
+  onDelete: (id: string) => void;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="space-y-3">
+      {items.map((item) => {
+        const embed = item.kind === 'video' && item.url ? videoEmbed(item.url) : null;
+        return (
+          <li key={item.id} className="rounded-lg border border-default p-3">
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm font-medium">{item.title}</p>
+              {canManage && (
+                <button type="button" className="text-xs text-red-400" onClick={() => onDelete(item.id)}>
+                  {fr ? 'Retirer' : 'Remove'}
+                </button>
+              )}
+            </div>
+            {item.kind === 'file' && (
+              <a href={`/api/modules/materials/${item.id}`} className="text-sm text-brand-500 underline" target="_blank" rel="noreferrer">
+                {fr ? 'Ouvrir' : 'Open'} {item.fileName || 'PDF'}
+              </a>
+            )}
+            {item.kind !== 'file' && item.url && !embed && (
+              <a href={item.url} className="text-sm text-brand-500 underline break-all" target="_blank" rel="noreferrer">
+                {item.url}
+              </a>
+            )}
+            {embed && (
+              <iframe
+                src={embed}
+                title={item.title}
+                className="mt-2 aspect-video w-full rounded-lg"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 export default function ModuleDetailPage() {
@@ -69,14 +156,22 @@ export default function ModuleDetailPage() {
   const [email, setEmail] = useState('');
   const [github, setGithub] = useState('');
   const [myGithub, setMyGithub] = useState('');
-  const [project, setProject] = useState({ title: '', description: '', pdfUrl: '', startsAt: '' });
+  const [project, setProject] = useState({ title: '', description: '', startsAt: '' });
+  const [projectFile, setProjectFile] = useState<File | null>(null);
+  const [resource, setResource] = useState({ title: '', kind: 'link', url: '' });
+  const [resourceFile, setResourceFile] = useState<File | null>(null);
   const [activity, setActivity] = useState({ title: '', description: '', date: '', location: '' });
+  const [leadGithub, setLeadGithub] = useState('');
+  const [accessNote, setAccessNote] = useState<string | null>(null);
 
   async function load() {
     const res = await fetch(`/api/modules/${id}`);
     const data = await res.json();
     if (!res.ok) setError(data.error || 'Erreur');
-    else setMod(data);
+    else {
+      setMod(data);
+      setLeadGithub(data.leadGithub || '');
+    }
   }
 
   useEffect(() => {
@@ -93,7 +188,30 @@ export default function ModuleDetailPage() {
     const data = await res.json();
     if (!res.ok) setError(data.error || 'Erreur');
     else await load();
-    return res.ok;
+    return { ok: res.ok, data };
+  }
+
+  async function uploadFile(file: File, title: string, projectId?: string) {
+    const body = new FormData();
+    body.set('file', file);
+    body.set('title', title);
+    if (projectId) body.set('projectId', projectId);
+    const res = await fetch(`/api/modules/${id}/materials`, { method: 'POST', body });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(data.error || (fr ? 'Envoi du fichier refusé' : 'File upload failed'));
+      return false;
+    }
+    await load();
+    return true;
+  }
+
+  async function removeMaterial(materialId: string) {
+    setError(null);
+    const res = await fetch(`/api/modules/materials/${materialId}`, { method: 'DELETE' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) setError(data.error || 'Erreur');
+    else await load();
   }
 
   if (!mod && !error) return <p className="text-sm text-secondary">…</p>;
@@ -116,10 +234,26 @@ export default function ModuleDetailPage() {
       <Panel title={fr ? 'Inscrits' : 'Enrolled'}>
         <ul className="space-y-1 text-sm">
           {mod.enrollments.map((e) => (
-            <li key={e.id} className="flex justify-between gap-2">
-              <span>{e.userName}</span>
-              <span className="text-muted">
-                {fr ? 'niveau' : 'level'} {e.level}
+            <li key={e.id} className="flex items-start justify-between gap-2">
+              <span>
+                {mod.canManage ? (
+                  <Link href={`/${locale}/modules/${id}/students/${e.userId}`} className="text-brand-500 hover:underline">
+                    {e.userName}
+                  </Link>
+                ) : (
+                  e.userName
+                )}
+                {mod.canManage && e.lastMessage ? (
+                  <span className="block text-xs text-muted mt-0.5 line-clamp-1">{e.lastMessage}</span>
+                ) : null}
+              </span>
+              <span className="text-xs text-muted text-right shrink-0">
+                {mod.canManage && (e.todayCount ?? 0) > 0 ? (
+                  <Badge variant="success">{fr ? `Aujourd’hui · ${e.todayCount}` : `Today · ${e.todayCount}`}</Badge>
+                ) : mod.canManage ? (
+                  <span>{fr ? 'Pas de push aujourd’hui' : 'No push today'}</span>
+                ) : null}
+                <span className="block mt-1">{fr ? 'niveau' : 'level'} {e.level}</span>
               </span>
             </li>
           ))}
@@ -133,7 +267,7 @@ export default function ModuleDetailPage() {
             onSubmit={async (ev) => {
               ev.preventDefault();
               const ok = await post(`/api/modules/${id}/enroll`, { githubUsername: myGithub });
-              if (ok) setMyGithub('');
+              if (ok.ok) setMyGithub('');
             }}
           >
             <input
@@ -158,7 +292,7 @@ export default function ModuleDetailPage() {
                 email,
                 githubUsername: github,
               });
-              if (ok) {
+              if (ok.ok) {
                 setEmail('');
                 setGithub('');
               }
@@ -183,6 +317,121 @@ export default function ModuleDetailPage() {
             </Button>
           </form>
         )}
+        {mod.canManage && (
+          <form
+            className="mt-4 grid gap-2"
+            onSubmit={async (ev) => {
+              ev.preventDefault();
+              const ok = await post(`/api/modules/${id}`, { leadGithub }, 'PATCH');
+              if (ok.ok) {
+                const refused = Number(ok.data?.refused || 0);
+                setAccessNote(
+                  refused > 0
+                    ? fr
+                      ? 'Pseudo enregistré, mais GitHub a refusé l’accès à certains dépôts.'
+                      : 'Username saved, but GitHub refused access to some repositories.'
+                    : fr
+                      ? 'Invitation envoyée. Accepte-la sur GitHub, puis ouvre le dépôt pour lire le code.'
+                      : 'Invite sent. Accept it on GitHub, then open the repository to read the code.'
+                );
+              }
+            }}
+          >
+            <p className="text-xs text-muted">
+              {fr
+                ? 'Ton pseudo GitHub. Tu reçois un accès en lecture sur le dépôt privé de chaque inscrit, pour ouvrir les fichiers et lire le code. Tu ne modifies pas leur travail.'
+                : 'Your GitHub username. You get read access to each student’s private repository, so you can open the files and read the code. You do not change their work.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                required
+                value={leadGithub}
+                onChange={(e) => setLeadGithub(e.target.value)}
+                placeholder="pseudo GitHub du lead"
+                className="flex-1 rounded-lg border border-default bg-card px-3 py-2 text-sm"
+              />
+              <Button type="submit" size="sm" variant="secondary">
+                {fr ? 'Recevoir l’accès aux dépôts' : 'Get access to the repos'}
+              </Button>
+            </div>
+            {accessNote && <p className="text-sm text-secondary">{accessNote}</p>}
+          </form>
+        )}
+      </Panel>
+
+      <Panel title={fr ? 'Ressources' : 'Resources'}>
+        <p className="text-xs text-muted mb-3">
+          {fr
+            ? 'PDF, liens et vidéos du module. Tout membre connecté peut les ouvrir.'
+            : 'PDFs, links and videos for this module. Any signed-in member can open them.'}
+        </p>
+        <MaterialList
+          items={(mod.materials || []).filter((item) => !item.projectId)}
+          fr={fr}
+          canManage={mod.canManage}
+          onDelete={(materialId) => void removeMaterial(materialId)}
+        />
+        {(mod.materials || []).filter((item) => !item.projectId).length === 0 && (
+          <p className="text-sm text-muted">{fr ? 'Aucune ressource pour l’instant.' : 'No resources yet.'}</p>
+        )}
+        {mod.canManage && (
+          <form
+            className="grid gap-2 mt-4"
+            onSubmit={async (ev) => {
+              ev.preventDefault();
+              if (resource.kind === 'file') {
+                if (!resourceFile || !resource.title.trim()) {
+                  setError(fr ? 'Titre et fichier requis.' : 'Title and file are required.');
+                  return;
+                }
+                const uploaded = await uploadFile(resourceFile, resource.title.trim());
+                if (uploaded) {
+                  setResource({ title: '', kind: 'link', url: '' });
+                  setResourceFile(null);
+                }
+                return;
+              }
+              const ok = await post(`/api/modules/${id}/materials`, resource);
+              if (ok.ok) setResource({ title: '', kind: 'link', url: '' });
+            }}
+          >
+            <input
+              required
+              placeholder={fr ? 'Titre' : 'Title'}
+              value={resource.title}
+              onChange={(e) => setResource({ ...resource, title: e.target.value })}
+              className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+            />
+            <select
+              value={resource.kind}
+              onChange={(e) => setResource({ ...resource, kind: e.target.value })}
+              className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+            >
+              <option value="link">{fr ? 'Lien' : 'Link'}</option>
+              <option value="video">{fr ? 'Vidéo' : 'Video'}</option>
+              <option value="file">{fr ? 'Fichier (PDF, document, image)' : 'File (PDF, document, image)'}</option>
+            </select>
+            {resource.kind === 'file' ? (
+              <input
+                required
+                type="file"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.zip,.txt"
+                onChange={(e) => setResourceFile(e.target.files?.[0] || null)}
+                className="text-sm"
+              />
+            ) : (
+              <input
+                required
+                type="url"
+                placeholder={resource.kind === 'video' ? 'https://youtube.com/...' : 'https://'}
+                value={resource.url}
+                onChange={(e) => setResource({ ...resource, url: e.target.value })}
+                className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+              />
+            )}
+            <Button type="submit" size="sm">{fr ? 'Ajouter la ressource' : 'Add resource'}</Button>
+          </form>
+        )}
       </Panel>
 
       <Panel title={fr ? 'Projets' : 'Projects'}>
@@ -200,6 +449,32 @@ export default function ModuleDetailPage() {
                 <a href={p.pdfUrl} className="text-sm text-brand-500 underline" target="_blank" rel="noreferrer">
                   PDF
                 </a>
+              )}
+              <div className="mt-3">
+                <MaterialList
+                  items={(mod.materials || []).filter((item) => item.projectId === p.id)}
+                  fr={fr}
+                  canManage={mod.canManage}
+                  onDelete={(materialId) => void removeMaterial(materialId)}
+                />
+              </div>
+              {mod.canManage && (
+                <form
+                  className="mt-2 flex flex-wrap items-center gap-2"
+                  onSubmit={async (ev) => {
+                    ev.preventDefault();
+                    const input = ev.currentTarget.elements.namedItem('pdf');
+                    const file = input instanceof HTMLInputElement ? input.files?.[0] : null;
+                    if (!file) return;
+                    const uploaded = await uploadFile(file, p.title, p.id);
+                    if (uploaded) ev.currentTarget.reset();
+                  }}
+                >
+                  <input name="pdf" type="file" accept=".pdf,application/pdf" className="text-xs" />
+                  <Button type="submit" size="sm" variant="secondary">
+                    {fr ? 'Ajouter un PDF' : 'Add a PDF'}
+                  </Button>
+                </form>
               )}
               <p className="text-xs text-muted mt-2">
                 {p.submissions.length} {fr ? 'rendus' : 'submissions'} · {p.repos.length} repos
@@ -228,13 +503,28 @@ export default function ModuleDetailPage() {
             className="grid gap-2 mt-4"
             onSubmit={async (ev) => {
               ev.preventDefault();
+              const title = project.title;
+              const file = projectFile;
               const ok = await post(`/api/modules/${id}/projects`, project);
-              if (ok) setProject({ title: '', description: '', pdfUrl: '', startsAt: '' });
+              if (!ok.ok) return;
+              if (file && ok.data?.id) {
+                await uploadFile(file, title || ok.data.title || 'PDF', ok.data.id);
+              }
+              setProject({ title: '', description: '', startsAt: '' });
+              setProjectFile(null);
             }}
           >
             <input required placeholder={fr ? 'Titre du projet' : 'Project title'} value={project.title} onChange={(e) => setProject({ ...project, title: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" />
             <textarea placeholder={fr ? 'Description' : 'Description'} value={project.description} onChange={(e) => setProject({ ...project, description: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" rows={3} />
-            <input placeholder="URL du PDF" value={project.pdfUrl} onChange={(e) => setProject({ ...project, pdfUrl: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" />
+            <label className="text-xs text-muted">
+              {fr ? 'PDF du sujet (6 Mo max)' : 'Project PDF (6 MB max)'}
+              <input
+                type="file"
+                accept=".pdf,application/pdf"
+                onChange={(e) => setProjectFile(e.target.files?.[0] || null)}
+                className="mt-1 block text-sm"
+              />
+            </label>
             <input required type="datetime-local" value={project.startsAt} onChange={(e) => setProject({ ...project, startsAt: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" />
             <Button type="submit" size="sm">{fr ? 'Ajouter le projet' : 'Add project'}</Button>
           </form>
@@ -253,7 +543,15 @@ export default function ModuleDetailPage() {
             return (
               <li key={event.id} className="flex justify-between gap-3">
                 <span>
-                  <strong>{who}</strong> — {event.message.split('\n')[0]}
+                  {mod.canManage ? (
+                    <Link href={`/${locale}/modules/${id}/students/${event.userId}`} className="font-semibold text-brand-500 hover:underline">
+                      {who}
+                    </Link>
+                  ) : (
+                    <strong>{who}</strong>
+                  )}
+                  {' — '}
+                  {event.message.split('\n')[0]}
                   {event.burst ? (
                     <Badge variant="danger" className="ml-2">burst</Badge>
                   ) : null}
@@ -285,7 +583,7 @@ export default function ModuleDetailPage() {
             onSubmit={async (ev) => {
               ev.preventDefault();
               const ok = await post(`/api/modules/${id}/projects`, activity, 'PUT');
-              if (ok) setActivity({ title: '', description: '', date: '', location: '' });
+              if (ok.ok) setActivity({ title: '', description: '', date: '', location: '' });
             }}
           >
             <input required placeholder={fr ? 'Titre activité' : 'Activity title'} value={activity.title} onChange={(e) => setActivity({ ...activity, title: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" />

@@ -30,6 +30,7 @@ import {
   BookOpen,
   GraduationCap,
   Wallet,
+  GitCommitHorizontal,
 } from 'lucide-react';
 import { UserButton, useClerk, useUser } from '@clerk/nextjs';
 import { userButtonProps } from '@/lib/clerk/user-button';
@@ -63,6 +64,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const { total: chatUnreadTotal } = useChatUnreadCount(!!isSignedIn);
   const { counts: notifCounts } = useNotificationCounts(!!isSignedIn);
+  const [leadsModule, setLeadsModule] = useState(false);
+
+  useEffect(() => {
+    if (!isSignedIn || isAdmin) return;
+    let cancelled = false;
+    fetch('/api/modules')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((rows) => {
+        if (!cancelled) setLeadsModule(Array.isArray(rows) && rows.some((row) => row?.isLead));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isSignedIn, isAdmin]);
 
   useEffect(() => {
     if (!isSignedIn || !pathname) return;
@@ -144,6 +160,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       icon: GraduationCap,
       active: pathname.startsWith(`/${locale}/modules`),
     },
+    ...(isAdmin || leadsModule
+      ? [
+          {
+            label: t('suivi'),
+            href: `/${locale}/suivi`,
+            icon: GitCommitHorizontal,
+            active: pathname.startsWith(`/${locale}/suivi`),
+          },
+        ]
+      : []),
     {
       label: t('profile'),
       href: `/${locale}/profile`,

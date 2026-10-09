@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { CONTRACT_VERSION, LATE_FEE_FCFA, MONTHLY_FEE_FCFA } from './contract';
-import { addCollaborator, createOrgRepo, ensureOrgPushWebhook, getCommitStats, githubConfigured } from './github';
+import { addCollaborator, createOrgRepo, ensureOrgPushWebhook, ensureRepoPushWebhook, getCommitStats, githubConfigured } from './github';
 
 function periodKey(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -41,6 +41,22 @@ export async function getModuleDetail(id: string) {
       projects: {
         orderBy: { startsAt: 'asc' },
         include: { submissions: true, repos: true },
+      },
+      materials: {
+        orderBy: { createdAt: 'asc' },
+        select: {
+          id: true,
+          moduleId: true,
+          projectId: true,
+          kind: true,
+          title: true,
+          url: true,
+          fileName: true,
+          mimeType: true,
+          fileSize: true,
+          createdBy: true,
+          createdAt: true,
+        },
       },
       activities: { orderBy: { date: 'asc' }, take: 30 },
     },
@@ -134,6 +150,58 @@ export async function createModuleProject(input: {
   });
 }
 
+const materialSelect = {
+  id: true,
+  moduleId: true,
+  projectId: true,
+  kind: true,
+  title: true,
+  url: true,
+  fileName: true,
+  mimeType: true,
+  fileSize: true,
+  createdAt: true,
+} as const;
+
+export async function addModuleMaterial(input: {
+  moduleId: string;
+  projectId?: string | null;
+  kind: 'file' | 'link' | 'video';
+  title: string;
+  url?: string | null;
+  fileName?: string | null;
+  mimeType?: string | null;
+  fileSize?: number | null;
+  bytes?: Buffer | null;
+  createdBy: string;
+}) {
+  if (input.projectId) {
+    const project = await prisma.moduleProject.findFirst({
+      where: { id: input.projectId, moduleId: input.moduleId },
+    });
+    if (!project) throw new Error('Projet introuvable');
+  }
+  return prisma.moduleMaterial.create({
+    data: {
+      moduleId: input.moduleId,
+      projectId: input.projectId || null,
+      kind: input.kind,
+      title: input.title.slice(0, 200),
+      url: input.url || null,
+      fileName: input.fileName || null,
+      mimeType: input.mimeType || null,
+      fileSize: input.fileSize ?? null,
+      bytes: input.bytes ?? null,
+      createdBy: input.createdBy,
+    },
+    select: materialSelect,
+  });
+}
+
+export async function deleteModuleMaterial(materialId: string) {
+  return prisma.moduleMaterial.delete({ where: { id: materialId } });
+}
+
 export async function submitProject(input: {
   projectId: string;
   userId: string;
@@ -171,6 +239,33 @@ export async function submitProject(input: {
   return { points: 0, trackedViaGithub: true };
 }
 
+async function grantLeadRead(repoName: string, leadGithub: string | null) {
+  const username = leadGithub?.replace(/^@/, '').trim();
+  if (!username) return;
+  await addCollaborator(repoName, username, 'pull').catch(() => undefined);
+}
+
+export async function saveLeadGithub(moduleId: string, leadGithub: string) {
+  const username = leadGithub.replace(/^@/, '').trim();
+  await prisma.learningModule.update({
+    where: { id: moduleId },
+    data: { leadGithub: username },
+  });
+  const repos = await prisma.moduleProjectRepo.findMany({
+    where: { project: { moduleId } },
+    select: { repoName: true },
+  });
+  let refused = 0;
+  for (const repo of repos) {
+    try {
+      await addCollaborator(repo.repoName, username, 'pull');
+    } catch {
+      refused += 1;
+    }
+  }
+  return { leadGithub: username, repos: repos.length, refused };
+}
+
 function slugify(value: string) {
   return value
     .normalize('NFD')
@@ -200,13 +295,19 @@ export async function provisionReposForStudent(moduleId: string, userId: string)
     const existing = await prisma.moduleProjectRepo.findUnique({
       where: { projectId_userId: { projectId: project.id, userId } },
     });
-    if (existing) continue;
+    if (existing) {
+      await ensureRepoPushWebhook(existing.repoName).catch(() => undefined);
+      await grantLeadRead(existing.repoName, module.leadGithub);
+      continue;
+    }
 
     const repoName = `${slugify(module.name)}-${slugify(project.title)}-${userId.slice(-6)}`.slice(0, 80);
     const repo = await createOrgRepo(repoName, `${module.name} — ${project.title} — ${enrollment.userName}`);
+    await ensureRepoPushWebhook(repo.name).catch(() => undefined);
     if (enrollment.githubUsername) {
-      await addCollaborator(repo.name, enrollment.githubUsername);
+      await addCollaborator(repo.name, enrollment.githubUsername, 'push');
     }
+    await grantLeadRead(repo.name, module.leadGithub);
     await prisma.moduleProjectRepo.create({
       data: { projectId: project.id, userId, repoName: repo.name, repoUrl: repo.html_url },
     });
@@ -294,6 +395,190 @@ async function refreshEnrollmentLevel(userId: string, projectId: string) {
     where: { moduleId: project.moduleId, userId },
     data: { level: days.size * 5 },
   });
+}
+
+const FOLLOW_TZ = 'Africa/Porto-Novo';
+
+export function calendarDay(date: Date) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: FOLLOW_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+function firstLine(message: string) {
+  return message.split('\n')[0].slice(0, 180);
+}
+
+export async function progressByEnrollment(moduleId: string) {
+  const projects = await prisma.moduleProject.findMany({
+    where: { moduleId },
+    select: { id: true },
+  });
+  const projectIds = projects.map((project) => project.id);
+  if (projectIds.length === 0) return {} as Record<string, { todayCount: number; lastPushAt: Date | null; lastMessage: string | null }>;
+
+  const events = await prisma.githubActivity.findMany({
+    where: { projectId: { in: projectIds } },
+    orderBy: { committedAt: 'desc' },
+    take: 2000,
+  });
+  const today = calendarDay(new Date());
+  const byUser: Record<string, { todayCount: number; lastPushAt: Date | null; lastMessage: string | null }> = {};
+  for (const event of events) {
+    const row = byUser[event.userId] ?? { todayCount: 0, lastPushAt: null, lastMessage: null };
+    if (!row.lastPushAt) {
+      row.lastPushAt = event.committedAt;
+      row.lastMessage = firstLine(event.message);
+    }
+    if (calendarDay(event.committedAt) === today) row.todayCount += 1;
+    byUser[event.userId] = row;
+  }
+  return byUser;
+}
+
+export async function listFollowedStudents(viewerId: string, isAdmin: boolean) {
+  const modules = await prisma.learningModule.findMany({
+    where: isAdmin ? {} : { leadUserId: viewerId },
+    orderBy: { name: 'asc' },
+    include: {
+      enrollments: { orderBy: { userName: 'asc' } },
+      projects: { select: { id: true } },
+    },
+  });
+  if (!isAdmin && modules.length === 0) return { scope: 'none' as const, students: [] };
+
+  const projectToModule = new Map<string, string>();
+  for (const learningModule of modules) {
+    for (const project of learningModule.projects) projectToModule.set(project.id, learningModule.id);
+  }
+  const projectIds = [...projectToModule.keys()];
+  const events = projectIds.length
+    ? await prisma.githubActivity.findMany({
+        where: { projectId: { in: projectIds } },
+        orderBy: { committedAt: 'desc' },
+        take: 4000,
+      })
+    : [];
+  const today = calendarDay(new Date());
+  const grouped = new Map<string, typeof events>();
+  for (const event of events) {
+    const moduleId = projectToModule.get(event.projectId);
+    if (!moduleId) continue;
+    const key = `${moduleId}:${event.userId}`;
+    const list = grouped.get(key);
+    if (list) list.push(event);
+    else grouped.set(key, [event]);
+  }
+
+  const students = modules.flatMap((learningModule) =>
+    learningModule.enrollments.map((enrollment) => {
+      const mine = grouped.get(`${learningModule.id}:${enrollment.userId}`) ?? [];
+      const last = mine[0];
+      const days = new Set(
+        mine.filter((event) => !event.burst).map((event) => calendarDay(event.committedAt))
+      );
+      const todayCount = mine.filter((event) => calendarDay(event.committedAt) === today).length;
+      return {
+        userId: enrollment.userId,
+        userName: enrollment.userName,
+        githubUsername: enrollment.githubUsername,
+        moduleId: learningModule.id,
+        moduleName: learningModule.name,
+        level: enrollment.level,
+        todayCount,
+        pushedToday: todayCount > 0,
+        lastPushAt: last?.committedAt ?? null,
+        lastMessage: last ? firstLine(last.message) : null,
+        activeDays: days.size,
+      };
+    })
+  );
+
+  students.sort((a, b) => {
+    if (a.pushedToday !== b.pushedToday) return a.pushedToday ? -1 : 1;
+    const aTime = a.lastPushAt ? new Date(a.lastPushAt).getTime() : 0;
+    const bTime = b.lastPushAt ? new Date(b.lastPushAt).getTime() : 0;
+    if (aTime !== bTime) return bTime - aTime;
+    return a.userName.localeCompare(b.userName, 'fr');
+  });
+
+  return { scope: isAdmin ? ('all' as const) : ('lead' as const), students };
+}
+
+export async function getStudentFollowUp(moduleId: string, studentId: string) {
+  const learningModule = await prisma.learningModule.findUnique({
+    where: { id: moduleId },
+    include: {
+      enrollments: { where: { userId: studentId } },
+      projects: {
+        orderBy: { startsAt: 'asc' },
+        include: {
+          repos: { where: { userId: studentId } },
+          submissions: { where: { userId: studentId }, orderBy: { createdAt: 'desc' } },
+        },
+      },
+    },
+  });
+  if (!learningModule) return null;
+  const enrollment = learningModule.enrollments[0];
+  if (!enrollment) return null;
+
+  const projectIds = learningModule.projects.map((project) => project.id);
+  const events = projectIds.length
+    ? await prisma.githubActivity.findMany({
+        where: { userId: studentId, projectId: { in: projectIds } },
+        orderBy: { committedAt: 'desc' },
+        take: 300,
+      })
+    : [];
+  const titles = new Map(learningModule.projects.map((project) => [project.id, project.title]));
+  const repoUrl = new Map(
+    learningModule.projects.flatMap((project) => project.repos.map((repo) => [project.id, repo.repoUrl] as const))
+  );
+  const today = calendarDay(new Date());
+  const pushes = events.map((event) => {
+    const url = repoUrl.get(event.projectId);
+    return {
+      id: event.id,
+      message: firstLine(event.message),
+      additions: event.additions,
+      deletions: event.deletions,
+      committedAt: event.committedAt,
+      burst: event.burst,
+      projectTitle: titles.get(event.projectId) || '',
+      day: calendarDay(event.committedAt),
+      today: calendarDay(event.committedAt) === today,
+      commitUrl: url ? `${url}/commit/${event.sha}` : null,
+    };
+  });
+
+  return {
+    moduleId: learningModule.id,
+    moduleName: learningModule.name,
+    leadUserId: learningModule.leadUserId,
+    student: {
+      userId: enrollment.userId,
+      userName: enrollment.userName,
+      githubUsername: enrollment.githubUsername,
+      level: enrollment.level,
+    },
+    repos: learningModule.projects.flatMap((project) =>
+      project.repos.map((repo) => ({ projectTitle: project.title, repoUrl: repo.repoUrl }))
+    ),
+    submissions: learningModule.projects.flatMap((project) =>
+      project.submissions.map((submission) => ({
+        projectTitle: project.title,
+        createdAt: submission.createdAt,
+        notes: submission.notes,
+      }))
+    ),
+    pushes,
+    todayCount: pushes.filter((push) => push.today).length,
+    activeDays: new Set(pushes.filter((push) => !push.burst).map((push) => push.day)).size,
+  };
 }
 
 export async function listGithubActivity(moduleId: string) {

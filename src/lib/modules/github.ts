@@ -30,12 +30,16 @@ export async function createOrgRepo(name: string, description: string) {
   return { html_url: body.html_url as string, name, existed: false };
 }
 
-export async function addCollaborator(repoName: string, githubUsername: string) {
+export async function addCollaborator(
+  repoName: string,
+  githubUsername: string,
+  permission: 'pull' | 'push' = 'push'
+) {
   const org = process.env.GITHUB_ORG;
   const res = await fetch(`${API}/repos/${org}/${repoName}/collaborators/${githubUsername}`, {
     method: 'PUT',
     headers: headers(),
-    body: JSON.stringify({ permission: 'push' }),
+    body: JSON.stringify({ permission }),
   });
   if (!res.ok && res.status !== 201 && res.status !== 204) {
     const body = await res.json().catch(() => ({}));
@@ -43,18 +47,31 @@ export async function addCollaborator(repoName: string, githubUsername: string) 
   }
 }
 
-export async function ensureOrgPushWebhook() {
-  const org = process.env.GITHUB_ORG;
+function siteOrigin() {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || '').trim();
+  if (!raw) return '';
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return raw.replace(/\/(fr|en)\/?$/, '').replace(/\/$/, '');
+  }
+}
+
+function webhookUrl() {
+  const site = siteOrigin();
+  return site ? `${site}/api/webhooks/github` : '';
+}
+
+async function ensureHook(listUrl: string, createUrl: string) {
   const secret = process.env.GITHUB_WEBHOOK_SECRET;
-  const site = (process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || '').replace(/\/$/, '');
-  if (!secret || !site) return;
-  const url = `${site}/api/webhooks/github`;
-  const list = await fetch(`${API}/orgs/${org}/hooks`, { headers: headers() });
+  const url = webhookUrl();
+  if (!secret || !url) return;
+  const list = await fetch(listUrl, { headers: headers() });
   const hooks = list.ok ? await list.json() : [];
   if (Array.isArray(hooks) && hooks.some((h: { config?: { url?: string } }) => h.config?.url === url)) {
     return;
   }
-  await fetch(`${API}/orgs/${org}/hooks`, {
+  await fetch(createUrl, {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
@@ -64,6 +81,21 @@ export async function ensureOrgPushWebhook() {
       config: { url, content_type: 'json', secret, insecure_ssl: '0' },
     }),
   });
+}
+
+export async function ensureRepoPushWebhook(repoName: string) {
+  const org = process.env.GITHUB_ORG;
+  if (!org || !repoName) return;
+  await ensureHook(
+    `${API}/repos/${org}/${repoName}/hooks`,
+    `${API}/repos/${org}/${repoName}/hooks`
+  );
+}
+
+export async function ensureOrgPushWebhook() {
+  const org = process.env.GITHUB_ORG;
+  if (!org) return;
+  await ensureHook(`${API}/orgs/${org}/hooks`, `${API}/orgs/${org}/hooks`);
 }
 
 export async function getCommitStats(repoName: string, sha: string) {
