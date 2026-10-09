@@ -34,7 +34,7 @@ export default async function CalendarPage() {
             </h1>
             <p className="text-[17px] text-secondary">
               {fr
-                ? 'Talks, workshops et conférences ouverts au public.'
+                ? 'Conférences, ateliers et rencontres ouverts au public.'
                 : 'Talks, workshops and conferences open to the public.'}
             </p>
           </div>
