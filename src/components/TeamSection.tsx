@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { ITeamMember } from '@/lib/team/types';
+import { COMMISSIONS } from '@/lib/team/commissions';
 
 /** Single DB title; show the locale-specific wording for this referent. */
 const REFERENT_TITLES: Record<string, { fr: string; en: string }> = {
@@ -10,6 +11,14 @@ const REFERENT_TITLES: Record<string, { fr: string; en: string }> = {
         fr: "Responsable du programme Bachelor d'EPITECH Bénin",
         en: 'Head of the Bachelor programme at EPITECH Benin',
     },
+};
+
+const ROLE_LABELS: Record<string, { fr: string; en: string }> = {
+    Président: { fr: 'Président', en: 'President' },
+    'Vice-président': { fr: 'Vice-président', en: 'Vice-president' },
+    'Responsable Formation': { fr: 'Responsable Formation', en: 'Head of Training' },
+    'Responsable Communication': { fr: 'Responsable Communication', en: 'Head of Communications' },
+    'Notre Référent': { fr: 'Notre Référent', en: 'Our Referent' },
 };
 
 type TeamSectionProps = {
@@ -48,6 +57,12 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     const referents = members.filter(m => m.section === 'referent');
     const executives = members.filter(m => m.section === 'executive');
     const mentors = members.filter(m => m.section === 'mentor');
+    const commissions = COMMISSIONS.map((commission) => ({
+        ...commission,
+        members: members
+            .filter((member) => member.section === 'pole' && member.poleKey === commission.key)
+            .sort((a, b) => a.displayOrder - b.displayOrder),
+    })).filter((commission) => commission.members.length > 0);
 
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
@@ -63,10 +78,9 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     };
 
     const MemberCard = ({ member, large = false }: { member: ITeamMember; large?: boolean }) => {
-        const localizedTitle = REFERENT_TITLES[member.name]?.[locale] ?? member.title;
-        const roleLabel = member.section === 'referent' && member.role === 'Notre Référent'
-            ? (locale === 'fr' ? 'Notre Référent' : 'Our Referent')
-            : member.role;
+        const localizedTitle = REFERENT_TITLES[member.name]?.[locale] ?? (member.section === 'pole' ? undefined : member.title);
+        const roleLabel = ROLE_LABELS[member.role]?.[locale] ?? member.role;
+        const hasSocial = Boolean(member.socialLinks.linkedin || member.socialLinks.github);
 
         return (
         <div className={`p-6 rounded-xl bg-card border border-default shadow-card text-center ${large ? 'w-full max-w-xs mx-auto' : ''}`}>
@@ -77,14 +91,20 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                     <span className="text-2xl font-semibold text-brand-700">{member.name.charAt(0)}</span>
                 )}
             </div>
-            <div className="text-[14px] font-medium text-brand-700 mb-1">{roleLabel}</div>
+            {member.section !== 'pole' && (
+                <div className="text-[14px] font-medium text-brand-700 mb-1">{roleLabel}</div>
+            )}
             <div className="text-[18px] font-semibold text-primary mb-1">{member.name}</div>
             {localizedTitle && <div className="text-[14px] text-muted mb-2">{localizedTitle}</div>}
-            {member.description && <p className="text-[14px] leading-relaxed text-secondary mb-3">{member.description}</p>}
-            <div className="flex justify-center gap-1 border-t border-subtle pt-3">
-                <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
-                <SocialLink type="github" url={member.socialLinks.github} />
-            </div>
+            {member.description && member.section !== 'pole' && (
+                <p className="text-[14px] leading-relaxed text-secondary mb-3">{member.description}</p>
+            )}
+            {hasSocial && (
+                <div className="flex justify-center gap-1 border-t border-subtle pt-3">
+                    <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
+                    <SocialLink type="github" url={member.socialLinks.github} />
+                </div>
+            )}
         </div>
         );
     };
@@ -134,6 +154,27 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {executives.map(m => <MemberCard key={m.id} member={m} large />)}
                         </div>
+                    </div>
+                )}
+
+                {commissions.length > 0 && (
+                    <div className="mb-16 space-y-12">
+                        <h3 className="text-[20px] font-semibold text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
+                            {locale === 'fr' ? 'Les commissions' : 'The commissions'}
+                        </h3>
+                        {commissions.map((commission) => (
+                            <div key={commission.key}>
+                                <h4 className="text-[17px] font-semibold text-primary">{locale === 'fr' ? commission.nameFr : commission.nameEn}</h4>
+                                <p className="text-[14px] text-secondary mt-1 mb-5 max-w-3xl">
+                                    {locale === 'fr' ? commission.missionFr : commission.missionEn}
+                                </p>
+                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {commission.members.map((member) => (
+                                        <MemberCard key={member.id} member={member} />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
 

@@ -1,4 +1,4 @@
-import { TEAM_POLES } from './poles';
+import { COMMISSIONS } from './commissions';
 import type { ITeamMember } from './types';
 
 const PHOTO = (file: string) => `/assets/team/members/${file}`;
@@ -13,6 +13,26 @@ const MENTORS = [
   { name: 'Gilchris HOUEKPO', title: 'PhD Candidate in AI', photo: 'gilchris-houekpo.jpg', order: 6 },
   { name: 'Farel GANLAKY', title: 'AI Engineer', photo: 'farel-ganlaky.jpg', order: 7 },
   { name: 'Maqsoud TAWALIOU', title: 'AI Engineer', photo: 'maqsoud-tawaliou.jpg', order: 8 },
+] as const;
+
+const EXECUTIVES = [
+  { name: 'Fresnel SATIGNON', role: 'Président', order: 1, linkedin: 'https://www.linkedin.com/in/fresnel-satignon-58a84229b/' },
+  { name: 'Méric GBEMETONOU', role: 'Vice-président', order: 2, linkedin: 'https://www.linkedin.com/in/méric-gbemetonou-235036233/' },
+  { name: 'Karyl SOUMAILA', role: 'Responsable Formation', order: 3, linkedin: '' },
+  { name: 'Ange ADANTCHEDE', role: 'Responsable Communication', order: 4, linkedin: 'https://www.linkedin.com/in/ange-adantchede-832273324/' },
+] as const;
+
+const COMMISSION_MEMBERS = [
+  { name: 'Carlos Victorieux SOSSOU', commission: 'commission_recherche', order: 1, linkedin: '' },
+  { name: 'Kael AVANDE', commission: 'commission_recherche', order: 2, linkedin: '' },
+  { name: 'Justus LIHOUSSOU', commission: 'commission_recherche', order: 3, linkedin: '' },
+  { name: 'Précieux LONMADON', commission: 'commission_projets', order: 1, linkedin: 'https://www.linkedin.com/in/précieux-lonmadon-b213b8394/' },
+  { name: 'Marcellin SAMBIENI', commission: 'commission_projets', order: 2, linkedin: 'https://www.linkedin.com/in/ipamma-marcellin-sambieni-23264b384/' },
+  { name: 'Inès MOMBO', commission: 'commission_evenements', order: 1, linkedin: '' },
+  { name: 'Mystica ALLOSSOHOUN', commission: 'commission_evenements', order: 2, linkedin: '' },
+  { name: 'Ivanna MICHODJEHOUN', commission: 'commission_evenements', order: 3, linkedin: '' },
+  { name: 'Peniel YAYI', commission: 'commission_vie', order: 1, linkedin: '' },
+  { name: 'Yann AZANDE', commission: 'commission_vie', order: 2, linkedin: '' },
 ] as const;
 
 export function buildDefaultTeamMembers(): ITeamMember[] {
@@ -35,6 +55,37 @@ export function buildDefaultTeamMembers(): ITeamMember[] {
     },
   ];
 
+  for (const executive of EXECUTIVES) {
+    members.push({
+      id: `seed-executive-${executive.order}`,
+      name: executive.name,
+      role: executive.role,
+      section: 'executive',
+      socialLinks: executive.linkedin ? { linkedin: executive.linkedin } : {},
+      displayOrder: executive.order,
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+  }
+
+  for (const person of COMMISSION_MEMBERS) {
+    const commission = COMMISSIONS.find((item) => item.key === person.commission);
+    members.push({
+      id: `seed-${person.commission}-${person.order}`,
+      name: person.name,
+      role: 'Membre',
+      title: commission?.nameFr,
+      section: 'pole',
+      poleKey: person.commission,
+      socialLinks: person.linkedin ? { linkedin: person.linkedin } : {},
+      displayOrder: person.order,
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+  }
+
   for (const mentor of MENTORS) {
     members.push({
       id: `seed-mentor-${mentor.order}`,
@@ -45,23 +96,6 @@ export function buildDefaultTeamMembers(): ITeamMember[] {
       photoUrl: PHOTO(mentor.photo),
       socialLinks: {},
       displayOrder: mentor.order,
-      isActive: true,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    });
-  }
-
-  for (const pole of TEAM_POLES) {
-    members.push({
-      id: `seed-pole-${pole.key}`,
-      name: '—',
-      role: pole.nameFr,
-      title: 'Responsable à nommer',
-      section: 'pole',
-      poleKey: pole.key,
-      description: pole.missionFr,
-      socialLinks: {},
-      displayOrder: pole.displayOrder,
       isActive: true,
       createdAt: timestamp,
       updatedAt: timestamp,
