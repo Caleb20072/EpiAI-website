@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { PageHeader, Panel, Button, EmptyState, Badge } from '@/components/ui';
 import { GraduationCap, Plus } from 'lucide-react';
+import { MemberPicker } from '@/components/members/MemberPicker';
 
 interface ModuleRow {
   id: string;
@@ -26,7 +27,8 @@ export default function ModulesPage() {
   const { isAdmin } = useAuth();
   const [modules, setModules] = useState<ModuleRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', description: '', leadUserId: '' });
+  const [form, setForm] = useState({ name: '', description: '', leadUserId: '', leadName: '' });
+  const [pickerKey, setPickerKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
@@ -42,6 +44,10 @@ export default function ModulesPage() {
   async function createModule(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!form.leadUserId) {
+      setError(fr ? 'Choisis le lead dans les suggestions.' : 'Pick the lead from the suggestions.');
+      return;
+    }
     const res = await fetch('/api/modules', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,7 +58,8 @@ export default function ModulesPage() {
       setError(data.error || 'Erreur');
       return;
     }
-    setForm({ name: '', description: '', leadUserId: '' });
+    setForm({ name: '', description: '', leadUserId: '', leadName: '' });
+    setPickerKey((key) => key + 1);
     await load();
   }
 
@@ -77,12 +84,18 @@ export default function ModulesPage() {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
             />
-            <input
-              required
-              placeholder={fr ? 'ID Clerk du lead' : 'Lead Clerk user id'}
-              value={form.leadUserId}
-              onChange={(e) => setForm({ ...form, leadUserId: e.target.value })}
-              className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+            <MemberPicker
+              key={pickerKey}
+              locale={locale}
+              selectedId={form.leadUserId}
+              selectedName={form.leadName}
+              onSelect={(member) =>
+                setForm((current) => ({
+                  ...current,
+                  leadUserId: member?.id || '',
+                  leadName: member?.name || '',
+                }))
+              }
             />
             <textarea
               placeholder={fr ? 'Description' : 'Description'}
@@ -101,8 +114,8 @@ export default function ModulesPage() {
           </form>
           <p className="text-xs text-muted mt-2">
             {fr
-              ? 'Le lead se trouve dans Clerk (User ID). Il verra ce module dans son interface.'
-              : 'The lead is a Clerk user id. They will see this module in their interface.'}
+              ? 'Écris le nom du lead et choisis-le dans la liste. Il verra ce module dans son interface.'
+              : 'Type the lead’s name and pick them from the list. They will see this module in their interface.'}
           </p>
         </Panel>
       )}
