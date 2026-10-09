@@ -511,6 +511,20 @@
         "failedAccounts": "Failed accounts:",
         "uploadMore": "Upload More"
     },
+    "EventDetail": {
+        "about": "About this event",
+        "details": "Details",
+        "gallery": "Gallery",
+        "videos": "Videos",
+        "enlarge": "Enlarge",
+        "online": "Online",
+        "registered": "{count} / {capacity} registered",
+        "availability": "Availability",
+        "spots": "{count, plural, =0 {Full} one {# spot left} other {# spots left}}",
+        "join_online": "Join online",
+        "view_cover": "View the poster larger",
+        "view_gallery": "View photo {index} larger"
+    },
     "Theme": {
         "label": "Appearance",
         "light": "Light",

@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { ITeamMember } from '@/lib/team/types';
-import { TEAM_POLES } from '@/lib/team/poles';
+
+/** Single DB title; show the locale-specific wording for this referent. */
+const REFERENT_TITLES: Record<string, { fr: string; en: string }> = {
+    'Sergino BRADFORD': {
+        fr: "Responsable du programme Bachelor d'EPITECH Bénin",
+        en: 'Head of the Bachelor programme at EPITECH Benin',
+    },
+};
 
 type TeamSectionProps = {
     initialMembers?: ITeamMember[];
@@ -40,21 +47,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
 
     const referents = members.filter(m => m.section === 'referent');
     const executives = members.filter(m => m.section === 'executive');
-    const poleMembers = members.filter(m => m.section === 'pole' && m.name !== '—');
-    const poleVacant = members.filter(m => m.section === 'pole' && m.name === '—');
     const mentors = members.filter(m => m.section === 'mentor');
-
-    const poleGroups = poleMembers.reduce<Record<string, ITeamMember[]>>((acc, m) => {
-        const key = m.poleKey || m.role;
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(m);
-        return acc;
-    }, {});
-
-    const vacantPoleKeys = new Set(poleVacant.map(p => p.poleKey).filter(Boolean) as string[]);
-
-    const techPoles = TEAM_POLES.filter(p => p.category === 'tech');
-    const nonTechPoles = TEAM_POLES.filter(p => p.category === 'non_tech');
 
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
@@ -69,7 +62,13 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
         );
     };
 
-    const MemberCard = ({ member, large = false }: { member: ITeamMember; large?: boolean }) => (
+    const MemberCard = ({ member, large = false }: { member: ITeamMember; large?: boolean }) => {
+        const localizedTitle = REFERENT_TITLES[member.name]?.[locale] ?? member.title;
+        const roleLabel = member.section === 'referent' && member.role === 'Notre Référent'
+            ? (locale === 'fr' ? 'Notre Référent' : 'Our Referent')
+            : member.role;
+
+        return (
         <div className={`p-6 rounded-xl bg-card border border-default shadow-card text-center ${large ? 'w-full max-w-xs mx-auto' : ''}`}>
             <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-brand-50 flex items-center justify-center overflow-hidden relative`}>
                 {member.photoUrl ? (
@@ -78,73 +77,17 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                     <span className="text-2xl font-semibold text-brand-700">{member.name.charAt(0)}</span>
                 )}
             </div>
-            <div className="text-[14px] font-medium text-brand-700 mb-1">{member.role}</div>
+            <div className="text-[14px] font-medium text-brand-700 mb-1">{roleLabel}</div>
             <div className="text-[18px] font-semibold text-primary mb-1">{member.name}</div>
-            {member.title && <div className="text-[14px] text-muted mb-2">{member.title}</div>}
+            {localizedTitle && <div className="text-[14px] text-muted mb-2">{localizedTitle}</div>}
             {member.description && <p className="text-[14px] leading-relaxed text-secondary mb-3">{member.description}</p>}
             <div className="flex justify-center gap-1 border-t border-subtle pt-3">
                 <SocialLink type="linkedin" url={member.socialLinks.linkedin} />
                 <SocialLink type="github" url={member.socialLinks.github} />
             </div>
         </div>
-    );
-
-    const PoleCard = ({ poleKey, poleDef, assigned }: { poleKey: string; poleDef?: typeof TEAM_POLES[0]; assigned: ITeamMember[] }) => {
-        const isVacant = assigned.length === 0 || vacantPoleKeys.has(poleKey);
-        const name = poleDef ? (locale === 'fr' ? poleDef.nameFr : poleDef.nameEn) : assigned[0]?.role || poleKey;
-        const mission = poleDef ? (locale === 'fr' ? poleDef.missionFr : poleDef.missionEn) : assigned[0]?.description;
-
-        return (
-            <div className="p-4 rounded-xl bg-card border border-default shadow-card text-left flex items-start gap-4">
-                <div className="flex shrink-0">
-                    {isVacant ? (
-                        <div className="w-14 h-14 rounded-lg bg-card-muted border border-dashed border-default flex items-center justify-center text-muted text-sm font-semibold">
-                            ?
-                        </div>
-                    ) : (
-                        assigned.map((m, idx) => (
-                            <div key={m.id} className={`w-14 h-14 rounded-lg bg-brand-50 flex items-center justify-center overflow-hidden ring-2 ring-[var(--bg-card)] relative ${idx > 0 ? '-ml-4 z-10' : 'z-20'}`}>
-                                {m.photoUrl ? (
-                                    <Image src={m.photoUrl} alt={m.name} fill className="object-cover" sizes="56px" />
-                                ) : (
-                                    <span className="text-lg font-semibold text-brand-700">{m.name.charAt(0)}</span>
-                                )}
-                            </div>
-                        ))
-                    )}
-                </div>
-                <div className="flex-1 min-w-0">
-                    <h4 className="text-[16px] font-semibold mb-0.5 text-primary leading-tight">{name}</h4>
-                    <div className="text-[13px] text-muted mb-0.5">
-                        {isVacant
-                            ? (locale === 'fr' ? 'Responsable à nommer' : 'Lead to be assigned')
-                            : assigned.length > 1 ? 'Co-Leads' : (assigned[0]?.title || 'Lead')}
-                    </div>
-                    {!isVacant && (
-                        <div className="text-primary text-[14px] font-medium mb-1 truncate">
-                            {assigned.map(m => m.name).join(' & ')}
-                        </div>
-                    )}
-                    {mission && (
-                        <p className="text-[14px] text-secondary leading-snug">{mission}</p>
-                    )}
-                </div>
-            </div>
         );
     };
-
-    const renderPoleGrid = (poles: typeof TEAM_POLES) => (
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {poles.map(pole => (
-                <PoleCard
-                    key={pole.key}
-                    poleKey={pole.key}
-                    poleDef={pole}
-                    assigned={poleGroups[pole.key] || []}
-                />
-            ))}
-        </div>
-    );
 
     if (loading) {
         return (
@@ -193,26 +136,6 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                         </div>
                     </div>
                 )}
-
-                <div className="mb-16">
-                    <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
-                        {locale === 'fr' ? 'Pôles Techniques' : 'Technical Poles'}
-                    </h3>
-                    <div className="mb-8 hidden md:block max-w-3xl rounded-xl overflow-hidden border border-default bg-white">
-                        <Image src="/assets/team/charts/poles-tech.png" alt="" width={1024} height={579} className="w-full h-auto" />
-                    </div>
-                    {renderPoleGrid(techPoles)}
-                </div>
-
-                <div className="mb-16">
-                    <h3 className="text-[20px] font-semibold mb-6 text-primary flex items-center gap-3 before:h-0.5 before:w-6 before:rounded-full before:bg-logo">
-                        {locale === 'fr' ? 'Pôles Non-Techniques' : 'Non-Technical Poles'}
-                    </h3>
-                    <div className="mb-8 hidden md:block max-w-3xl rounded-xl overflow-hidden border border-default bg-white">
-                        <Image src="/assets/team/charts/poles-non-tech.png" alt="" width={1024} height={579} className="w-full h-auto" />
-                    </div>
-                    {renderPoleGrid(nonTechPoles)}
-                </div>
 
                 {mentors.length > 0 && (
                     <div>

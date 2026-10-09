@@ -16,7 +16,7 @@ export const TEAM_POLES: TeamPoleDefinition[] = [
     category: 'tech',
     nameFr: 'Pôle Formation',
     nameEn: 'Training Pole',
-    missionFr: 'Workshops, montée en compétence et veille technologique.',
+    missionFr: 'Ateliers, montée en compétence et veille technologique.',
     missionEn: 'Workshops, skill-building and technology watch.',
     displayOrder: 1,
   },

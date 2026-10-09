@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { useParams } from 'next/navigation';
 import { Loader2, FileText } from 'lucide-react';
 import { isRoadmapUrl } from '@/lib/projects/links';
+import { localizeProjectStatus } from '@/lib/i18n/labels';
 
 interface Project {
   _id: string;
@@ -84,7 +85,7 @@ export default function ProjectDetailPage() {
           <div>
             {project.status && (
               <div className="mb-6 inline-block px-4 py-1.5 rounded-full bg-brand-600/20 border border-brand-500/25 text-[10px] font-bold uppercase tracking-widest text-brand-300">
-                {project.status}
+                {localizeProjectStatus(project.status, lang)}
               </div>
             )}
             <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight">{title}</h1>

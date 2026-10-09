@@ -142,6 +142,12 @@ model Event {
   title            String
   description      String
   content          String
+  titleEn          String?  @map("title_en")
+  titleFr          String?  @map("title_fr")
+  descriptionEn    String?  @map("description_en")
+  descriptionFr    String?  @map("description_fr")
+  contentEn        String?  @map("content_en")
+  contentFr        String?  @map("content_fr")
   categoryId       String   @map("category_id")
   date             DateTime
   endDate          DateTime? @map("end_date")

@@ -16,6 +16,7 @@ import {
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { PageHeader, Button, Panel, ListRow, EmptyState, Badge } from '@/components/ui';
 import type { EventWithDetails, PaginatedResponse } from '@/lib/events/types';
+import { eventField } from '@/lib/events/locale';
 import { formatDate } from '@/lib/utils/date';
 import { EventCoverImage } from '@/components/events/EventCoverImage';
 
@@ -243,7 +244,7 @@ export default function AdminEventsPage() {
                         href={`/${locale}/events/${event.id}`}
                         className="text-sm font-semibold text-primary hover:text-brand-600"
                       >
-                        {event.title}
+                        {eventField(event, locale, 'title')}
                       </Link>
                       <Badge variant={event.isPublished ? 'success' : 'muted'}>
                         {event.isPublished

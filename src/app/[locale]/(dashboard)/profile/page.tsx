@@ -31,7 +31,7 @@ export default function ProfilePage() {
   const [memberData, setMemberData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const roleName = roleId ? getRoleName(roleId, locale as 'en' | 'fr') : 'Member';
+  const roleName = roleId ? getRoleName(roleId, locale as 'en' | 'fr') : (locale === 'fr' ? 'Membre' : 'Member');
   const roleLevel = roleId ? getRoleLevel(roleId) : 1;
 
   // Fetch member data from API
@@ -62,14 +62,14 @@ export default function ProfilePage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-default border-t-brand-500 rounded-full mx-auto mb-4" />
-          <p className="text-secondary">Loading profile...</p>
+          <p className="text-secondary">{locale === 'fr' ? 'Chargement du profil…' : 'Loading profile…'}</p>
         </div>
       </div>
     );
   }
 
-  const userName = user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User';
-  const userEmail = user?.emailAddresses[0]?.emailAddress || 'No email';
+  const userName = user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress?.split('@')[0] || (locale === 'fr' ? 'Membre' : 'Member');
+  const userEmail = user?.emailAddresses[0]?.emailAddress || (locale === 'fr' ? 'Pas d’e-mail' : 'No email');
   const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
@@ -79,7 +79,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-5 max-w-4xl">
         <PageHeader
-          title="Profile"
+          title={locale === 'fr' ? 'Profil' : 'Profile'}
           description={
             locale === 'fr'
               ? 'Gérez vos informations personnelles et vos préférences.'
@@ -149,10 +149,10 @@ export default function ProfilePage() {
                   <span>{roleName}</span>
                 </span>
                 <span className="text-muted text-sm">
-                  Level {roleLevel}
+                  {locale === 'fr' ? `Niveau ${roleLevel}` : `Level ${roleLevel}`}
                 </span>
                 {isAdmin && (
-                  <Badge variant="amber">Administrator</Badge>
+                  <Badge variant="amber">{locale === 'fr' ? 'Administrateur' : 'Administrator'}</Badge>
                 )}
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function ProfilePage() {
                   <p className="text-muted text-xs uppercase tracking-wide">
                     {locale === 'fr' ? 'Pôle' : 'Department'}
                   </p>
-                  <p className="text-primary">{memberData?.pole || 'Not assigned'}</p>
+                  <p className="text-primary">{memberData?.pole || (locale === 'fr' ? 'Non assigné' : 'Not assigned')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   <p className="text-muted text-xs uppercase tracking-wide">
                     {locale === 'fr' ? 'Équipe' : 'Team'}
                   </p>
-                  <p className="text-primary">{memberData?.team || 'Not assigned'}</p>
+                  <p className="text-primary">{memberData?.team || (locale === 'fr' ? 'Non assignée' : 'Not assigned')}</p>
                 </div>
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function ProfilePage() {
         <WorkspaceCard locale={locale} />
 
         {role && role.permissions && role.permissions.length > 0 ? (
-          <Panel title="Permissions">
+          <Panel title={locale === 'fr' ? 'Autorisations' : 'Permissions'}>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {role.permissions.map((permission) => (
                 <div

@@ -1,8 +1,11 @@
 'use client';
 
 import type { ComponentType } from 'react';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import type { EventWithDetails } from '@/lib/events/types';
+import { CATEGORIES } from '@/lib/events/categories';
+import { eventField } from '@/lib/events/locale';
 import { formatDate } from '@/lib/utils/date';
 import { cn } from '@/lib/utils/cn';
 import { EventCoverImage } from './EventCoverImage';
@@ -33,6 +36,12 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, href, className }: EventCardProps) {
+  const locale = useLocale();
+  const lang = locale === 'en' ? 'en' : 'fr';
+  const title = eventField(event, lang, 'title');
+  const description = eventField(event, lang, 'description');
+  const category = CATEGORIES.find((item) => item.id === event.categoryId);
+  const categoryName = category ? category.name[lang] : event.categoryName;
   const Icon = iconComponents[event.categoryIcon] || Calendar;
   const isFull = event.spotsLeft <= 0;
   const spotsPercentage = (event.registeredCount / event.capacity) * 100;
@@ -49,33 +58,33 @@ export function EventCard({ event, href, className }: EventCardProps) {
       <div className="relative">
         <EventCoverImage
           src={event.imageUrl}
-          alt={event.title}
+          alt={title}
           className="h-40 w-full"
           imgClassName="group-hover:scale-105 transition-transform duration-500"
         />
 
         <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm border border-default">
           <Icon className={cn('w-3.5 h-3.5', event.categoryColor)} />
-          <span className="text-primary text-xs font-medium">{event.categoryName}</span>
+          <span className="text-primary text-xs font-medium">{categoryName}</span>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 space-y-3">
         <h3 className="text-sm font-semibold text-primary line-clamp-2 group-hover:text-brand-600 transition-colors">
-          {event.title}
+          {title}
         </h3>
 
         <div className="flex flex-wrap gap-2.5 text-xs text-secondary">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5" />
-            <span>{formatDate(event.date)}</span>
+            <span>{formatDate(event.date, lang)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             {event.isOnline ? (
               <>
                 <Globe className="w-3.5 h-3.5" />
-                <span>Online</span>
+                <span>{lang === 'fr' ? 'En ligne' : 'Online'}</span>
               </>
             ) : (
               <>
@@ -87,7 +96,7 @@ export function EventCard({ event, href, className }: EventCardProps) {
         </div>
 
         <p className="text-muted text-xs line-clamp-2 leading-relaxed">
-          {event.description}
+          {description}
         </p>
 
         <div className="space-y-1.5">

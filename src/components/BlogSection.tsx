@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { getPublishedPosts } from '@/lib/blog/repository';
+import { localizeCategory } from '@/lib/i18n/labels';
 
 export default async function BlogSection() {
   const tHeader = await getTranslations('Header');
@@ -69,7 +70,7 @@ export default async function BlogSection() {
                   )}
                   {post.category ? (
                     <span className="absolute left-3 top-3 rounded-md bg-card px-2 py-0.5 text-[12px] font-medium text-primary shadow-sm">
-                      {post.category}
+                      {localizeCategory(post.category, locale)}
                     </span>
                   ) : null}
                 </div>

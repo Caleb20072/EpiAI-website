@@ -1,7 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import type { EventWithDetails } from '@/lib/events/types';
+import { CATEGORIES } from '@/lib/events/categories';
+import { eventField } from '@/lib/events/locale';
 import { formatDate, getSpotsPercentage, getProgressColor } from '@/lib/events/utils';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -40,9 +43,16 @@ export function EventDetail({
   className,
   showRegistrationStats = true,
 }: EventDetailProps) {
+  const locale = useLocale();
+  const t = useTranslations('EventDetail');
   const Icon = iconComponents[event.categoryIcon] || Calendar;
   const spotsPercentage = getSpotsPercentage(event.registeredCount, event.capacity);
   const isFull = event.spotsLeft <= 0;
+  const title = eventField(event, locale, 'title');
+  const description = eventField(event, locale, 'description');
+  const content = eventField(event, locale, 'content');
+  const category = CATEGORIES.find((item) => item.id === event.categoryId);
+  const categoryName = category ? category.name[locale === 'en' ? 'en' : 'fr'] : event.categoryName;
 
   const lightboxImages = useMemo(() => {
     const cover = event.imageUrl ? [event.imageUrl] : [];
@@ -68,48 +78,48 @@ export function EventDetail({
             type="button"
             onClick={() => openAt(event.imageUrl!)}
             className="absolute inset-0 z-[1] w-full h-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-            aria-label="View cover image larger"
+            aria-label={t('view_cover')}
           />
         ) : null}
         <EventCoverImage
           src={event.imageUrl}
-          alt={event.title}
+          alt={title}
           className="h-full w-full rounded-2xl pointer-events-none"
         />
 
         <div className="absolute top-6 left-6 z-[2] inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-default pointer-events-none">
           <Icon className={cn('w-5 h-5', event.categoryColor)} />
-          <span className="text-primary font-medium">{event.categoryName}</span>
+          <span className="text-primary font-medium">{categoryName}</span>
         </div>
 
         {event.imageUrl ? (
           <div className="absolute bottom-4 right-4 z-[2] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/60 text-white text-xs backdrop-blur-sm">
               <Expand className="w-3.5 h-3.5" />
-              Enlarge
+              {t('enlarge')}
             </span>
           </div>
         ) : null}
       </div>
 
       <div>
-        <h1 className="text-3xl md:text-4xl font-bold text-primary">{event.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-primary">{title}</h1>
       </div>
 
       {/* Meta Info */}
       <div className="flex flex-wrap gap-4 md:gap-6">
         <div className="flex items-center gap-2 text-secondary">
           <Calendar className="w-5 h-5" />
-          <span>{formatDate(event.date)}</span>
+          <span>{formatDate(event.date, locale === 'en' ? 'en' : 'fr')}</span>
         </div>
         <div className="flex items-center gap-2 text-secondary">
           <MapPin className="w-5 h-5" />
-          <span>{event.isOnline ? 'Online Event' : event.location}</span>
+          <span>{event.isOnline ? t('online') : event.location}</span>
         </div>
         {showRegistrationStats ? (
           <div className="flex items-center gap-2 text-secondary">
             <Users className="w-5 h-5" />
-            <span>{event.registeredCount} / {event.capacity} registered</span>
+            <span>{t('registered', { count: event.registeredCount, capacity: event.capacity })}</span>
           </div>
         ) : null}
       </div>
@@ -118,12 +128,12 @@ export function EventDetail({
       {showRegistrationStats ? (
         <div className="p-4 rounded-xl bg-card border border-default">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-secondary">Availability</span>
+            <span className="text-secondary">{t('availability')}</span>
             <span className={cn(
               'font-medium',
               isFull ? 'text-red-400' : 'text-brand-400'
             )}>
-              {event.spotsLeft} spots remaining
+              {t('spots', { count: event.spotsLeft })}
             </span>
           </div>
           <div className="h-3 rounded-full bg-card-muted overflow-hidden">
@@ -147,25 +157,25 @@ export function EventDetail({
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all border border-purple-500/30"
         >
           <Globe className="w-5 h-5" />
-          <span>Join Online</span>
+          <span>{t('join_online')}</span>
           <ExternalLink className="w-4 h-4" />
         </a>
       )}
 
       {/* Description */}
       <div className="prose prose-invert max-w-none">
-        <h2 className="text-xl font-semibold text-primary mb-3">About this event</h2>
+        <h2 className="text-xl font-semibold text-primary mb-3">{t('about')}</h2>
         <p className="text-secondary whitespace-pre-wrap leading-relaxed">
-          {event.description}
+          {description}
         </p>
       </div>
 
       {/* Full Content */}
-      {event.content && (
+      {content && (
         <div className="prose prose-invert max-w-none">
-          <h2 className="text-xl font-semibold text-primary mb-3">Details</h2>
+          <h2 className="text-xl font-semibold text-primary mb-3">{t('details')}</h2>
           <div className="text-secondary whitespace-pre-wrap leading-relaxed">
-            {event.content}
+            {content}
           </div>
         </div>
       )}
@@ -173,7 +183,7 @@ export function EventDetail({
       {/* Gallery */}
       {event.gallery && event.gallery.length > 0 && (
         <div>
-          <h2 className="text-xl font-semibold text-primary mb-4">Gallery</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">{t('gallery')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {event.gallery.map((image, index) => (
               <button
@@ -181,12 +191,12 @@ export function EventDetail({
                 type="button"
                 onClick={() => openAt(image)}
                 className="relative aspect-square rounded-xl overflow-hidden cursor-zoom-in group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                aria-label={`View gallery image ${index + 1} larger`}
+                aria-label={t('view_gallery', { index: index + 1 })}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={image}
-                  alt={`Gallery ${index + 1}`}
+                  alt={t('view_gallery', { index: index + 1 })}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <span className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -200,7 +210,7 @@ export function EventDetail({
 
       {event.videoUrls && event.videoUrls.length > 0 && (
         <div>
-          <h2 className="text-xl font-semibold text-primary mb-4">Videos</h2>
+          <h2 className="text-xl font-semibold text-primary mb-4">{t('videos')}</h2>
           <div className="space-y-4">
             {event.videoUrls.map((url, index) => {
               const isFile = url.startsWith('/') || /\.(mp4|webm|mov)(\?|$)/i.test(url);
@@ -216,7 +226,7 @@ export function EventDetail({
                       className="flex items-center gap-2 p-4 text-brand-600 hover:underline text-sm"
                     >
                       <ExternalLink className="w-4 h-4" />
-                      Video {index + 1}
+                      {t('videos')} {index + 1}
                     </a>
                   )}
                 </div>
@@ -230,7 +240,7 @@ export function EventDetail({
         <ImageLightbox
           images={lightboxImages}
           index={lightboxIndex}
-          alt={event.title}
+          alt={title}
           onClose={() => setLightboxIndex(null)}
           onIndexChange={setLightboxIndex}
         />

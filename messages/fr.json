@@ -177,7 +177,7 @@
             },
             "done": {
                 "title": "Inscris-toi à un événement",
-                "body": "Workshops et hackathons t'attendent. Consulte le calendrier !"
+                "body": "Ateliers et hackathons t'attendent. Consulte le calendrier !"
             }
         },
         "actions": {
@@ -394,10 +394,10 @@
         "spotsLeft": "places restantes",
         "eventFull": "Événement Complet",
         "categories": {
-            "workshop": "Workshop",
+            "workshop": "Atelier",
             "conference": "Conférence",
             "hackathon": "Hackathon",
-            "meetup": "Meetup",
+            "meetup": "Rencontre",
             "formation": "Formation"
         }
     },
@@ -510,6 +510,20 @@
         "accountsCreated": "{count, plural, =1 {# compte créé} other {# comptes créés}}",
         "failedAccounts": "Comptes échoués :",
         "uploadMore": "Uploader Plus"
+    },
+    "EventDetail": {
+        "about": "À propos",
+        "details": "Détails",
+        "gallery": "Galerie",
+        "videos": "Vidéos",
+        "enlarge": "Agrandir",
+        "online": "En ligne",
+        "registered": "{count} / {capacity} inscrits",
+        "availability": "Disponibilité",
+        "spots": "{count, plural, =0 {Complet} one {# place restante} other {# places restantes}}",
+        "join_online": "Rejoindre en ligne",
+        "view_cover": "Agrandir l'affiche",
+        "view_gallery": "Agrandir la photo {index}"
     },
     "Theme": {
         "label": "Apparence",

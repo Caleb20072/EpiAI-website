@@ -51,6 +51,12 @@ export interface EventWithDetails {
   title: string;
   description: string;
   content: string;
+  titleEn?: string;
+  titleFr?: string;
+  descriptionEn?: string;
+  descriptionFr?: string;
+  contentEn?: string;
+  contentFr?: string;
   categoryId: string;
   categoryName: string;
   categoryColor: string;
@@ -90,6 +96,12 @@ export interface CreateEventInput {
   title: string;
   description: string;
   content: string;
+  titleEn?: string;
+  titleFr?: string;
+  descriptionEn?: string;
+  descriptionFr?: string;
+  contentEn?: string;
+  contentFr?: string;
   categoryId: string;
   date: string;
   endDate?: string;

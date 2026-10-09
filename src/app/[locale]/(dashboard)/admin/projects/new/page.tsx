@@ -71,15 +71,15 @@ export default function NewProjectPage() {
     return (
         <FormPageShell
             backHref={`/${locale}/admin/projects`}
-            backLabel="Back to projects"
-            title="New Project"
-            description="Create a new project for the homepage"
+            backLabel={locale === 'fr' ? 'Retour aux projets' : 'Back to projects'}
+            title={locale === 'fr' ? 'Nouveau projet' : 'New project'}
+            description={locale === 'fr' ? 'Créer un projet pour la page d’accueil' : 'Create a new project for the homepage'}
             maxWidth="lg"
             className="max-w-4xl"
         >
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-4">
-                    <h2 className="text-sm font-semibold text-primary">Title</h2>
+                    <h2 className="text-sm font-semibold text-primary">{locale === 'fr' ? 'Titre' : 'Title'}</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         <Input
                             label="English"
@@ -124,7 +124,7 @@ export default function NewProjectPage() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-3">
-                        <h2 className="text-sm font-semibold text-primary">Cover Image</h2>
+                        <h2 className="text-sm font-semibold text-primary">{locale === 'fr' ? 'Image de couverture' : 'Cover image'}</h2>
                         <Input
                             type="url"
                             required
@@ -139,7 +139,7 @@ export default function NewProjectPage() {
 
                     <div className="space-y-3">
                         <Select
-                            label="Status"
+                            label={locale === 'fr' ? 'Statut' : 'Status'}
                             value={formData.status}
                             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                         >
@@ -208,17 +208,17 @@ export default function NewProjectPage() {
                         className="w-4 h-4 rounded bg-input border-default text-brand-600 focus:ring-brand-500"
                     />
                     <div>
-                        <p className="text-primary text-sm font-semibold">Publish immediately</p>
-                        <p className="text-secondary text-xs">Make this project visible on the homepage</p>
+                        <p className="text-primary text-sm font-semibold">{locale === 'fr' ? 'Publier tout de suite' : 'Publish immediately'}</p>
+                        <p className="text-secondary text-xs">{locale === 'fr' ? 'Rendre ce projet visible sur la page d’accueil' : 'Make this project visible on the homepage'}</p>
                     </div>
                 </label>
 
                 <div className="flex gap-3 pt-2">
                     <Link href={`/${locale}/admin/projects`}>
-                        <Button variant="secondary" size="lg">Cancel</Button>
+                        <Button variant="secondary" size="lg">{locale === 'fr' ? 'Annuler' : 'Cancel'}</Button>
                     </Link>
                     <Button type="submit" disabled={loading} className="flex-1" size="lg">
-                        {loading ? 'Creating...' : 'Create Project'}
+                        {loading ? (locale === 'fr' ? 'Création…' : 'Creating…') : (locale === 'fr' ? 'Créer le projet' : 'Create project')}
                     </Button>
                 </div>
             </form>

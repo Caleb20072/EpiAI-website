@@ -107,9 +107,9 @@ export default function EditProjectPage() {
     return (
         <FormPageShell
             backHref={`/${locale}/admin/projects`}
-            backLabel="Back to projects"
-            title="Edit Project"
-            description="Update project information"
+            backLabel={locale === 'fr' ? 'Retour aux projets' : 'Back to projects'}
+            title={locale === 'fr' ? 'Modifier le projet' : 'Edit project'}
+            description={locale === 'fr' ? 'Mettre à jour les informations du projet' : 'Update project information'}
             maxWidth="lg"
             className="max-w-4xl"
         >
@@ -237,17 +237,17 @@ export default function EditProjectPage() {
                         className="w-4 h-4 rounded bg-input border-default text-brand-600 focus:ring-brand-500"
                     />
                     <div>
-                        <p className="text-primary text-sm font-semibold">Published</p>
-                        <p className="text-secondary text-xs">Make this project visible on the homepage</p>
+                        <p className="text-primary text-sm font-semibold">{locale === 'fr' ? 'Publié' : 'Published'}</p>
+                        <p className="text-secondary text-xs">{locale === 'fr' ? 'Rendre ce projet visible sur la page d’accueil' : 'Make this project visible on the homepage'}</p>
                     </div>
                 </label>
 
                 <div className="flex gap-3 pt-2">
                     <Link href={`/${locale}/admin/projects`}>
-                        <Button variant="secondary" size="lg">Cancel</Button>
+                        <Button variant="secondary" size="lg">{locale === 'fr' ? 'Annuler' : 'Cancel'}</Button>
                     </Link>
                     <Button type="submit" disabled={loading} className="flex-1" size="lg">
-                        {loading ? 'Updating...' : 'Update Project'}
+                        {loading ? (locale === 'fr' ? 'Mise à jour…' : 'Updating…') : (locale === 'fr' ? 'Mettre à jour' : 'Update project')}
                     </Button>
                 </div>
             </form>

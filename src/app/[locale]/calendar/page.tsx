@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import { prisma } from '@/lib/prisma';
 import { Link } from '@/i18n/routing';
 import { normalizeImageUrl } from '@/lib/utils/image-url';
+import { eventField } from '@/lib/events/locale';
 
 export const dynamic = 'force-dynamic';
 
@@ -71,7 +72,7 @@ export default async function CalendarPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="text-[17px] font-semibold text-primary">{e.title}</h2>
+                        <h2 className="text-[17px] font-semibold text-primary">{eventField(e, locale, 'title')}</h2>
                         {isPast ? (
                           <span className="text-[12px] text-muted border border-default px-2 py-0.5 rounded-full">
                             {fr ? 'Passé' : 'Past'}

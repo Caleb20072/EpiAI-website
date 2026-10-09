@@ -4,6 +4,7 @@ import { Link } from '@/i18n/routing';
 import Footer from '@/components/Footer';
 import { BlogMarkdown } from '@/components/blog/BlogMarkdown';
 import { getPostBySlug } from '@/lib/blog/repository';
+import { localizeCategory } from '@/lib/i18n/labels';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -48,7 +49,7 @@ export default async function BlogDetailPage({
         <article>
           <header className="mb-12">
             <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-brand-400 mb-6">
-              <span>{post.category}</span>
+              <span>{localizeCategory(post.category, locale)}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
               <span className="text-gray-500">{date}</span>
             </div>

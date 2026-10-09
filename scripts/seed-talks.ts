@@ -16,9 +16,15 @@ const TALKS = [
     titleFr: 'Talk 001 — Build your AI career',
     matchTitles: ['Build your AI career', 'Talk 001', 'Arnauld Adjovi'],
     data: {
-      title: 'Talk 001 — Build your AI career',
+      title: 'Talk 001 — Construire sa carrière en IA',
+      titleFr: 'Talk 001 — Construire sa carrière en IA',
+      titleEn: 'Talk 001 — Build your AI career',
       description:
         "Premier Talk Epi'AI avec Arnauld Adjovi (Technical Sales, Data & AI · IBM) : construire une carrière en IA, entre industrie, mentorat et GenAI.",
+      descriptionFr:
+        "Premier Talk Epi'AI avec Arnauld Adjovi (Technical Sales, Data & AI · IBM) : construire une carrière en IA, entre industrie, mentorat et GenAI.",
+      descriptionEn:
+        "Epi'AI's first talk, with Arnauld Adjovi (Technical Sales, Data & AI at IBM): building an AI career between industry, mentoring and GenAI.",
       content: `Epi'AI Presents — TALK · 001
 Thèmes : IA · Carrière · Industrie
 
@@ -33,6 +39,34 @@ Parcours & expertise :
 • Domaines : Machine Learning, NLP, IBM watsonx, GenAI
 
 Événement ouvert à tous — pas de retard.`,
+      contentFr: `Epi'AI présente — TALK · 001
+Thèmes : IA · Carrière · Industrie
+
+Intervenant : Arnauld Adjovi
+Rôle : Technical Sales, Data & AI · IBM (Paris)
+Profil : Professionnel béninois de l'IA, au cœur des grands enjeux mondiaux.
+
+Parcours et expertise :
+• Mentor de l'équipe nationale béninoise aux World AI Olympiads (Beijing) — 30e / 87
+• Co-fondateur d'iSHEERO — conseil en gouvernance IA et transformation digitale
+• Professeur d'IA à Epitech · Sèmè City
+• Domaines : machine learning, NLP, IBM watsonx, GenAI
+
+Événement ouvert à tous.`,
+      contentEn: `Epi'AI presents — TALK · 001
+Themes: AI · Career · Industry
+
+Speaker: Arnauld Adjovi
+Role: Technical Sales, Data & AI · IBM (Paris)
+Profile: A Beninese AI professional working on major global issues.
+
+Background:
+• Mentor of Benin's national team at the World AI Olympiads (Beijing) — 30th / 87
+• Co-founder of iSHEERO — AI governance and digital transformation
+• AI lecturer at Epitech · Sèmè City
+• Fields: machine learning, NLP, IBM watsonx, GenAI
+
+Open to everyone.`,
       categoryId: 'conference',
       date: '2026-05-28T17:00:00.000Z',
       location: 'Campus Epitech Bénin',
@@ -111,8 +145,14 @@ Ouvert à tous, le Talk 001 pose le ton d'Epi'AI : ambitieux, concret, ancré au
     matchTitles: ["L'IA au service du pays", 'Talk 002', 'Kevin Degila'],
     data: {
       title: "Talk 002 — L'IA au service du pays",
+      titleFr: "Talk 002 — L'IA au service du pays",
+      titleEn: 'Talk 002 — AI at the service of the country',
       description:
         "Deuxième Talk Epi'AI avec Kevin Degila (Head of Data & AI) : IA, innovation publique et carrière — campus Epitech Bénin.",
+      descriptionFr:
+        "Deuxième Talk Epi'AI avec Kevin Degila (Head of Data & AI) : IA, innovation publique et carrière — campus Epitech Bénin.",
+      descriptionEn:
+        "Epi'AI's second talk, with Kevin Degila (Head of Data & AI): AI, public innovation and careers at Campus Epitech Benin.",
       content: `Epi'AI Presents — TALK · 002
 Thèmes : IA · Innovation publique · Carrière
 
@@ -131,6 +171,42 @@ Ouvert à tous — pas de retard.
 • Livre : https://www.llmdezero.com/
 
 Un échange riche entre expertise technique, vision nationale de l'IA, et inspiration pour la communauté étudiante.`,
+      contentFr: `Epi'AI présente — TALK · 002
+Thèmes : IA · Innovation publique · Carrière
+
+Intervenant : Kevin Degila
+Rôle : Head of Data & AI
+
+Sujet : « L'IA au service du pays. »
+
+Lieu : Mezzanine — Campus Epitech Bénin
+Date : lundi 20 juillet · 19h
+Ouvert à tous.
+
+À propos de Kevin Degila :
+• Site : https://kevindegila.com/
+• Auteur du livre « Construire un LLM de zéro » — lancement officiel le 21 juillet
+• Livre : https://www.llmdezero.com/
+
+Un échange entre expertise technique, vision nationale de l'IA et inspiration pour la communauté étudiante.`,
+      contentEn: `Epi'AI presents — TALK · 002
+Themes: AI · Public innovation · Career
+
+Speaker: Kevin Degila
+Role: Head of Data & AI
+
+Topic: “AI at the service of the country.”
+
+Place: Mezzanine — Campus Epitech Benin
+Date: Monday 20 July · 19:00
+Open to everyone.
+
+About Kevin Degila:
+• Website: https://kevindegila.com/
+• Author of the book “Construire un LLM de zéro” — official launch on 21 July
+• Book: https://www.llmdezero.com/
+
+A conversation between technical expertise, a national view of AI, and inspiration for the student community.`,
       categoryId: 'conference',
       date: '2026-07-20T19:00:00.000Z',
       location: 'Mezzanine — Campus Epitech Bénin',
@@ -217,8 +293,14 @@ Le Talk 002 confirme la mission d'Epi'AI : connecter les étudiants aux leaders 
     blogStatus: 'published' as const,
     data: {
       title: 'IA & Études',
+      titleFr: 'IA & Études',
+      titleEn: 'AI & Studies',
       description:
         "Séance Epi'AI × Epitech pour les collégiens, lycéens et bacheliers : utiliser l'IA pour réussir ses études, sans la laisser réfléchir à sa place. Campus Epitech Bénin, mézzanine.",
+      descriptionFr:
+        "Séance Epi'AI × Epitech pour les collégiens, lycéens et bacheliers : utiliser l'IA pour réussir ses études, sans la laisser réfléchir à sa place. Campus Epitech Bénin, mézzanine.",
+      descriptionEn:
+        "An Epi'AI × Epitech session for secondary-school students and new graduates: use AI to succeed in your studies, without letting it think for you. Mezzanine, Campus Epitech Benin.",
       content: `Epi'AI × Epitech — IA & Études
 
 Une IA qui muscle. Pas une IA qui remplace.
@@ -238,6 +320,44 @@ Thèmes travaillés en salle :
 • Comprendre un cours, réviser et s'entraîner avec l'IA
 
 Séance déjà passée.`,
+      contentFr: `Epi'AI × Epitech — IA & Études
+
+Une IA qui muscle. Pas une IA qui remplace.
+Apprends à l'utiliser pour réussir, pas pour réfléchir à ta place.
+
+Public : collégiens, lycéens et bacheliers pas encore entrés à l'université.
+Lieu : Mézzanine — Campus Epitech Bénin
+Date : samedi 29 août 2026 · 9h–12h
+Entrée gratuite · places limitées.
+
+Thèmes travaillés en salle :
+• Utiliser l'IA pour apprendre sans en devenir dépendant
+• Écrire un prompt et relire la réponse
+• Faire confiance, ou non, à une réponse produite par une IA
+• La différence entre s'en servir pour apprendre et s'en servir pour tricher
+• Se tromper fait partie du processus
+• Comprendre un cours, réviser et s'entraîner avec l'IA
+
+Séance déjà passée.`,
+      contentEn: `Epi'AI × Epitech — AI & Studies
+
+An AI that trains you. Not an AI that replaces you.
+Learn to use it to succeed, not to think in your place.
+
+Audience: secondary-school students and graduates who have not started university yet.
+Place: Mezzanine — Campus Epitech Benin
+Date: Saturday 29 August 2026 · 9:00–12:00
+Free entry · limited seats.
+
+What the room worked on:
+• Using AI to learn without becoming dependent on it
+• Writing a prompt and checking the answer
+• Deciding when an AI answer can be trusted
+• The difference between using AI to learn and using it to cheat
+• Making mistakes as part of the process
+• Understanding a lesson, revising and practicing with AI
+
+This session has already taken place.`,
       categoryId: 'formation',
       date: '2026-08-29T08:00:00.000Z',
       endDate: '2026-08-29T11:00:00.000Z',

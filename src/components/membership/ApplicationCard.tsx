@@ -238,7 +238,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
           <div className="mb-6">
             <h4 className="text-sm font-medium text-secondary mb-2 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              Motivations
+              {locale === 'fr' ? 'Motivations' : 'Motivations'}
             </h4>
             <div className="p-4 rounded-lg bg-card text-secondary text-sm leading-relaxed">
               {application.motivations}
@@ -247,7 +247,10 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
 
           {/* Meta */}
           <div className="flex items-center gap-4 text-sm text-muted mb-6">
-            <span>Submitted {formatDistanceToNow(application.createdAt, locale as 'en' | 'fr')}</span>
+            <span>
+              {locale === 'fr' ? 'Envoyée' : 'Submitted'}{' '}
+              {formatDistanceToNow(application.createdAt, locale)}
+            </span>
           </div>
 
           {/* Actions (only for pending) */}

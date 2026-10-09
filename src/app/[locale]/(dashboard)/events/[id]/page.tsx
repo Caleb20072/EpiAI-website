@@ -8,6 +8,7 @@ import { EventDetail } from '@/components/events/EventDetail';
 import { RegistrationForm } from '@/components/events/RegistrationForm';
 import { Countdown } from '@/components/events/Countdown';
 import type { EventWithDetails } from '@/lib/events/types';
+import { eventField } from '@/lib/events/locale';
 import { ArrowLeft, Calendar, ClipboardList, Eye, EyeOff, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageHeader, Panel, Button } from '@/components/ui';
@@ -113,15 +114,15 @@ export default function EventDetailPage() {
       <div className="max-w-2xl mx-auto text-center py-16">
         <Calendar className="w-16 h-16 text-muted mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-primary mb-2">
-          Event Not Found
+          {locale === 'fr' ? 'Événement introuvable' : 'Event not found'}
         </h1>
         <p className="text-secondary mb-6">
-          {error || 'This event does not exist or has been deleted.'}
+          {error || (locale === 'fr' ? 'Cet événement n’existe pas ou a été supprimé.' : 'This event does not exist or has been deleted.')}
         </p>
         <Link href={`/${locale}/events`}>
           <Button>
             <ArrowLeft className="w-4 h-4" />
-            Back to Events
+            {t('backToEvents')}
           </Button>
         </Link>
       </div>
@@ -131,8 +132,8 @@ export default function EventDetailPage() {
   return (
     <div className="space-y-5 max-w-4xl mx-auto">
       <PageHeader
-        eyebrow="Events"
-        title={event.title}
+        eyebrow={t('title')}
+        title={eventField(event, locale, 'title')}
         description={event.location || undefined}
         actions={
           <Link

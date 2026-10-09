@@ -7,6 +7,7 @@ import { Link } from '@/i18n/routing';
 import { BrandWordmark } from '@/components/BrandLogo';
 import { formatDate } from '@/lib/utils/date';
 import type { EventWithDetails } from '@/lib/events/types';
+import { eventField } from '@/lib/events/locale';
 
 const ArrowRight = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -106,7 +107,7 @@ export default function HeroSection({ nextEvent }: HeroSectionProps) {
                                     </span>
                                     <span className="min-w-0">
                                         <span className="block text-[16px] font-semibold text-primary group-hover:text-brand-700 transition-colors duration-[160ms]">
-                                            {nextEvent.title}
+                                            {eventField(nextEvent, locale, 'title')}
                                         </span>
                                         <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-muted">
                                             <span className="inline-flex items-center gap-1.5">

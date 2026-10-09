@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { Calendar, MapPin, Globe } from 'lucide-react';
 import type { EventWithDetails } from '@/lib/events/types';
+import { eventField } from '@/lib/events/locale';
 import { EventCoverImage } from '@/components/events/EventCoverImage';
 import { formatDate } from '@/lib/utils/date';
 
@@ -39,17 +40,19 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => {
               const d = new Date(event.date);
+              const title = eventField(event, locale, 'title');
+              const description = eventField(event, locale, 'description');
               return (
                 <article
                   key={event.id}
                   className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-default bg-card shadow-card transition-[border-color,box-shadow] duration-200 hover:border-brand-300 hover:shadow-elevated"
                 >
-                  <Link href={`/calendar/${event.id}`} className="absolute inset-0 z-10 rounded-xl" aria-label={event.title} />
+                  <Link href={`/calendar/${event.id}`} className="absolute inset-0 z-10 rounded-xl" aria-label={title} />
 
                   <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-default bg-card-muted">
                     <EventCoverImage
                       src={event.imageUrl}
-                      alt={event.title}
+                      alt={title}
                       className="h-full w-full"
                       imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                       showGradient={false}
@@ -69,7 +72,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
 
                   <div className="flex flex-1 flex-col p-5">
                     <h3 className="text-[18px] font-semibold leading-snug text-primary transition-colors duration-[160ms] group-hover:text-brand-700">
-                      {event.title}
+                      {title}
                     </h3>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-muted">
                       <span className="inline-flex items-center gap-1.5">
@@ -81,7 +84,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
                         <span className="max-w-[180px] truncate">{event.isOnline ? t('online') : event.location}</span>
                       </span>
                     </div>
-                    <p className="mt-3 line-clamp-3 text-[15px] leading-[1.6] text-secondary">{event.description}</p>
+                    <p className="mt-3 line-clamp-3 text-[15px] leading-[1.6] text-secondary">{description}</p>
                   </div>
                 </article>
               );

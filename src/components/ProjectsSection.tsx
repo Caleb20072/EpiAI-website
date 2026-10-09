@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { discoveryLinkLabel } from '@/lib/projects/links';
+import { localizeProjectStatus } from '@/lib/i18n/labels';
 import type { ProjectApiShape } from '@/lib/projects/repository';
 
 interface ProjectsSectionProps {
@@ -84,7 +85,7 @@ export default function ProjectsSection({ initialProjects = [] }: ProjectsSectio
                                     )}
                                     {project.status ? (
                                         <span className={`absolute right-3 top-3 rounded-md border px-2 py-0.5 text-[12px] font-medium ${statusColors[project.status as keyof typeof statusColors] || statusColors['Live']}`}>
-                                            {project.status}
+                                            {localizeProjectStatus(project.status, locale)}
                                         </span>
                                     ) : null}
                                 </div>
