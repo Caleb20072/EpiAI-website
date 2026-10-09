@@ -8,7 +8,7 @@ import { EventDetail } from '@/components/events/EventDetail';
 import { RegistrationForm } from '@/components/events/RegistrationForm';
 import { Countdown } from '@/components/events/Countdown';
 import type { EventWithDetails } from '@/lib/events/types';
-import { eventField } from '@/lib/events/locale';
+import { eventField, eventLocation } from '@/lib/events/locale';
 import { ArrowLeft, Calendar, ClipboardList, Eye, EyeOff, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageHeader, Panel, Button } from '@/components/ui';
@@ -134,7 +134,7 @@ export default function EventDetailPage() {
       <PageHeader
         eyebrow={t('title')}
         title={eventField(event, locale, 'title')}
-        description={event.location || undefined}
+        description={event.location ? eventLocation(event.location, locale) : undefined}
         actions={
           <Link
             href={`/${locale}/events`}

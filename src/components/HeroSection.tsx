@@ -7,7 +7,7 @@ import { Link } from '@/i18n/routing';
 import { BrandWordmark } from '@/components/BrandLogo';
 import { formatDate } from '@/lib/utils/date';
 import type { EventWithDetails } from '@/lib/events/types';
-import { eventField } from '@/lib/events/locale';
+import { eventField, eventLocation } from '@/lib/events/locale';
 
 const ArrowRight = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -116,7 +116,7 @@ export default function HeroSection({ nextEvent }: HeroSectionProps) {
                                             </span>
                                             <span className="inline-flex min-w-0 items-center gap-1.5">
                                                 {nextEvent.isOnline ? <Globe className="h-3.5 w-3.5" aria-hidden /> : <MapPin className="h-3.5 w-3.5" aria-hidden />}
-                                                <span className="truncate">{nextEvent.isOnline ? t('online') : nextEvent.location}</span>
+                                                <span className="truncate">{nextEvent.isOnline ? t('online') : eventLocation(nextEvent.location, locale)}</span>
                                             </span>
                                         </span>
                                     </span>

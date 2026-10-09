@@ -3,7 +3,7 @@ import Footer from '@/components/Footer';
 import { prisma } from '@/lib/prisma';
 import { Link } from '@/i18n/routing';
 import { normalizeImageUrl } from '@/lib/utils/image-url';
-import { eventField } from '@/lib/events/locale';
+import { eventField, eventLocation } from '@/lib/events/locale';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,7 +79,7 @@ export default async function CalendarPage() {
                           </span>
                         ) : null}
                       </div>
-                      <p className="text-secondary text-[14px] mt-1">{e.location}</p>
+                      <p className="text-secondary text-[14px] mt-1">{eventLocation(e.location, locale)}</p>
                       <p className="text-muted text-[12px] mt-1">
                         {e.date.toLocaleString(locale, {
                           dateStyle: 'medium',

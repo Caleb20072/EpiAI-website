@@ -92,7 +92,7 @@ Open to everyone.`,
         "Epi'AI lance sa série de Talks avec Arnauld Adjovi (IBM) : carrière, GenAI et impact concret de l'IA.",
       contentEn: `## Talk 001 — Build your AI career
 
-On **May 28**, Epi'AI hosted the first talk of its series at Epitech Bénin.
+On **May 28**, Epi'AI hosted the first talk of its series at Epitech Benin.
 
 ### The speaker
 
@@ -233,7 +233,7 @@ A conversation between technical expertise, a national view of AI, and inspirati
         "Kevin Degila (Head of Data & AI) était l'invité du Talk 002 Epi'AI : innovation publique, carrière, et LLM de zéro.",
       contentEn: `## Talk 002 — AI at the service of the country
 
-On **Monday, July 20 at 19:00**, Epi'AI welcomed **Kevin Degila** (Head of Data & AI) to the Mezzanine at Campus Epitech Bénin.
+On **Monday, July 20 at 19:00**, Epi'AI welcomed **Kevin Degila** (Head of Data & AI) to the Mezzanine at Campus Epitech Benin.
 
 ### Themes
 
@@ -386,7 +386,7 @@ This session has already taken place.`,
         'Le 29 août, Epi’AI et Epitech ont accueilli collégiens, lycéens et bacheliers pour une séance gratuite : utiliser l’IA pour étudier, sans la laisser penser à leur place.',
       contentEn: `## IA & Studies
 
-On **Saturday 29 August, 9:00–12:00**, Epi'AI and Epitech held **IA & Études** on the mezzanine of Campus Epitech Bénin.
+On **Saturday 29 August, 9:00–12:00**, Epi'AI and Epitech held **AI & Studies** on the mezzanine of Campus Epitech Benin.
 
 The session was free, with limited seats, and open to secondary-school students and graduates who have not started university yet.
 

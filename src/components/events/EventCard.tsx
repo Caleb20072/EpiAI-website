@@ -5,7 +5,7 @@ import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import type { EventWithDetails } from '@/lib/events/types';
 import { CATEGORIES } from '@/lib/events/categories';
-import { eventField } from '@/lib/events/locale';
+import { eventField, eventLocation } from '@/lib/events/locale';
 import { formatDate } from '@/lib/utils/date';
 import { cn } from '@/lib/utils/cn';
 import { EventCoverImage } from './EventCoverImage';
@@ -89,7 +89,7 @@ export function EventCard({ event, href, className }: EventCardProps) {
             ) : (
               <>
                 <MapPin className="w-3.5 h-3.5" />
-                <span className="truncate max-w-[120px]">{event.location}</span>
+                <span className="truncate max-w-[120px]">{eventLocation(event.location, lang)}</span>
               </>
             )}
           </div>

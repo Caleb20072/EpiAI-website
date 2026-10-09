@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { EventWithDetails } from '@/lib/events/types';
 import { CATEGORIES } from '@/lib/events/categories';
-import { eventField } from '@/lib/events/locale';
+import { eventField, eventLocation } from '@/lib/events/locale';
 import { formatDate, getSpotsPercentage, getProgressColor } from '@/lib/events/utils';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -114,7 +114,7 @@ export function EventDetail({
         </div>
         <div className="flex items-center gap-2 text-secondary">
           <MapPin className="w-5 h-5" />
-          <span>{event.isOnline ? t('online') : event.location}</span>
+          <span>{event.isOnline ? t('online') : eventLocation(event.location, locale)}</span>
         </div>
         {showRegistrationStats ? (
           <div className="flex items-center gap-2 text-secondary">

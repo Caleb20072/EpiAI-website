@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { Calendar, MapPin, Globe } from 'lucide-react';
 import type { EventWithDetails } from '@/lib/events/types';
-import { eventField } from '@/lib/events/locale';
+import { eventField, eventLocation } from '@/lib/events/locale';
 import { EventCoverImage } from '@/components/events/EventCoverImage';
 import { formatDate } from '@/lib/utils/date';
 
@@ -81,7 +81,7 @@ export default function EventsSection({ initialEvents = [] }: EventsSectionProps
                       </span>
                       <span className="inline-flex min-w-0 items-center gap-1.5">
                         {event.isOnline ? <Globe className="h-3.5 w-3.5" aria-hidden /> : <MapPin className="h-3.5 w-3.5" aria-hidden />}
-                        <span className="max-w-[180px] truncate">{event.isOnline ? t('online') : event.location}</span>
+                        <span className="max-w-[180px] truncate">{event.isOnline ? t('online') : eventLocation(event.location, locale)}</span>
                       </span>
                     </div>
                     <p className="mt-3 line-clamp-3 text-[15px] leading-[1.6] text-secondary">{description}</p>
