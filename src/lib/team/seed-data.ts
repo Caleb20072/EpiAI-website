@@ -18,21 +18,21 @@ const MENTORS = [
 const EXECUTIVES = [
   { name: 'Fresnel SATIGNON', role: 'Président', order: 1, linkedin: 'https://www.linkedin.com/in/fresnel-satignon-58a84229b/', photo: 'fresnel-satignon.jpg' },
   { name: 'Méric GBEMETONOU', role: 'Vice-président', order: 2, linkedin: 'https://www.linkedin.com/in/méric-gbemetonou-235036233/', photo: '' },
-  { name: 'Karyl SOUMAILA', role: 'Responsable Formation', order: 3, linkedin: '', photo: '' },
+  { name: 'Karyl SOUMAILA', role: 'Responsable Formation', order: 3, linkedin: 'https://www.linkedin.com/in/karyl-soumaila-8429a63b4/', photo: 'karyl-soumaila.jpg' },
   { name: 'Ange ADANTCHEDE', role: 'Responsable Communication', order: 4, linkedin: 'https://www.linkedin.com/in/ange-adantchede-832273324/', photo: 'ange-adantchede.jpg' },
 ] as const;
 
 const COMMISSION_MEMBERS = [
-  { name: 'Carlos Victorieux SOSSOU', commission: 'commission_recherche', order: 1, linkedin: '' },
-  { name: 'Kael AVANDE', commission: 'commission_recherche', order: 2, linkedin: '' },
-  { name: 'Justus LIHOUSSOU', commission: 'commission_recherche', order: 3, linkedin: '' },
-  { name: 'Précieux LONMADON', commission: 'commission_projets', order: 1, linkedin: 'https://www.linkedin.com/in/précieux-lonmadon-b213b8394/' },
-  { name: 'Marcellin SAMBIENI', commission: 'commission_projets', order: 2, linkedin: 'https://www.linkedin.com/in/ipamma-marcellin-sambieni-23264b384/' },
-  { name: 'Inès MOMBO', commission: 'commission_evenements', order: 1, linkedin: '' },
-  { name: 'Mystica ALLOSSOHOUN', commission: 'commission_evenements', order: 2, linkedin: '' },
-  { name: 'Ivanna MICHODJEHOUN', commission: 'commission_evenements', order: 3, linkedin: '' },
-  { name: 'Peniel YAYI', commission: 'commission_vie', order: 1, linkedin: '' },
-  { name: 'Yann AZANDE', commission: 'commission_vie', order: 2, linkedin: '' },
+  { name: 'Carlos Victorieux SOSSOU', commission: 'commission_recherche', order: 1, linkedin: 'https://www.linkedin.com/in/carlos-victorieux-sossou-371415379', photo: '' },
+  { name: 'Kael AVANDE', commission: 'commission_recherche', order: 2, linkedin: 'https://www.linkedin.com/in/kael-essoh', photo: '' },
+  { name: 'Justus LIHOUSSOU', commission: 'commission_recherche', order: 3, linkedin: '', photo: '' },
+  { name: 'Précieux LONMADON', commission: 'commission_projets', order: 1, linkedin: 'https://www.linkedin.com/in/précieux-lonmadon-b213b8394/', photo: 'precieux-lonmadon.jpg' },
+  { name: 'Marcellin SAMBIENI', commission: 'commission_projets', order: 2, linkedin: 'https://www.linkedin.com/in/ipamma-marcellin-sambieni-23264b384/', photo: 'marcellin-sambieni.jpg' },
+  { name: 'Inès MOMBO', commission: 'commission_evenements', order: 1, linkedin: '', photo: '' },
+  { name: 'Mystica ALLOSSOHOUN', commission: 'commission_evenements', order: 2, linkedin: 'https://www.linkedin.com/in/mystica-allossohoun-7964683b7', photo: '' },
+  { name: 'Ivanna MICHODJEHOUN', commission: 'commission_evenements', order: 3, linkedin: '', photo: '' },
+  { name: 'Peniel YAYI', commission: 'commission_vie', order: 1, linkedin: 'https://www.linkedin.com/in/péniel-yayi-91570a295/', photo: 'peniel-yayi.jpg' },
+  { name: 'Yann AZANDE', commission: 'commission_vie', order: 2, linkedin: 'https://www.linkedin.com/in/yann-azande-127874442', photo: '' },
 ] as const;
 
 export function buildDefaultTeamMembers(): ITeamMember[] {
@@ -79,6 +79,7 @@ export function buildDefaultTeamMembers(): ITeamMember[] {
       title: commission?.nameFr,
       section: 'pole',
       poleKey: person.commission,
+      photoUrl: person.photo ? PHOTO(person.photo) : undefined,
       socialLinks: person.linkedin ? { linkedin: person.linkedin } : {},
       displayOrder: person.order,
       isActive: true,
