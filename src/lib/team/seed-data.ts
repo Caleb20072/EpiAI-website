@@ -16,10 +16,10 @@ const MENTORS = [
 ] as const;
 
 const EXECUTIVES = [
-  { name: 'Fresnel SATIGNON', role: 'Président', order: 1, linkedin: 'https://www.linkedin.com/in/fresnel-satignon-58a84229b/' },
-  { name: 'Méric GBEMETONOU', role: 'Vice-président', order: 2, linkedin: 'https://www.linkedin.com/in/méric-gbemetonou-235036233/' },
-  { name: 'Karyl SOUMAILA', role: 'Responsable Formation', order: 3, linkedin: '' },
-  { name: 'Ange ADANTCHEDE', role: 'Responsable Communication', order: 4, linkedin: 'https://www.linkedin.com/in/ange-adantchede-832273324/' },
+  { name: 'Fresnel SATIGNON', role: 'Président', order: 1, linkedin: 'https://www.linkedin.com/in/fresnel-satignon-58a84229b/', photo: 'fresnel-satignon.jpg' },
+  { name: 'Méric GBEMETONOU', role: 'Vice-président', order: 2, linkedin: 'https://www.linkedin.com/in/méric-gbemetonou-235036233/', photo: '' },
+  { name: 'Karyl SOUMAILA', role: 'Responsable Formation', order: 3, linkedin: '', photo: '' },
+  { name: 'Ange ADANTCHEDE', role: 'Responsable Communication', order: 4, linkedin: 'https://www.linkedin.com/in/ange-adantchede-832273324/', photo: 'ange-adantchede.jpg' },
 ] as const;
 
 const COMMISSION_MEMBERS = [
@@ -61,6 +61,7 @@ export function buildDefaultTeamMembers(): ITeamMember[] {
       name: executive.name,
       role: executive.role,
       section: 'executive',
+      photoUrl: executive.photo ? PHOTO(executive.photo) : undefined,
       socialLinks: executive.linkedin ? { linkedin: executive.linkedin } : {},
       displayOrder: executive.order,
       isActive: true,

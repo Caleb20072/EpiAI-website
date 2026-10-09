@@ -30,6 +30,16 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
     const [members, setMembers] = useState<ITeamMember[]>(initialMembers ?? []);
     const [loading, setLoading] = useState(!initialMembers?.length);
     const [locale, setLocale] = useState<'en' | 'fr'>(localeProp ?? 'fr');
+    const [openCommissionKey, setOpenCommissionKey] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!openCommissionKey) return;
+        function onKey(event: KeyboardEvent) {
+            if (event.key === 'Escape') setOpenCommissionKey(null);
+        }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [openCommissionKey]);
 
     useEffect(() => {
         if (localeProp) {
@@ -63,6 +73,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
             .filter((member) => member.section === 'pole' && member.poleKey === commission.key)
             .sort((a, b) => a.displayOrder - b.displayOrder),
     })).filter((commission) => commission.members.length > 0);
+    const openCommission = commissions.find((commission) => commission.key === openCommissionKey) ?? null;
 
     const SocialLink = ({ type, url }: { type: 'linkedin' | 'github', url?: string }) => {
         if (!url) return null;
@@ -86,7 +97,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
         <div className={`p-6 rounded-xl bg-card border border-default shadow-card text-center ${large ? 'w-full max-w-xs mx-auto' : ''}`}>
             <div className={`${large ? 'w-24 h-24' : 'w-20 h-20'} mx-auto mb-4 rounded-full bg-brand-50 flex items-center justify-center overflow-hidden relative`}>
                 {member.photoUrl ? (
-                    <Image src={member.photoUrl} alt={member.name} fill className="object-cover" sizes="96px" />
+                    <Image src={member.photoUrl} alt={member.name} fill className="object-cover object-top" sizes="96px" />
                 ) : (
                     <span className="text-2xl font-semibold text-brand-700">{member.name.charAt(0)}</span>
                 )}
@@ -164,11 +175,22 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                         </h3>
                         {commissions.map((commission) => (
                             <div key={commission.key}>
-                                <h4 className="text-[17px] font-semibold text-primary">{locale === 'fr' ? commission.nameFr : commission.nameEn}</h4>
-                                <p className="text-[14px] text-secondary mt-1 mb-5 max-w-3xl">
-                                    {locale === 'fr' ? commission.missionFr : commission.missionEn}
-                                </p>
-                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setOpenCommissionKey(commission.key)}
+                                    className="text-left group"
+                                >
+                                    <h4 className="text-[17px] font-semibold text-primary group-hover:text-brand-700">
+                                        {locale === 'fr' ? commission.nameFr : commission.nameEn}
+                                    </h4>
+                                    <p className="text-[14px] text-secondary mt-1 mb-1 max-w-3xl">
+                                        {locale === 'fr' ? commission.missionFr : commission.missionEn}
+                                    </p>
+                                    <span className="text-[13px] font-medium text-brand-700">
+                                        {locale === 'fr' ? 'Voir la mission' : 'See the mission'}
+                                    </span>
+                                </button>
+                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
                                     {commission.members.map((member) => (
                                         <MemberCard key={member.id} member={member} />
                                     ))}
@@ -188,7 +210,7 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                                 <div key={mentor.id} className="p-4 rounded-xl bg-card border border-default shadow-card flex flex-col items-center text-center gap-2">
                                     <div className="w-16 h-16 rounded-full overflow-hidden bg-brand-50 relative">
                                         {mentor.photoUrl ? (
-                                            <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover" sizes="64px" />
+                                            <Image src={mentor.photoUrl} alt={mentor.name} fill className="object-cover object-top" sizes="64px" />
                                         ) : (
                                             <span className="flex items-center justify-center w-full h-full text-brand-700 font-semibold">{mentor.name.charAt(0)}</span>
                                         )}
@@ -203,6 +225,49 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
                     </div>
                 )}
             </div>
+            {openCommission && (
+                <div
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-[#14171f]/50"
+                    onClick={() => setOpenCommissionKey(null)}
+                >
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="commission-dialog-title"
+                        className="w-full max-w-lg max-h-[85vh] overflow-auto rounded-xl bg-card border border-default shadow-card p-6"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="flex items-start justify-between gap-4">
+                            <h3 id="commission-dialog-title" className="text-[18px] font-semibold text-primary">
+                                {locale === 'fr' ? openCommission.nameFr : openCommission.nameEn}
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setOpenCommissionKey(null)}
+                                className="shrink-0 rounded-lg px-2 py-1 text-sm text-muted hover:text-primary hover:bg-card-muted"
+                            >
+                                {locale === 'fr' ? 'Fermer' : 'Close'}
+                            </button>
+                        </div>
+                        <p className="text-[14px] leading-relaxed text-secondary mt-3">
+                            {locale === 'fr' ? openCommission.missionFr : openCommission.missionEn}
+                        </p>
+                        <p className="text-[13px] font-semibold text-primary mt-5">
+                            {locale === 'fr' ? 'Ce qu’elle fait' : 'What it does'}
+                        </p>
+                        <ul className="mt-2 space-y-2 text-[14px] leading-relaxed text-secondary list-disc pl-5">
+                            {(locale === 'fr' ? openCommission.dutiesFr : openCommission.dutiesEn).map((duty) => (
+                                <li key={duty}>{duty}</li>
+                            ))}
+                        </ul>
+                        {(locale === 'fr' ? openCommission.noteFr : openCommission.noteEn) && (
+                            <p className="text-[13px] leading-relaxed text-muted mt-4">
+                                {locale === 'fr' ? openCommission.noteFr : openCommission.noteEn}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
         </section>
     );
 }
