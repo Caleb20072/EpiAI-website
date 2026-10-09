@@ -25,7 +25,9 @@ export function buildDefaultTeamMembers(): ITeamMember[] {
       title: "Responsable du programme Bachelor d'EPITECH Bénin",
       section: 'referent',
       photoUrl: PHOTO('sergino-bradford.png'),
-      socialLinks: {},
+      socialLinks: {
+        linkedin: 'https://www.linkedin.com/in/gounoukperou-sergino-bradford-7513651a3/',
+      },
       displayOrder: 0,
       isActive: true,
       createdAt: timestamp,
