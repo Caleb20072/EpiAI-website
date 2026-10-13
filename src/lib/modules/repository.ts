@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { CONTRACT_VERSION, LATE_FEE_FCFA, MONTHLY_FEE_FCFA } from './contract';
-import { addCollaborator, createOrgRepo, ensureOrgPushWebhook, ensureRepoPushWebhook, getCommitStats, githubConfigured } from './github';
+import { addCollaborator, createOrgRepo, deleteOrgRepo, ensureOrgPushWebhook, ensureRepoPushWebhook, getCommitStats, githubConfigured } from './github';
 
 function periodKey(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -83,6 +83,70 @@ export async function createModule(input: {
   createdBy: string;
 }) {
   return prisma.learningModule.create({ data: input });
+}
+
+export async function updateModule(
+  moduleId: string,
+  input: {
+    name: string;
+    description: string;
+    leadUserId: string;
+    leadName: string;
+    lead2UserId: string | null;
+    lead2Name: string | null;
+  }
+) {
+  const current = await prisma.learningModule.findUnique({
+    where: { id: moduleId },
+    select: { leadUserId: true, lead2UserId: true, leadGithub: true, lead2Github: true },
+  });
+  if (!current) throw new Error('Introuvable');
+  if (input.lead2UserId && input.lead2UserId === input.leadUserId) {
+    throw new Error('Les deux leads doivent être deux personnes différentes');
+  }
+
+  const leadGithub =
+    input.leadUserId === current.leadUserId
+      ? current.leadGithub
+      : input.leadUserId === current.lead2UserId
+        ? current.lead2Github
+        : null;
+  const lead2Github =
+    input.lead2UserId === current.lead2UserId
+      ? current.lead2Github
+      : input.lead2UserId && input.lead2UserId === current.leadUserId
+        ? current.leadGithub
+        : null;
+
+  return prisma.learningModule.update({
+    where: { id: moduleId },
+    data: {
+      name: input.name.trim(),
+      description: input.description,
+      leadUserId: input.leadUserId,
+      leadName: input.leadName,
+      leadGithub,
+      lead2UserId: input.lead2UserId,
+      lead2Name: input.lead2Name,
+      lead2Github,
+    },
+  });
+}
+
+export async function deleteModule(moduleId: string) {
+  const projects = await prisma.moduleProject.findMany({
+    where: { moduleId },
+    select: { id: true, repos: { select: { repoName: true } } },
+  });
+  const projectIds = projects.map((project) => project.id);
+  if (projectIds.length > 0) {
+    await prisma.githubActivity.deleteMany({ where: { projectId: { in: projectIds } } });
+  }
+  await prisma.learningModule.delete({ where: { id: moduleId } });
+  const repoNames = [...new Set(projects.flatMap((project) => project.repos.map((repo) => repo.repoName)))];
+  for (const repoName of repoNames) {
+    await deleteOrgRepo(repoName).catch(() => undefined);
+  }
 }
 
 export async function enrollStudent(input: {

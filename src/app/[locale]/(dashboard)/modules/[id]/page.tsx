@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { PageHeader, Panel, Button, Badge } from '@/components/ui';
@@ -157,6 +157,7 @@ export default function ModuleDetailPage() {
   const locale = (params.locale as string) || 'fr';
   const fr = locale === 'fr';
   const { userId, isAdmin } = useAuth();
+  const router = useRouter();
   const id = params.id as string;
   const [mod, setMod] = useState<ModuleDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -176,6 +177,16 @@ export default function ModuleDetailPage() {
   const [lead2Id, setLead2Id] = useState('');
   const [lead2Name, setLead2Name] = useState('');
   const [accessNote, setAccessNote] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editPickerKey, setEditPickerKey] = useState(0);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    leadUserId: '',
+    leadName: '',
+    lead2UserId: '',
+    lead2Name: '',
+  });
 
   async function load() {
     const res = await fetch(`/api/modules/${id}`);
@@ -250,6 +261,49 @@ export default function ModuleDetailPage() {
     else await load();
   }
 
+  function openEdit() {
+    if (!mod) return;
+    setEditForm({
+      name: mod.name,
+      description: mod.description || '',
+      leadUserId: mod.leadUserId,
+      leadName: mod.leadName,
+      lead2UserId: mod.lead2UserId || '',
+      lead2Name: mod.lead2Name || '',
+    });
+    setEditPickerKey((key) => key + 1);
+    setEditing(true);
+  }
+
+  async function saveProfile(ev: React.FormEvent) {
+    ev.preventDefault();
+    if (!editForm.leadUserId) {
+      setError(fr ? 'Choisis le lead dans les suggestions.' : 'Pick the lead from the suggestions.');
+      return;
+    }
+    if (editForm.lead2UserId && editForm.lead2UserId === editForm.leadUserId) {
+      setError(fr ? 'Choisis deux personnes différentes.' : 'Pick two different people.');
+      return;
+    }
+    const ok = await post(`/api/modules/${id}`, editForm, 'PATCH');
+    if (ok.ok) setEditing(false);
+  }
+
+  async function removeModule() {
+    if (!mod) return;
+    const message = fr
+      ? `Supprimer définitivement « ${mod.name} » ? Les inscrits, les projets et les ressources de ce module seront effacés.`
+      : `Permanently delete “${mod.name}”? Enrollments, projects and resources for this module will be removed.`;
+    if (!confirm(message)) return;
+    const res = await fetch(`/api/modules/${id}`, { method: 'DELETE' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(data.error || 'Erreur');
+      return;
+    }
+    router.push(`/${locale}/modules`);
+  }
+
   if (!mod && !error) return <p className="text-sm text-secondary">…</p>;
   if (!mod) return <p className="text-sm text-red-400">{error}</p>;
 
@@ -260,12 +314,81 @@ export default function ModuleDetailPage() {
         title={mod.name}
         description={mod.description}
         actions={
-          <Badge variant="brand">
-            {fr ? 'Niveau' : 'Level'} {mod.myLevel}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <>
+                <Button type="button" size="sm" variant="secondary" onClick={openEdit}>
+                  {fr ? 'Modifier' : 'Edit'}
+                </Button>
+                <Button type="button" size="sm" variant="danger" onClick={() => void removeModule()}>
+                  {fr ? 'Supprimer' : 'Delete'}
+                </Button>
+              </>
+            ) : null}
+            <Badge variant="brand">
+              {fr ? 'Niveau' : 'Level'} {mod.myLevel}
+            </Badge>
+          </div>
         }
       />
       {error && <p className="text-sm text-red-400">{error}</p>}
+      {isAdmin && editing ? (
+        <Panel title={fr ? 'Modifier le module' : 'Edit module'}>
+          <form onSubmit={saveProfile} className="grid gap-3 md:grid-cols-2">
+            <input
+              required
+              value={editForm.name}
+              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              placeholder={fr ? 'Nom du module' : 'Module name'}
+              className="md:col-span-2 rounded-lg border border-default bg-card px-3 py-2 text-sm"
+            />
+            <MemberPicker
+              key={`${editPickerKey}-1`}
+              locale={locale}
+              selectedId={editForm.leadUserId}
+              selectedName={editForm.leadName}
+              placeholder={fr ? 'Premier lead' : 'First lead'}
+              onSelect={(member) =>
+                setEditForm((current) => ({
+                  ...current,
+                  leadUserId: member?.id || '',
+                  leadName: member?.name || '',
+                }))
+              }
+            />
+            <MemberPicker
+              key={`${editPickerKey}-2`}
+              locale={locale}
+              required={false}
+              selectedId={editForm.lead2UserId}
+              selectedName={editForm.lead2Name}
+              placeholder={fr ? 'Second lead, si besoin' : 'Second lead, if needed'}
+              onSelect={(member) =>
+                setEditForm((current) => ({
+                  ...current,
+                  lead2UserId: member?.id || '',
+                  lead2Name: member?.name || '',
+                }))
+              }
+            />
+            <textarea
+              value={editForm.description}
+              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+              placeholder={fr ? 'Description' : 'Description'}
+              className="md:col-span-2 rounded-lg border border-default bg-card px-3 py-2 text-sm"
+              rows={2}
+            />
+            <div className="flex gap-2">
+              <Button type="submit" size="sm">
+                {fr ? 'Enregistrer' : 'Save'}
+              </Button>
+              <Button type="button" size="sm" variant="secondary" onClick={() => setEditing(false)}>
+                {fr ? 'Annuler' : 'Cancel'}
+              </Button>
+            </div>
+          </form>
+        </Panel>
+      ) : null}
 
       <Panel title={fr ? 'Inscrits' : 'Enrolled'}>
         <ul className="space-y-1 text-sm">

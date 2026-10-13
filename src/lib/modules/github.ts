@@ -15,6 +15,19 @@ export function githubConfigured() {
   return Boolean(process.env.GITHUB_TOKEN && process.env.GITHUB_ORG);
 }
 
+export async function deleteOrgRepo(repoName: string) {
+  const org = process.env.GITHUB_ORG;
+  if (!org || !process.env.GITHUB_TOKEN || !repoName) return;
+  const res = await fetch(`${API}/repos/${org}/${repoName}`, {
+    method: 'DELETE',
+    headers: headers(),
+  });
+  if (!res.ok && res.status !== 404) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body?.message || `Suppression du dépôt ${repoName} refusée`);
+  }
+}
+
 export async function createOrgRepo(name: string, description: string) {
   const org = process.env.GITHUB_ORG;
   const res = await fetch(`${API}/orgs/${org}/repos`, {

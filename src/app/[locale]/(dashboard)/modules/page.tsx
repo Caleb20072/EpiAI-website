@@ -12,7 +12,9 @@ interface ModuleRow {
   id: string;
   name: string;
   description: string;
+  leadUserId: string;
   leadName: string;
+  lead2UserId?: string | null;
   lead2Name?: string | null;
   isLead: boolean;
   enrolled: boolean;
@@ -21,6 +23,15 @@ interface ModuleRow {
   projectCount: number;
 }
 
+const emptyForm = {
+  name: '',
+  description: '',
+  leadUserId: '',
+  leadName: '',
+  lead2UserId: '',
+  lead2Name: '',
+};
+
 export default function ModulesPage() {
   const params = useParams();
   const locale = (params.locale as string) || 'fr';
@@ -28,14 +39,8 @@ export default function ModulesPage() {
   const { isAdmin } = useAuth();
   const [modules, setModules] = useState<ModuleRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    leadUserId: '',
-    leadName: '',
-    lead2UserId: '',
-    lead2Name: '',
-  });
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [pickerKey, setPickerKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +54,28 @@ export default function ModulesPage() {
     void load();
   }, []);
 
-  async function createModule(e: React.FormEvent) {
+  function resetForm() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setPickerKey((key) => key + 1);
+  }
+
+  function beginEdit(mod: ModuleRow) {
+    setError(null);
+    setEditingId(mod.id);
+    setForm({
+      name: mod.name,
+      description: mod.description || '',
+      leadUserId: mod.leadUserId,
+      leadName: mod.leadName,
+      lead2UserId: mod.lead2UserId || '',
+      lead2Name: mod.lead2Name || '',
+    });
+    setPickerKey((key) => key + 1);
+    document.getElementById('module-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function saveModule(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!form.leadUserId) {
@@ -60,8 +86,8 @@ export default function ModulesPage() {
       setError(fr ? 'Choisis deux personnes différentes.' : 'Pick two different people.');
       return;
     }
-    const res = await fetch('/api/modules', {
-      method: 'POST',
+    const res = await fetch(editingId ? `/api/modules/${editingId}` : '/api/modules', {
+      method: editingId ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
@@ -70,8 +96,23 @@ export default function ModulesPage() {
       setError(data.error || 'Erreur');
       return;
     }
-    setForm({ name: '', description: '', leadUserId: '', leadName: '', lead2UserId: '', lead2Name: '' });
-    setPickerKey((key) => key + 1);
+    resetForm();
+    await load();
+  }
+
+  async function removeModule(mod: ModuleRow) {
+    const message = fr
+      ? `Supprimer définitivement « ${mod.name} » ? Les inscrits, les projets et les ressources de ce module seront effacés.`
+      : `Permanently delete “${mod.name}”? Enrollments, projects and resources for this module will be removed.`;
+    if (!confirm(message)) return;
+    setError(null);
+    const res = await fetch(`/api/modules/${mod.id}`, { method: 'DELETE' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(data.error || 'Erreur');
+      return;
+    }
+    if (editingId === mod.id) resetForm();
     await load();
   }
 
@@ -87,8 +128,8 @@ export default function ModulesPage() {
       />
 
       {isAdmin && (
-        <Panel title={fr ? 'Nouveau module' : 'New module'}>
-          <form onSubmit={createModule} className="grid gap-3 md:grid-cols-2">
+        <Panel title={editingId ? (fr ? 'Modifier le module' : 'Edit module') : fr ? 'Nouveau module' : 'New module'}>
+          <form id="module-form" onSubmit={saveModule} className="grid gap-3 md:grid-cols-2">
             <input
               required
               placeholder={fr ? 'Nom du module' : 'Module name'}
@@ -133,11 +174,16 @@ export default function ModulesPage() {
               rows={2}
             />
             {error && <p className="text-sm text-red-400 md:col-span-2">{error}</p>}
-            <div>
+            <div className="flex gap-2">
               <Button type="submit" size="sm">
-                <Plus className="w-4 h-4" />
-                {fr ? 'Créer' : 'Create'}
+                {editingId ? null : <Plus className="w-4 h-4" />}
+                {editingId ? (fr ? 'Enregistrer' : 'Save') : fr ? 'Créer' : 'Create'}
               </Button>
+              {editingId ? (
+                <Button type="button" size="sm" variant="secondary" onClick={resetForm}>
+                  {fr ? 'Annuler' : 'Cancel'}
+                </Button>
+              ) : null}
             </div>
           </form>
           <p className="text-xs text-muted mt-2">
@@ -158,19 +204,31 @@ export default function ModulesPage() {
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
           {modules.map((mod) => (
-            <Link key={mod.id} href={`/${locale}/modules/${mod.id}`}>
-              <Panel className="h-full hover:border-brand-500/30 transition-colors">
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-semibold text-primary">{mod.name}</h2>
-                  {mod.isLead ? <Badge variant="amber">{fr ? 'Lead' : 'Lead'}</Badge> : null}
-                </div>
+            <Panel key={mod.id} className="h-full">
+              <div className="flex items-start justify-between gap-2">
+                <Link href={`/${locale}/modules/${mod.id}`} className="font-semibold text-primary hover:text-brand-600">
+                  {mod.name}
+                </Link>
+                {mod.isLead ? <Badge variant="amber">{fr ? 'Lead' : 'Lead'}</Badge> : null}
+              </div>
+              <Link href={`/${locale}/modules/${mod.id}`} className="block">
                 <p className="text-sm text-secondary mt-1 line-clamp-2">{mod.description}</p>
                 <p className="text-xs text-muted mt-3">
                   {fr ? 'Leads' : 'Leads'} : {[mod.leadName, mod.lead2Name].filter(Boolean).join(' · ')} · {mod.projectCount}{' '}
                   {fr ? 'projets' : 'projects'} · {fr ? 'Niveau' : 'Level'} {mod.level}
                 </p>
-              </Panel>
-            </Link>
+              </Link>
+              {isAdmin ? (
+                <div className="flex gap-2 mt-3">
+                  <Button type="button" size="sm" variant="secondary" onClick={() => beginEdit(mod)}>
+                    {fr ? 'Modifier' : 'Edit'}
+                  </Button>
+                  <Button type="button" size="sm" variant="danger" onClick={() => void removeModule(mod)}>
+                    {fr ? 'Supprimer' : 'Delete'}
+                  </Button>
+                </div>
+              ) : null}
+            </Panel>
           ))}
         </div>
       )}
