@@ -25,7 +25,9 @@ export async function listModulesForUser(userId: string) {
       description: m.description,
       leadUserId: m.leadUserId,
       leadName: m.leadName,
-      isLead: m.leadUserId === userId,
+      lead2UserId: m.lead2UserId,
+      lead2Name: m.lead2Name,
+      isLead: m.leadUserId === userId || m.lead2UserId === userId,
       enrolled: m.enrollments.length > 0,
       level: m.enrollments[0]?.level ?? 0,
       enrollmentCount: m._count.enrollments,
@@ -64,11 +66,11 @@ export async function getModuleDetail(id: string) {
 }
 
 export function canManageModule(
-  module: { leadUserId: string },
+  module: { leadUserId: string; lead2UserId?: string | null },
   userId: string,
   isAdmin: boolean
 ) {
-  return isAdmin || module.leadUserId === userId;
+  return isAdmin || module.leadUserId === userId || module.lead2UserId === userId;
 }
 
 export async function createModule(input: {
@@ -76,6 +78,8 @@ export async function createModule(input: {
   description: string;
   leadUserId: string;
   leadName: string;
+  lead2UserId?: string | null;
+  lead2Name?: string | null;
   createdBy: string;
 }) {
   return prisma.learningModule.create({ data: input });
@@ -217,7 +221,7 @@ export async function submitProject(input: {
   const enrollment = await prisma.moduleEnrollment.findUnique({
     where: { moduleId_userId: { moduleId: project.moduleId, userId: input.userId } },
   });
-  if (!enrollment && project.module.leadUserId !== input.userId) {
+  if (!enrollment && !canManageModule(project.module, input.userId, false)) {
     throw new Error('Tu dois être inscrit à ce module');
   }
 
@@ -245,11 +249,27 @@ async function grantLeadRead(repoName: string, leadGithub: string | null) {
   await addCollaborator(repoName, username, 'pull').catch(() => undefined);
 }
 
-export async function saveLeadGithub(moduleId: string, leadGithub: string) {
+export async function setSecondLead(moduleId: string, lead: { userId: string; name: string } | null) {
+  const current = await prisma.learningModule.findUnique({
+    where: { id: moduleId },
+    select: { leadUserId: true, lead2UserId: true },
+  });
+  if (!current) throw new Error('Introuvable');
+  if (lead && lead.userId === current.leadUserId) throw new Error('Cette personne est déjà lead de ce module');
+  if (lead && lead.userId === current.lead2UserId) return current;
+  return prisma.learningModule.update({
+    where: { id: moduleId },
+    data: lead
+      ? { lead2UserId: lead.userId, lead2Name: lead.name, lead2Github: null }
+      : { lead2UserId: null, lead2Name: null, lead2Github: null },
+  });
+}
+
+export async function saveLeadGithub(moduleId: string, leadGithub: string, slot: 1 | 2 = 1) {
   const username = leadGithub.replace(/^@/, '').trim();
   await prisma.learningModule.update({
     where: { id: moduleId },
-    data: { leadGithub: username },
+    data: slot === 2 ? { lead2Github: username } : { leadGithub: username },
   });
   const repos = await prisma.moduleProjectRepo.findMany({
     where: { project: { moduleId } },
@@ -298,6 +318,7 @@ export async function provisionReposForStudent(moduleId: string, userId: string)
     if (existing) {
       await ensureRepoPushWebhook(existing.repoName).catch(() => undefined);
       await grantLeadRead(existing.repoName, module.leadGithub);
+      await grantLeadRead(existing.repoName, module.lead2Github);
       continue;
     }
 
@@ -308,6 +329,7 @@ export async function provisionReposForStudent(moduleId: string, userId: string)
       await addCollaborator(repo.name, enrollment.githubUsername, 'push');
     }
     await grantLeadRead(repo.name, module.leadGithub);
+    await grantLeadRead(repo.name, module.lead2Github);
     await prisma.moduleProjectRepo.create({
       data: { projectId: project.id, userId, repoName: repo.name, repoUrl: repo.html_url },
     });
@@ -441,7 +463,7 @@ export async function progressByEnrollment(moduleId: string) {
 
 export async function listFollowedStudents(viewerId: string, isAdmin: boolean) {
   const modules = await prisma.learningModule.findMany({
-    where: isAdmin ? {} : { leadUserId: viewerId },
+    where: isAdmin ? {} : { OR: [{ leadUserId: viewerId }, { lead2UserId: viewerId }] },
     orderBy: { name: 'asc' },
     include: {
       enrollments: { orderBy: { userName: 'asc' } },
@@ -559,6 +581,7 @@ export async function getStudentFollowUp(moduleId: string, studentId: string) {
     moduleId: learningModule.id,
     moduleName: learningModule.name,
     leadUserId: learningModule.leadUserId,
+    lead2UserId: learningModule.lead2UserId,
     student: {
       userId: enrollment.userId,
       userName: enrollment.userName,

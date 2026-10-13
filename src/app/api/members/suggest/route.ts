@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const admin = await checkUserPermission('dashboard.admin');
   if (!('allowed' in admin)) {
-    const leads = await prisma.learningModule.count({ where: { leadUserId: userId } });
+    const leads = await prisma.learningModule.count({
+      where: { OR: [{ leadUserId: userId }, { lead2UserId: userId }] },
+    });
     if (leads === 0) {
       return NextResponse.json({ error: admin.error }, { status: admin.status });
     }

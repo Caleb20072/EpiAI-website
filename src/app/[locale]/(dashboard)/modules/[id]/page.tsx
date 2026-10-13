@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 import { PageHeader, Panel, Button, Badge } from '@/components/ui';
 import { MemberPicker } from '@/components/members/MemberPicker';
 
@@ -61,8 +62,12 @@ interface ModuleDetail {
   id: string;
   name: string;
   description: string;
+  leadUserId: string;
   leadName: string;
   leadGithub: string | null;
+  lead2UserId: string | null;
+  lead2Name: string | null;
+  lead2Github: string | null;
   canManage: boolean;
   enrolled: boolean;
   myLevel: number;
@@ -151,6 +156,7 @@ export default function ModuleDetailPage() {
   const params = useParams();
   const locale = (params.locale as string) || 'fr';
   const fr = locale === 'fr';
+  const { userId, isAdmin } = useAuth();
   const id = params.id as string;
   const [mod, setMod] = useState<ModuleDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -166,6 +172,9 @@ export default function ModuleDetailPage() {
   const [resourceFile, setResourceFile] = useState<File | null>(null);
   const [activity, setActivity] = useState({ title: '', description: '', date: '', location: '' });
   const [leadGithub, setLeadGithub] = useState('');
+  const [lead2Github, setLead2Github] = useState('');
+  const [lead2Id, setLead2Id] = useState('');
+  const [lead2Name, setLead2Name] = useState('');
   const [accessNote, setAccessNote] = useState<string | null>(null);
 
   async function load() {
@@ -175,6 +184,9 @@ export default function ModuleDetailPage() {
     else {
       setMod(data);
       setLeadGithub(data.leadGithub || '');
+      setLead2Github(data.lead2Github || '');
+      setLead2Id(data.lead2UserId || '');
+      setLead2Name(data.lead2Name || '');
     }
   }
 
@@ -210,6 +222,26 @@ export default function ModuleDetailPage() {
     return true;
   }
 
+  async function saveGithub(slot: 1 | 2, username: string) {
+    const ok = await post(`/api/modules/${id}`, { leadGithub: username, slot }, 'PATCH');
+    if (!ok.ok) return;
+    const repos = Number(ok.data?.repos || 0);
+    const refused = Number(ok.data?.refused || 0);
+    setAccessNote(
+      repos === 0
+        ? fr
+          ? 'Pseudo enregistré. L’invitation part quand un étudiant a un dépôt : crée un projet, puis inscris-le avec son pseudo GitHub.'
+          : 'Username saved. The invite goes out once a student has a repository: create a project, then enroll them with their GitHub username.'
+        : refused > 0
+          ? fr
+            ? 'Pseudo enregistré, mais GitHub a refusé l’accès à certains dépôts.'
+            : 'Username saved, but GitHub refused access to some repositories.'
+          : fr
+            ? 'Invitation envoyée. Accepte-la sur GitHub, puis ouvre le dépôt pour lire le code.'
+            : 'Invite sent. Accept it on GitHub, then open the repository to read the code.'
+    );
+  }
+
   async function removeMaterial(materialId: string) {
     setError(null);
     const res = await fetch(`/api/modules/materials/${materialId}`, { method: 'DELETE' });
@@ -224,7 +256,7 @@ export default function ModuleDetailPage() {
   return (
     <div className="space-y-5 max-w-4xl">
       <PageHeader
-        eyebrow={mod.leadName}
+        eyebrow={[mod.leadName, mod.lead2Name].filter(Boolean).join(' · ')}
         title={mod.name}
         description={mod.description}
         actions={
@@ -340,46 +372,89 @@ export default function ModuleDetailPage() {
             className="mt-4 grid gap-2"
             onSubmit={async (ev) => {
               ev.preventDefault();
-              const ok = await post(`/api/modules/${id}`, { leadGithub }, 'PATCH');
-              if (ok.ok) {
-                const repos = Number(ok.data?.repos || 0);
-                const refused = Number(ok.data?.refused || 0);
-                setAccessNote(
-                  repos === 0
-                    ? fr
-                      ? 'Pseudo enregistré. L’invitation part quand un étudiant a un dépôt : crée un projet, puis inscris-le avec son pseudo GitHub.'
-                      : 'Username saved. The invite goes out once a student has a repository: create a project, then enroll them with their GitHub username.'
-                    : refused > 0
-                      ? fr
-                        ? 'Pseudo enregistré, mais GitHub a refusé l’accès à certains dépôts.'
-                        : 'Username saved, but GitHub refused access to some repositories.'
-                      : fr
-                        ? 'Invitation envoyée. Accepte-la sur GitHub, puis ouvre le dépôt pour lire le code.'
-                        : 'Invite sent. Accept it on GitHub, then open the repository to read the code.'
-                );
-              }
+              const ok = await post(`/api/modules/${id}`, { lead2UserId: lead2Id }, 'PATCH');
+              if (ok.ok) await load();
+            }}
+          >
+            <p className="text-xs text-muted">
+              {fr ? 'Second lead. Il gère ce module au même titre que le premier.' : 'Second lead. They manage this module the same way as the first.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1">
+                <MemberPicker
+                  key={mod.lead2UserId || 'no-second-lead'}
+                  locale={locale}
+                  required={false}
+                  selectedId={lead2Id}
+                  selectedName={lead2Name}
+                  placeholder={fr ? 'Nom du second lead' : 'Second lead name'}
+                  onSelect={(member) => {
+                    setLead2Id(member?.id || '');
+                    setLead2Name(member?.name || '');
+                  }}
+                />
+              </div>
+              <Button type="submit" size="sm" variant="secondary">
+                {fr ? 'Enregistrer' : 'Save'}
+              </Button>
+            </div>
+          </form>
+        )}
+        {mod.canManage && (isAdmin || userId === mod.leadUserId) && (
+          <form
+            className="mt-4 grid gap-2"
+            onSubmit={async (ev) => {
+              ev.preventDefault();
+              await saveGithub(1, leadGithub);
             }}
           >
             <p className="text-xs text-muted">
               {fr
-                ? 'Ton pseudo GitHub. Tu reçois un accès en lecture sur le dépôt privé de chaque inscrit, pour ouvrir les fichiers et lire le code. Tu ne modifies pas leur travail.'
-                : 'Your GitHub username. You get read access to each student’s private repository, so you can open the files and read the code. You do not change their work.'}
+                ? `Pseudo GitHub de ${mod.leadName}. Accès en lecture aux dépôts des inscrits, sans modifier leur travail.`
+                : `GitHub username for ${mod.leadName}. Read access to enrolled repositories, without changing their work.`}
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 required
                 value={leadGithub}
                 onChange={(e) => setLeadGithub(e.target.value)}
-                placeholder="pseudo GitHub du lead"
+                placeholder="pseudo GitHub"
                 className="flex-1 rounded-lg border border-default bg-card px-3 py-2 text-sm"
               />
               <Button type="submit" size="sm" variant="secondary">
                 {fr ? 'Recevoir l’accès aux dépôts' : 'Get access to the repos'}
               </Button>
             </div>
-            {accessNote && <p className="text-sm text-secondary">{accessNote}</p>}
           </form>
         )}
+        {mod.canManage && mod.lead2UserId && (isAdmin || userId === mod.lead2UserId) && (
+          <form
+            className="mt-4 grid gap-2"
+            onSubmit={async (ev) => {
+              ev.preventDefault();
+              await saveGithub(2, lead2Github);
+            }}
+          >
+            <p className="text-xs text-muted">
+              {fr
+                ? `Pseudo GitHub de ${mod.lead2Name}. Même accès en lecture.`
+                : `GitHub username for ${mod.lead2Name}. The same read access.`}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                required
+                value={lead2Github}
+                onChange={(e) => setLead2Github(e.target.value)}
+                placeholder="pseudo GitHub"
+                className="flex-1 rounded-lg border border-default bg-card px-3 py-2 text-sm"
+              />
+              <Button type="submit" size="sm" variant="secondary">
+                {fr ? 'Recevoir l’accès aux dépôts' : 'Get access to the repos'}
+              </Button>
+            </div>
+          </form>
+        )}
+        {accessNote && <p className="text-sm text-secondary mt-2">{accessNote}</p>}
       </Panel>
 
       <Panel title={fr ? 'Ressources' : 'Resources'}>

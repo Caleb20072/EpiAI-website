@@ -39,7 +39,7 @@ export async function DELETE(
   const { materialId } = await params;
   const material = await prisma.moduleMaterial.findUnique({
     where: { id: materialId },
-    include: { module: { select: { leadUserId: true } } },
+    include: { module: { select: { leadUserId: true, lead2UserId: true } } },
   });
   if (!material) return NextResponse.json({ error: 'Introuvable' }, { status: 404 });
   const admin = await checkUserPermission('dashboard.admin');

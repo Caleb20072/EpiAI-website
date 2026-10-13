@@ -268,6 +268,9 @@ model LearningModule {
   leadUserId  String   @map("lead_user_id")
   leadName    String   @map("lead_name")
   leadGithub  String?  @map("lead_github")
+  lead2UserId String?  @map("lead2_user_id")
+  lead2Name   String?  @map("lead2_name")
+  lead2Github String?  @map("lead2_github")
   createdBy   String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -278,6 +281,7 @@ model LearningModule {
   materials   ModuleMaterial[]
 
   @@index([leadUserId])
+  @@index([lead2UserId])
   @@map("learning_modules")
 }
 

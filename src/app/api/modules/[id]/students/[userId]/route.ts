@@ -14,7 +14,7 @@ export async function GET(
   if (!followUp) return NextResponse.json({ error: 'Introuvable' }, { status: 404 });
 
   const admin = await checkUserPermission('dashboard.admin');
-  if (!canManageModule({ leadUserId: followUp.leadUserId }, userId, 'allowed' in admin)) {
+  if (!canManageModule(followUp, userId, 'allowed' in admin)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 

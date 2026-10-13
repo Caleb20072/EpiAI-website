@@ -13,6 +13,7 @@ interface ModuleRow {
   name: string;
   description: string;
   leadName: string;
+  lead2Name?: string | null;
   isLead: boolean;
   enrolled: boolean;
   level: number;
@@ -27,7 +28,14 @@ export default function ModulesPage() {
   const { isAdmin } = useAuth();
   const [modules, setModules] = useState<ModuleRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', description: '', leadUserId: '', leadName: '' });
+  const [form, setForm] = useState({
+    name: '',
+    description: '',
+    leadUserId: '',
+    leadName: '',
+    lead2UserId: '',
+    lead2Name: '',
+  });
   const [pickerKey, setPickerKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +56,10 @@ export default function ModulesPage() {
       setError(fr ? 'Choisis le lead dans les suggestions.' : 'Pick the lead from the suggestions.');
       return;
     }
+    if (form.lead2UserId && form.lead2UserId === form.leadUserId) {
+      setError(fr ? 'Choisis deux personnes différentes.' : 'Pick two different people.');
+      return;
+    }
     const res = await fetch('/api/modules', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -58,7 +70,7 @@ export default function ModulesPage() {
       setError(data.error || 'Erreur');
       return;
     }
-    setForm({ name: '', description: '', leadUserId: '', leadName: '' });
+    setForm({ name: '', description: '', leadUserId: '', leadName: '', lead2UserId: '', lead2Name: '' });
     setPickerKey((key) => key + 1);
     await load();
   }
@@ -82,18 +94,34 @@ export default function ModulesPage() {
               placeholder={fr ? 'Nom du module' : 'Module name'}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+              className="md:col-span-2 rounded-lg border border-default bg-card px-3 py-2 text-sm"
             />
             <MemberPicker
-              key={pickerKey}
+              key={`${pickerKey}-1`}
               locale={locale}
               selectedId={form.leadUserId}
               selectedName={form.leadName}
+              placeholder={fr ? 'Premier lead' : 'First lead'}
               onSelect={(member) =>
                 setForm((current) => ({
                   ...current,
                   leadUserId: member?.id || '',
                   leadName: member?.name || '',
+                }))
+              }
+            />
+            <MemberPicker
+              key={`${pickerKey}-2`}
+              locale={locale}
+              required={false}
+              selectedId={form.lead2UserId}
+              selectedName={form.lead2Name}
+              placeholder={fr ? 'Second lead, si besoin' : 'Second lead, if needed'}
+              onSelect={(member) =>
+                setForm((current) => ({
+                  ...current,
+                  lead2UserId: member?.id || '',
+                  lead2Name: member?.name || '',
                 }))
               }
             />
@@ -114,8 +142,8 @@ export default function ModulesPage() {
           </form>
           <p className="text-xs text-muted mt-2">
             {fr
-              ? 'Écris le nom du lead et choisis-le dans la liste. Il verra ce module dans son interface.'
-              : 'Type the lead’s name and pick them from the list. They will see this module in their interface.'}
+              ? 'Choisis un ou deux leads. Chacun gère le module et voit le suivi de ses étudiants.'
+              : 'Pick one or two leads. Each one manages the module and follows its students.'}
           </p>
         </Panel>
       )}
@@ -138,7 +166,7 @@ export default function ModulesPage() {
                 </div>
                 <p className="text-sm text-secondary mt-1 line-clamp-2">{mod.description}</p>
                 <p className="text-xs text-muted mt-3">
-                  {fr ? 'Lead' : 'Lead'} : {mod.leadName} · {mod.projectCount}{' '}
+                  {fr ? 'Leads' : 'Leads'} : {[mod.leadName, mod.lead2Name].filter(Boolean).join(' · ')} · {mod.projectCount}{' '}
                   {fr ? 'projets' : 'projects'} · {fr ? 'Niveau' : 'Level'} {mod.level}
                 </p>
               </Panel>

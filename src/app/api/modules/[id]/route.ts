@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
-import { canManageModule, getModuleDetail, listGithubActivity, progressByEnrollment, saveLeadGithub } from '@/lib/modules/repository';
+import { canManageModule, getModuleDetail, listGithubActivity, progressByEnrollment, saveLeadGithub, setSecondLead } from '@/lib/modules/repository';
 
 export async function GET(
   _request: NextRequest,
@@ -51,11 +51,39 @@ export async function PATCH(
   }
 
   const body = await request.json();
+  if ('lead2UserId' in body) {
+    const secondId = String(body.lead2UserId || '').trim();
+    try {
+      if (!secondId) {
+        await setSecondLead(id, null);
+        return NextResponse.json({ ok: true, lead2UserId: null, lead2Name: null });
+      }
+      const client = await clerkClient();
+      const person = await client.users.getUser(secondId).catch(() => null);
+      const name = person
+        ? `${person.firstName || ''} ${person.lastName || ''}`.trim() || person.emailAddresses[0]?.emailAddress || body.lead2Name || secondId
+        : body.lead2Name || secondId;
+      await setSecondLead(id, { userId: secondId, name });
+      return NextResponse.json({ ok: true, lead2UserId: secondId, lead2Name: name });
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'Erreur' },
+        { status: 400 }
+      );
+    }
+  }
+
   const leadGithub = String(body.leadGithub || '').replace(/^@/, '').trim();
   if (!/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$/.test(leadGithub)) {
     return NextResponse.json({ error: 'Pseudo GitHub invalide' }, { status: 400 });
   }
+  const slot = body.slot === 2 ? 2 : 1;
+  const owner = slot === 2 ? learningModule.lead2UserId : learningModule.leadUserId;
+  if (!owner) return NextResponse.json({ error: 'Ce lead n’existe pas' }, { status: 400 });
+  if (!('allowed' in admin) && owner !== userId) {
+    return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
+  }
 
-  const saved = await saveLeadGithub(id, leadGithub);
+  const saved = await saveLeadGithub(id, leadGithub, slot);
   return NextResponse.json(saved);
 }

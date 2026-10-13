@@ -10,15 +10,16 @@ interface MemberPickerProps {
   selectedName: string;
   onSelect: (member: MemberSuggestion | null) => void;
   placeholder?: string;
+  required?: boolean;
 }
 
-export function MemberPicker({ locale, selectedId, selectedName, onSelect, placeholder }: MemberPickerProps) {
+export function MemberPicker({ locale, selectedId, selectedName, onSelect, placeholder, required = true }: MemberPickerProps) {
   const fr = locale === 'fr';
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(selectedName);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState<MemberSuggestion[]>([]);
@@ -97,7 +98,7 @@ export function MemberPicker({ locale, selectedId, selectedName, onSelect, place
   return (
     <div ref={rootRef} className="relative">
       <input
-        required
+        required={required}
         role="combobox"
         aria-expanded={showList}
         aria-controls={listId}
