@@ -27,6 +27,14 @@ async function seedPartners() {
         type: 'alumni',
         displayOrder: 2,
       },
+      {
+        name: 'Olomoon',
+        description: 'L’IA peut être comprise. Elle peut servir à résoudre de vrais problèmes.',
+        type: 'partner',
+        logoUrl: '/assets/partners/olomoon-clair.png',
+        websiteUrl: 'https://olomoon.org',
+        displayOrder: 3,
+      },
     ],
   });
 
