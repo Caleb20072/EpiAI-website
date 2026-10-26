@@ -6,6 +6,7 @@ import { ArrowLeft, X } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import { PageHeader, Button, Panel } from '@/components/ui';
+import { clerkUserProfileAppearance } from '@/lib/clerk/appearance';
 
 export default function SettingsPage() {
     const params = useParams();
@@ -33,39 +34,7 @@ export default function SettingsPage() {
 
             <Panel noPadding bodyClassName="p-4 sm:p-5">
                 <UserProfile
-                    appearance={{
-                        elements: {
-                            rootBox: 'w-full',
-                            card: 'bg-transparent shadow-none',
-                            navbar: 'bg-card-muted rounded-lg border border-subtle',
-                            navbarButton: 'text-secondary hover:text-primary hover:bg-card rounded-md text-sm',
-                            navbarButtonActive: 'bg-card text-primary',
-                            pageScrollBox: 'bg-transparent',
-                            page: 'bg-transparent',
-                            profileSection: 'bg-card border border-default rounded-xl shadow-card',
-                            profileSectionPrimaryButton: 'bg-brand-600 text-white hover:bg-brand-500 rounded-lg text-sm',
-                            formButtonPrimary: 'bg-brand-600 text-white hover:bg-brand-500 rounded-lg text-sm',
-                            formButtonReset: 'text-secondary hover:text-primary hover:bg-card-muted rounded-lg text-sm',
-                            badge: 'bg-card-muted text-primary border-default',
-                            accordionTriggerButton: 'text-secondary hover:text-primary hover:bg-card-muted rounded-lg',
-                            accordionContent: 'bg-card-muted rounded-lg',
-                            formFieldLabel: 'text-secondary text-xs',
-                            formFieldInput: 'bg-input border-default text-primary placeholder:text-muted rounded-lg text-sm',
-                            identityPreviewText: 'text-primary',
-                            identityPreviewEditButton: 'text-secondary hover:text-primary',
-                            headerTitle: 'text-primary text-lg',
-                            headerSubtitle: 'text-secondary text-sm',
-                            socialButtonsBlockButton: 'bg-card-muted border-default text-primary hover:bg-card rounded-lg text-sm',
-                            dividerLine: 'bg-card-muted',
-                            dividerText: 'text-muted text-xs',
-                            avatarImageActionsUpload: 'text-secondary hover:text-primary',
-                            avatarImageActionsRemove: 'text-red-600 hover:text-red-500',
-                            fileDropAreaBox: 'bg-card-muted border-default rounded-lg',
-                            fileDropAreaIconBox: 'text-muted',
-                            fileDropAreaText: 'text-secondary text-sm',
-                            fileDropAreaButtonPrimary: 'bg-brand-600 text-white hover:bg-brand-500 rounded-lg text-sm',
-                        },
-                    }}
+                    appearance={clerkUserProfileAppearance}
                     routing="path"
                     path={`/${locale}/settings`}
                 />

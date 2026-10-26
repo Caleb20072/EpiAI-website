@@ -423,3 +423,65 @@ iframe {
   color: var(--text-primary);
   border-radius: 10px;
 }
+
+/* Clerk cards: navy + light text so labels stay readable in light or dark site chrome. */
+.clerk-shell .cl-card,
+.clerk-shell .cl-cardBox,
+.clerk-shell .cl-main,
+.clerk-shell .cl-scrollBox,
+.clerk-shell .cl-page,
+.clerk-shell .cl-navbar {
+  background-color: #0f172b !important;
+  color: #edf0f5 !important;
+}
+.clerk-shell .cl-navbar {
+  border-color: rgba(134, 174, 246, 0.2) !important;
+}
+.clerk-shell .cl-profileSection,
+.clerk-shell .cl-profileSectionItem,
+.clerk-shell .cl-accordionContent,
+.clerk-shell .cl-menuList,
+.clerk-shell .cl-userPreview {
+  background-color: #19233d !important;
+  color: #edf0f5 !important;
+  border-color: rgba(134, 174, 246, 0.22) !important;
+  box-shadow: none !important;
+}
+.clerk-shell .cl-headerTitle,
+.clerk-shell .cl-profileSectionTitleText,
+.clerk-shell .cl-formFieldLabel,
+.clerk-shell .cl-navbarButton,
+.clerk-shell .cl-breadcrumbsItem,
+.clerk-shell .cl-identityPreviewText,
+.clerk-shell .cl-userPreviewMainIdentifier,
+.clerk-shell .cl-userPreviewSecondaryIdentifier,
+.clerk-shell .cl-menuItem {
+  color: #edf0f5 !important;
+}
+.clerk-shell .cl-headerSubtitle,
+.clerk-shell .cl-formFieldHintText,
+.clerk-shell .cl-footerActionText,
+.clerk-shell .cl-dividerText {
+  color: #c3c9d6 !important;
+}
+.clerk-shell .cl-formFieldInput,
+.clerk-shell .cl-input {
+  background-color: #0a1022 !important;
+  color: #edf0f5 !important;
+  border-color: rgba(134, 174, 246, 0.32) !important;
+}
+.clerk-shell .cl-formButtonPrimary,
+.clerk-shell .cl-profileSectionPrimaryButton,
+.clerk-shell .cl-fileDropAreaButtonPrimary {
+  background-color: #3479f0 !important;
+  color: #ffffff !important;
+}
+.clerk-shell .cl-footerActionLink,
+.clerk-shell .cl-breadcrumbsItem.cl-breadcrumbsItem__currentPage {
+  color: #86aef6 !important;
+}
+.clerk-shell .cl-socialButtonsBlockButton {
+  background-color: #19233d !important;
+  color: #edf0f5 !important;
+  border-color: rgba(134, 174, 246, 0.28) !important;
+}

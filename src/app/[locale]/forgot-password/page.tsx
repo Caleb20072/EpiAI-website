@@ -3,7 +3,7 @@
 import { useAuth, SignIn } from '@clerk/nextjs';
 import { useParams } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { AuthGuard } from '@/components/auth/AuthGuard';
+import { clerkAppearance } from '@/lib/clerk/appearance';
 
 export default function ForgotPasswordPage() {
   const params = useParams();
@@ -13,17 +13,17 @@ export default function ForgotPasswordPage() {
   // Si l'utilisateur est déjà connecté, montrer un message
   if (isSignedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
-        <div className="text-center p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl max-w-md">
-          <h1 className="text-2xl font-bold text-white mb-4">
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_#1d3a7a_0%,_#0d1b4a_42%,_#0a1022_100%)]">
+        <div className="text-center p-8 bg-[#131c33] border border-[rgba(134,174,246,0.24)] rounded-2xl max-w-md">
+          <h1 className="text-2xl font-semibold text-[#edf0f5] mb-4">
             Already Signed In
           </h1>
-          <p className="text-white/70 mb-6">
+          <p className="text-[#c3c9d6] mb-6">
             You are already signed in. If you need to reset your password, please contact an administrator.
           </p>
           <a
             href={`/${locale}/dashboard`}
-            className="inline-block bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-white/90 transition-colors"
+            className="inline-block bg-[#3479f0] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#2361d6] transition-colors"
           >
             Go to Dashboard
           </a>
@@ -33,27 +33,13 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_#1d3a7a_0%,_#0d1b4a_42%,_#0a1022_100%)]">
       <SignIn
         routing="path"
         path={`/${locale}/sign-in`}
         signUpUrl={`/${locale}/sign-up`}
         redirectUrl={`/${locale}/dashboard`}
-        appearance={{
-          elements: {
-            rootBox: 'mx-auto',
-            card: 'bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl',
-            headerTitle: 'text-white text-2xl font-bold',
-            headerSubtitle: 'text-white/60',
-            socialButtonsBlockButton: 'bg-white/10 border-white/20 text-white hover:bg-white/20',
-            formButtonPrimary: 'bg-white text-black hover:bg-white/90 font-semibold rounded-xl',
-            formFieldLabel: 'text-white/70',
-            formFieldInput: 'bg-white/5 border-white/20 text-white placeholder:text-white/40 rounded-xl',
-            footerActionLink: 'text-white/70 hover:text-white',
-            identityPreviewText: 'text-white',
-            identityPreviewEditButton: 'text-white/70',
-          },
-        }}
+        appearance={clerkAppearance}
       />
     </div>
   );
