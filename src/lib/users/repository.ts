@@ -36,7 +36,6 @@ export async function upsertUserFromClerk(data: {
     clerkId: user.clerkId,
     firstName: user.firstName,
     lastName: user.lastName,
-    imageUrl: user.imageUrl,
     linkedin: user.linkedin ?? undefined,
   });
 

@@ -47,15 +47,6 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
       .catch(() => {});
   }, [user?.firstName, user?.lastName]);
 
-  useEffect(() => {
-    if (!user?.imageUrl) return;
-    void fetch('/api/me/profile', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageUrl: user.imageUrl }),
-    });
-  }, [user?.imageUrl]);
-
   async function saveLinkedin() {
     setSaving(true);
     setMessage(null);
@@ -95,7 +86,7 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
       const res = await fetch('/api/me/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: user.imageUrl }),
+        body: JSON.stringify({ imageUrl: user.imageUrl, syncPublicPhoto: true }),
       });
       if (!res.ok) throw new Error(fr ? 'Photo enregistrée sur Clerk, pas sur la page équipe.' : 'Photo saved on Clerk, not on the team page.');
       const data = await res.json();
@@ -157,9 +148,21 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
         <div className="space-y-4">
           <p className="text-sm text-secondary">
             {fr
-              ? 'Ta photo et ton LinkedIn sont les mêmes que sur la page Équipe du site. Change-les ici, la vitrine se met à jour.'
-              : 'Your photo and LinkedIn match the public Team page. Change them here and the site updates too.'}
+              ? 'Le portrait officiel de la page Équipe reste celui du bureau, sauf si tu en envoies un nouveau avec le bouton ci-dessous. La photo de ton compte ne le remplace plus toute seule.'
+              : 'The official Team-page portrait stays the bureau photo unless you upload a new one with the button below. Your account photo no longer replaces it on its own.'}
           </p>
+          {profile?.photoUrl && profile.onPublicTeam ? (
+            <div className="flex items-center gap-3">
+              <img
+                src={profile.photoUrl}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover border border-default"
+              />
+              <p className="text-xs text-secondary">
+                {fr ? 'Portrait actuellement affiché sur la page Équipe.' : 'Portrait currently shown on the Team page.'}
+              </p>
+            </div>
+          ) : null}
           <div>
             <input
               ref={fileRef}

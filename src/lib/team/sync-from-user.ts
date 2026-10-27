@@ -57,9 +57,8 @@ export async function syncTeamMemberFromUser(input: {
   lastName: string;
   imageUrl?: string | null;
   linkedin?: string | null;
+  syncPhoto?: boolean;
 }) {
-  const imageUrl = input.imageUrl?.trim() || null;
-
   let member = await prisma.teamMember.findUnique({ where: { clerkId: input.clerkId } });
   if (!member) {
     const candidates = await prisma.teamMember.findMany();
@@ -74,7 +73,10 @@ export async function syncTeamMemberFromUser(input: {
     linkedin?: string | null;
   } = { clerkId: input.clerkId };
 
-  if (imageUrl) data.photoUrl = imageUrl;
+  if (input.syncPhoto) {
+    const imageUrl = input.imageUrl?.trim() || null;
+    if (imageUrl) data.photoUrl = imageUrl;
+  }
   if (typeof input.linkedin === 'string') {
     data.linkedin = normalizeLinkedin(input.linkedin);
   }

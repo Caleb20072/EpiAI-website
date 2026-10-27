@@ -92,9 +92,34 @@ async function seedTeam() {
   console.log(`Team seeded (${members.length} entries).`);
 }
 
+function isClerkHostedPhoto(url: string | null | undefined) {
+  if (!url) return false;
+  return /clerk\.com|img\.clerk|images\.clerk/i.test(url);
+}
+
+async function restoreOfficialTeamPhotos() {
+  const members = buildDefaultTeamMembers();
+  let restored = 0;
+  for (const seed of members) {
+    if (!seed.photoUrl) continue;
+    const rows = await prisma.teamMember.findMany({ where: { name: seed.name } });
+    for (const row of rows) {
+      if (!isClerkHostedPhoto(row.photoUrl)) continue;
+      await prisma.teamMember.update({
+        where: { id: row.id },
+        data: { photoUrl: seed.photoUrl },
+      });
+      restored += 1;
+      console.log(`Restored portrait: ${row.name}`);
+    }
+  }
+  console.log(`Official portraits restored: ${restored}.`);
+}
+
 async function main() {
   await seedPartners();
   await seedTeam();
+  await restoreOfficialTeamPhotos();
   await seedProjects(prisma);
   await seedResources(prisma);
   const { seedTalks } = await import('./seed-talks');

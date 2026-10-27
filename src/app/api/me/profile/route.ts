@@ -44,7 +44,7 @@ export async function GET() {
     }
   }
 
-  const photoUrl = user.imageUrl || teamMember?.photoUrl || null;
+  const photoUrl = teamMember?.photoUrl || user.imageUrl || null;
 
   return NextResponse.json({
     clerkId: user.clerkId,
@@ -71,6 +71,7 @@ export async function PATCH(request: NextRequest) {
   const body = (await request.json()) as {
     linkedin?: string;
     imageUrl?: string | null;
+    syncPublicPhoto?: boolean;
   };
 
   const linkedin =
@@ -93,6 +94,7 @@ export async function PATCH(request: NextRequest) {
     lastName: updated.lastName,
     imageUrl: updated.imageUrl,
     linkedin: body.linkedin !== undefined ? body.linkedin : undefined,
+    syncPhoto: body.syncPublicPhoto === true,
   });
 
   return GET();
