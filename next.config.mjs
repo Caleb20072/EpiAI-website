@@ -21,6 +21,18 @@ const nextConfig = {
         qualities: [75, 100],
         unoptimized: true,
     },
+    async headers() {
+        return [
+            {
+                source: '/push-sw.js',
+                headers: [
+                    { key: 'Service-Worker-Allowed', value: '/' },
+                    { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+                    { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+                ],
+            },
+        ];
+    },
 };
 
 export default withNextIntl(nextConfig);

@@ -13,6 +13,29 @@ function urlBase64ToUint8Array(base64String: string) {
   return arr;
 }
 
+function toUint8(src: BufferSource): Uint8Array {
+  if (src instanceof ArrayBuffer) return new Uint8Array(src);
+  return new Uint8Array(src.buffer, src.byteOffset, src.byteLength);
+}
+
+function uint8Equal(a: Uint8Array, b: Uint8Array) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+}
+
+function vapidKeyBytes(publicKey: string): Uint8Array {
+  const bytes = urlBase64ToUint8Array(publicKey.trim());
+  if (bytes.byteLength !== 65 || bytes[0] !== 0x04) {
+    throw new Error('Invalid VAPID public key');
+  }
+  return bytes;
+}
+
 function isIosDevice() {
   if (typeof navigator === 'undefined') return false;
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -25,52 +48,109 @@ function isStandaloneDisplay() {
   return window.matchMedia('(display-mode: standalone)').matches || standalone;
 }
 
+function waitForWorkerActivated(worker: ServiceWorker, timeoutMs = 15000): Promise<void> {
+  if (worker.state === 'activated') return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      worker.removeEventListener('statechange', onChange);
+      if (worker.state === 'activated') resolve();
+      else reject(new Error('Service worker timeout'));
+    }, timeoutMs);
+
+    function onChange() {
+      if (worker.state === 'activated') {
+        window.clearTimeout(timer);
+        worker.removeEventListener('statechange', onChange);
+        resolve();
+        return;
+      }
+      if (worker.state === 'redundant') {
+        window.clearTimeout(timer);
+        worker.removeEventListener('statechange', onChange);
+        reject(new Error('Service worker redundant'));
+      }
+    }
+
+    worker.addEventListener('statechange', onChange);
+  });
+}
+
 async function getPushRegistration(): Promise<ServiceWorkerRegistration> {
   const reg = await navigator.serviceWorker.register('/push-sw.js', {
     scope: '/',
     updateViaCache: 'none',
   });
-  const ready = await navigator.serviceWorker.ready;
-  return ready.scope.endsWith('/') || ready.scope.includes(location.origin)
-    ? ready
-    : reg;
+
+  const pending = reg.installing || reg.waiting;
+  if (pending) await waitForWorkerActivated(pending);
+  if (!reg.active) {
+    await Promise.race([
+      navigator.serviceWorker.ready,
+      delay(15000).then(() => {
+        throw new Error('Service worker timeout');
+      }),
+    ]);
+  }
+  if (!reg.active) throw new Error('Service worker registration failed');
+
+  if (!navigator.serviceWorker.controller) {
+    await Promise.race([
+      new Promise<void>((resolve) => {
+        navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true });
+      }),
+      delay(1500),
+    ]);
+  }
+
+  await delay(50);
+  return reg;
 }
 
 async function subscribeWithKey(
   reg: ServiceWorkerRegistration,
   publicKey: string,
 ): Promise<PushSubscription> {
-  const applicationServerKey = urlBase64ToUint8Array(publicKey.trim());
+  const expected = vapidKeyBytes(publicKey);
   const existing = await reg.pushManager.getSubscription();
   if (existing) {
-    const same =
-      existing.options.applicationServerKey &&
-      uint8Equal(new Uint8Array(existing.options.applicationServerKey as ArrayBuffer), applicationServerKey);
-    if (same) return existing;
+    const current = existing.options.applicationServerKey
+      ? toUint8(existing.options.applicationServerKey)
+      : null;
+    if (!current || uint8Equal(current, expected)) return existing;
     await existing.unsubscribe().catch(() => undefined);
+    await delay(350);
   }
-  try {
-    return await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey,
-    });
-  } catch (err) {
-    const leftover = await reg.pushManager.getSubscription();
-    if (leftover) {
-      await leftover.unsubscribe().catch(() => undefined);
-      return reg.pushManager.subscribe({
+
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      return await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey,
+        applicationServerKey: expected.slice(),
       });
+    } catch (err) {
+      lastErr = err;
+      const name = err instanceof DOMException ? err.name : '';
+      const leftover = await reg.pushManager.getSubscription();
+      if (leftover) return leftover;
+      const msg = err instanceof Error ? err.message : '';
+      if (/push service not available/i.test(msg)) throw err;
+      if (name !== 'AbortError' && name !== 'InvalidStateError') throw err;
+      await delay(400 * (attempt + 1));
     }
-    throw err;
   }
+  throw lastErr instanceof Error ? lastErr : new Error('Push subscribe aborted');
 }
 
-function uint8Equal(a: Uint8Array, b: Uint8Array) {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
+let subscribeLock: Promise<void> = Promise.resolve();
+
+function withSubscribeLock<T>(fn: () => Promise<T>): Promise<T> {
+  const run = subscribeLock.then(fn, fn);
+  subscribeLock = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
 }
 
 function pushErrorMessage(err: unknown, fr: boolean) {
@@ -81,13 +161,25 @@ function pushErrorMessage(err: unknown, fr: boolean) {
       ? 'Le navigateur a bloqué les notifications. Autorise-les pour epiai.eu, puis réessaie.'
       : 'The browser blocked notifications. Allow them for epiai.eu, then try again.';
   }
-  if (name === 'AbortError') {
-    return fr ? 'Activation annulée. Réessaie.' : 'Activation cancelled. Try again.';
+  if (/push service not available/i.test(raw)) {
+    return fr
+      ? 'Ce navigateur ne peut pas recevoir d’alertes hors ligne (souvent Chromium sous Linux). Ouvre Epi’AI dans Google Chrome, Firefox ou Edge, puis réessaie.'
+      : 'This browser cannot receive background alerts (common with Chromium on Linux). Open Epi’AI in Google Chrome, Firefox or Edge, then try again.';
   }
-  if (/service worker|registration/i.test(raw)) {
+  if (name === 'AbortError' || name === 'InvalidStateError') {
+    return fr
+      ? 'Le navigateur a interrompu l’activation. Recharge la page, puis réessaie.'
+      : 'The browser interrupted activation. Reload the page, then try again.';
+  }
+  if (/service worker|registration|timeout/i.test(raw)) {
     return fr
       ? 'Le service des alertes n’a pas démarré. Recharge la page et réessaie.'
       : 'The alert service did not start. Reload the page and try again.';
+  }
+  if (/vapid/i.test(raw)) {
+    return fr
+      ? 'Les alertes ne sont pas encore activées sur le serveur. Préviens un admin.'
+      : 'Alerts are not configured on the server yet. Ask an admin.';
   }
   return fr
     ? 'L’activation a échoué. Rien n’a été enregistré. Recharge la page, autorise les notifications, puis réessaie.'
@@ -120,6 +212,24 @@ async function persistSubscription(
   };
 }
 
+async function activatePush(sendTest: boolean) {
+  const [keyRes, reg] = await Promise.all([
+    fetch('/api/push/vapid-key'),
+    getPushRegistration(),
+  ]);
+  if (!keyRes.ok) {
+    throw new Error('VAPID key unavailable');
+  }
+  const { publicKey } = (await keyRes.json()) as { publicKey?: string };
+  if (!publicKey) throw new Error('VAPID key unavailable');
+
+  const sub = await subscribeWithKey(reg, publicKey);
+  const saved = await persistSubscription(sub, sendTest);
+  if (!saved.ok) throw new Error('persist failed');
+  if (!saved.pushReady) throw new Error('push not ready');
+  return saved;
+}
+
 export default function PushNotificationManager() {
   const params = useParams();
   const fr = ((params.locale as string) || 'fr') === 'fr';
@@ -144,82 +254,84 @@ export default function PushNotificationManager() {
     const wasDismissed = localStorage.getItem('epiai-push-dismissed');
     if (wasDismissed === 'true') setDismissed(true);
 
-    if (ok && Notification.permission === 'granted') {
-      void (async () => {
-        try {
-          const keyRes = await fetch('/api/push/vapid-key');
-          if (!keyRes.ok) return;
-          const { publicKey } = await keyRes.json();
-          if (!publicKey) return;
-          const reg = await getPushRegistration();
-          const sub = await subscribeWithKey(reg, publicKey);
-          await persistSubscription(sub, false);
-        } catch {
-          /* silent repair */
+    if (!ok || Notification.permission !== 'granted') return;
+
+    void withSubscribeLock(async () => {
+      try {
+        const existingReg = await navigator.serviceWorker.getRegistration('/');
+        const existing = await existingReg?.pushManager.getSubscription();
+        if (existing) {
+          await persistSubscription(existing, false);
+          return;
         }
-      })();
-    }
-  }, []);
+        await activatePush(false);
+      } catch {
+        setError(
+          fr
+            ? 'Les alertes ne sont pas encore enregistrées. Clique sur Activer.'
+            : 'Alerts are not saved yet. Click Turn on.',
+        );
+      }
+    });
+  }, [fr]);
 
   const subscribe = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const keyRes = await fetch('/api/push/vapid-key');
-      if (!keyRes.ok) {
-        setError(
-          fr
-            ? 'Les alertes ne sont pas encore activées sur le serveur. Rien n’a été enregistré.'
-            : 'Alerts are not configured on the server yet. Nothing was saved.',
-        );
-        return;
-      }
-      const { publicKey } = await keyRes.json();
-      if (!publicKey) {
-        setError(
-          fr
-            ? 'Les alertes ne sont pas encore activées sur le serveur. Rien n’a été enregistré.'
-            : 'Alerts are not configured on the server yet. Nothing was saved.',
-        );
-        return;
-      }
+      await withSubscribeLock(async () => {
+        if (Notification.permission === 'default') {
+          const perm = await Notification.requestPermission();
+          setPermission(perm);
+        } else {
+          setPermission(Notification.permission);
+        }
 
-      const perm = await Notification.requestPermission();
-      setPermission(perm);
-      if (perm === 'denied') {
-        setError(
-          fr
-            ? 'Le navigateur a bloqué les notifications. Autorise-les dans les paramètres du site, puis réessaie.'
-            : 'The browser blocked notifications. Allow them in the site settings, then try again.',
-        );
-        return;
-      }
-      if (perm !== 'granted') return;
+        if (Notification.permission === 'denied') {
+          setError(
+            fr
+              ? 'Le navigateur a bloqué les notifications. Autorise-les dans les paramètres du site, puis réessaie.'
+              : 'The browser blocked notifications. Allow them in the site settings, then try again.',
+          );
+          return;
+        }
+        if (Notification.permission !== 'granted') return;
+        await delay(150);
 
-      const reg = await getPushRegistration();
-      const sub = await subscribeWithKey(reg, publicKey);
+        try {
+          await activatePush(true);
+        } catch (err) {
+          if (err instanceof Error && err.message === 'VAPID key unavailable') {
+            setError(
+              fr
+                ? 'Les alertes ne sont pas encore activées sur le serveur. Rien n’a été enregistré.'
+                : 'Alerts are not configured on the server yet. Nothing was saved.',
+            );
+            return;
+          }
+          if (err instanceof Error && err.message === 'persist failed') {
+            setError(
+              fr
+                ? 'Le navigateur a accepté, mais l’enregistrement a échoué. Réessaie.'
+                : 'The browser allowed it, but saving failed. Try again.',
+            );
+            return;
+          }
+          if (err instanceof Error && err.message === 'push not ready') {
+            setError(
+              fr
+                ? 'Abonnement enregistré, mais le serveur ne peut pas encore envoyer d’alerte. Préviens un admin.'
+                : 'Subscription saved, but the server cannot send alerts yet.',
+            );
+            return;
+          }
+          throw err;
+        }
 
-      const saved = await persistSubscription(sub, true);
-      if (!saved.ok) {
-        setError(
-          fr
-            ? 'Le navigateur a accepté, mais l’enregistrement a échoué. Réessaie.'
-            : 'The browser allowed it, but saving failed. Try again.',
-        );
-        return;
-      }
-      if (!saved.pushReady) {
-        setError(
-          fr
-            ? 'Abonnement enregistré, mais le serveur ne peut pas encore envoyer d’alerte. Préviens un admin.'
-            : 'Subscription saved, but the server cannot send alerts yet.',
-        );
-        return;
-      }
-
-      localStorage.removeItem('epiai-push-dismissed');
-      setSuccess(true);
-      window.setTimeout(() => setDismissed(true), 6000);
+        localStorage.removeItem('epiai-push-dismissed');
+        setSuccess(true);
+        window.setTimeout(() => setDismissed(true), 6000);
+      });
     } catch (err) {
       console.warn('[Push] Subscription failed:', err);
       setError(pushErrorMessage(err, fr));

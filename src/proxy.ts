@@ -98,6 +98,12 @@ export default clerkMiddleware(async (auth, req) => {
     pathname.startsWith('/uploads/') ||
     pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|pdf|docx?|xlsx?|pptx?|zip|rar|gz|tar|mp4|webm|mp3|wav|csv|json|xml|txt)$/)
   ) {
+    if (pathname === '/push-sw.js') {
+      const res = NextResponse.next();
+      res.headers.set('Service-Worker-Allowed', '/');
+      res.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      return res;
+    }
     return;
   }
 
@@ -141,6 +147,6 @@ export const config = {
     // - _next/image (image optimization files)
     // - favicon.ico (favicon file)
     // - static files in public folder are handled in the middleware function
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|push-sw\\.js).*)',
   ],
 };

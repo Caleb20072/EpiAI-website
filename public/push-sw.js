@@ -1,6 +1,6 @@
 /* Service worker — notifications push Epi'AI (hors ligne) */
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
