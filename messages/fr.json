@@ -242,7 +242,11 @@
         "form_motivations": "Vos Motivations (projets, attentes, compétences)",
         "form_motivations_placeholder": "Décrivez vos projets passés et ce que vous souhaitez apporter à l'association...",
         "form_submit": "Confirmer l'envoi",
-        "form_success": "Candidature reçue. Nous vous contacterons prochainement."
+        "form_success": "Candidature reçue. Nous vous contacterons prochainement.",
+        "form_error_required": "Tous les champs sont obligatoires.",
+        "form_error_email": "Indique un e-mail valide, par exemple prenom.nom@epitech.eu",
+        "form_error_whatsapp": "Indique un numéro WhatsApp valide, par exemple +229 01 40 00 00 00",
+        "form_error_fail": "Impossible d'envoyer la candidature. Réessaie dans un instant."
     },
     "Project_Detail": {
         "back_btn": "Retour aux projets",

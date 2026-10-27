@@ -242,7 +242,11 @@
         "form_motivations": "Your Motivations (projects, expectations, skills)",
         "form_motivations_placeholder": "Describe your past projects and what you wish to bring to the association...",
         "form_submit": "Confirm Submission",
-        "form_success": "Application received. We will contact you soon."
+        "form_success": "Application received. We will contact you soon.",
+        "form_error_required": "All fields are required.",
+        "form_error_email": "Enter a valid email, for example first.last@epitech.eu",
+        "form_error_whatsapp": "Enter a valid WhatsApp number, for example +229 01 40 00 00 00",
+        "form_error_fail": "Could not send the application. Please try again in a moment."
     },
     "Project_Detail": {
         "back_btn": "Back to Projects",

@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
+import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Footer from '@/components/Footer';
 import { Loader2 } from 'lucide-react';
+import { isValidEmail, isValidWhatsapp } from '@/lib/membership/validate';
 
 export default function JoinPage() {
     const t = useTranslations('Join');
+    const params = useParams();
+    const locale = (params.locale as string) === 'en' ? 'en' : 'fr';
     const [submitted, setSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -34,22 +38,44 @@ export default function JoinPage() {
         setIsLoading(true);
         setError(null);
 
+        const firstName = formData.firstName.trim();
+        const lastName = formData.lastName.trim();
+        const email = formData.email.trim();
+        const whatsapp = formData.whatsapp.trim();
+        const motivations = formData.motivations.trim();
+
+        if (!firstName || !lastName || !email || !whatsapp || !motivations) {
+            setError(t('form_error_required'));
+            setIsLoading(false);
+            return;
+        }
+        if (!isValidEmail(email)) {
+            setError(t('form_error_email'));
+            setIsLoading(false);
+            return;
+        }
+        if (!isValidWhatsapp(whatsapp)) {
+            setError(t('form_error_whatsapp'));
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch('/api/membership', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ firstName, lastName, email, whatsapp, motivations, locale }),
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to submit application');
+                throw new Error(typeof data.error === 'string' ? data.error : t('form_error_fail'));
             }
 
             setSubmitted(true);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : t('form_error_fail'));
         } finally {
             setIsLoading(false);
         }
@@ -194,7 +220,7 @@ export default function JoinPage() {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} noValidate className="space-y-6">
                                 {error && (
                                     <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-center">
                                         {error}
@@ -232,7 +258,12 @@ export default function JoinPage() {
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">{t('form_email')}</label>
                                     <input
                                         required
-                                        type="email"
+                                        type="text"
+                                        inputMode="email"
+                                        autoComplete="email"
+                                        autoCapitalize="none"
+                                        autoCorrect="off"
+                                        spellCheck={false}
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
@@ -245,12 +276,14 @@ export default function JoinPage() {
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">{t('form_whatsapp')}</label>
                                     <input
                                         required
-                                        type="tel"
+                                        type="text"
+                                        inputMode="tel"
+                                        autoComplete="tel"
                                         name="whatsapp"
                                         value={formData.whatsapp}
                                         onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all font-light"
-                                        placeholder="+33 6 00 00 00 00"
+                                        placeholder="+229 01 40 00 00 00"
                                     />
                                 </div>
 

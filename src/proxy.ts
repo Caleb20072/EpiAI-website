@@ -66,6 +66,7 @@ const isPublicRoute = createRouteMatcher([
   '/forgot-password',
   '/reset-password',
   '/api/webhooks(.*)',
+  '/api/membership(.*)',
   '/api/admin/invite(.*)', // Public pour la création du premier admin
   '/api/team-members(.*)',
   '/api/chatbot(.*)',
