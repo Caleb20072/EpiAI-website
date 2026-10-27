@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Panel, Button } from '@/components/ui';
-import { CONTRACT_CLAUSES_FR } from '@/lib/modules/contract';
+import { contractClauses, dueStatusLabel } from '@/lib/modules/contract';
 
 interface Workspace {
   contractAccepted: boolean;
@@ -42,16 +42,19 @@ export function WorkspaceCard({ locale }: { locale: string }) {
       <div className="space-y-4 text-sm">
         {data.due && (
           <p>
-            {fr ? 'Cotisation' : 'Fee'} {data.due.period} : <strong>{data.due.total} FCFA</strong>
-            {data.due.lateFee > 0 ? ` (${fr ? 'dont' : 'incl.'} ${data.due.lateFee} ${fr ? 'de retard' : 'late'})` : ''}
+            {fr ? 'Cotisation' : 'Monthly fee'} {data.due.period} :{' '}
+            <strong>{data.due.total} FCFA</strong>
+            {data.due.lateFee > 0
+              ? ` (${fr ? 'dont' : 'incl.'} ${data.due.lateFee} ${fr ? 'de retard' : 'late fee'})`
+              : ''}
             {' · '}
-            {data.due.status}
+            {dueStatusLabel(data.due.status, locale)}
           </p>
         )}
         <div>
           <p className="font-medium mb-2">{fr ? 'Contrat' : 'Agreement'}</p>
           <ul className="list-disc pl-5 space-y-1 text-secondary">
-            {CONTRACT_CLAUSES_FR.map((clause) => (
+            {contractClauses(locale).map((clause) => (
               <li key={clause}>{clause}</li>
             ))}
           </ul>

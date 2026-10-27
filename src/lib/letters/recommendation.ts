@@ -86,7 +86,7 @@ function paragraphs(input: RecommendationInput): string[] {
     const extra = input.contributions?.trim();
     return [
       `It is with enthusiasm that I write this letter of recommendation for ${full}${roleBit}, with whom I have had the pleasure of collaborating at Epi'AI, the Artificial Intelligence association of EPITECH Benin. As President of the association, I have been able to observe closely ${their} commitment and exceptional competence in the field.`,
-      `${first} has established ${agr(g, 'himself', 'herself')} as an active and committed member of Epi'AI. ${agr(g, 'His', 'Her')} passion for artificial intelligence is evident in every project ${they} take part in. ${agr(g, 'He', 'She')} has shown a strong spirit of initiative, taking the lead and exceeding expectations on every occasion. This passion, combined with a sense of autonomy, makes ${them} an ideal candidate for any professional opportunity in AI.`,
+      `${first} has established ${agr(g, 'himself', 'herself')} as an active and committed member of Epi'AI. ${agr(g, 'His', 'Her')} passion for artificial intelligence is evident in every project ${they} takes part in. ${agr(g, 'He', 'She')} has shown a strong spirit of initiative, taking the lead and exceeding expectations on every occasion. This passion, combined with a sense of autonomy, makes ${them} an ideal candidate for any professional opportunity in AI.`,
       `Throughout our collaboration, ${first} has led several AI-related projects with rigor and effectiveness. ${agr(g, 'His', 'Her')} command of technical skills, notably in ${focus}, is impressive. ${agr(g, 'He', 'She')} shows a remarkable team spirit while remaining able to carry a project from start to finish. ${agr(g, 'His', 'Her')} ability to integrate and apply these skills makes ${them} an asset to any organisation.`,
       ...(extra ? [extra] : []),
       `I warmly recommend ${them} for any position or professional opportunity related to artificial intelligence. I am convinced that ${they} will make a valuable and innovative contribution to your team.`,
@@ -212,7 +212,7 @@ export async function buildRecommendationPdf(input: RecommendationInput): Promis
   });
 
   page.drawRectangle({ x: 0, y: 0, width, height: 36, color: NAVY });
-  page.drawText('epiai.eu  ·  Cotonou, Bénin', {
+  page.drawText(locale === 'fr' ? 'epiai.eu  ·  Cotonou, Bénin' : 'epiai.eu  ·  Cotonou, Benin', {
     x: margin,
     y: 14,
     size: 9,
@@ -223,7 +223,9 @@ export async function buildRecommendationPdf(input: RecommendationInput): Promis
   return doc.save();
 }
 
-export function letterFilename(firstName: string, lastName: string) {
-  const full = publicDisplayName(firstName, lastName, 'membre').replace(/\s+/g, '_');
-  return `${full}_Lettre_de_recommandation.pdf`;
+export function letterFilename(firstName: string, lastName: string, locale: 'fr' | 'en' = 'fr') {
+  const full = publicDisplayName(firstName, lastName, locale === 'en' ? 'member' : 'membre').replace(/\s+/g, '_');
+  return locale === 'en'
+    ? `${full}_Letter_of_recommendation.pdf`
+    : `${full}_Lettre_de_recommandation.pdf`;
 }

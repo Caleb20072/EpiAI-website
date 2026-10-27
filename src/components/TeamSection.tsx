@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import type { ITeamMember } from '@/lib/team/types';
 import { COMMISSIONS } from '@/lib/team/commissions';
+import { ROLE_LABELS } from '@/lib/team/role-labels';
 
 /** Single DB title; show the locale-specific wording for this referent. */
 const REFERENT_TITLES: Record<string, { fr: string; en: string }> = {
@@ -11,14 +12,6 @@ const REFERENT_TITLES: Record<string, { fr: string; en: string }> = {
         fr: "Responsable du programme Bachelor d'EPITECH Bénin",
         en: 'Head of the Bachelor programme at EPITECH Benin',
     },
-};
-
-const ROLE_LABELS: Record<string, { fr: string; en: string }> = {
-    Président: { fr: 'Président', en: 'President' },
-    'Vice-président': { fr: 'Vice-président', en: 'Vice-president' },
-    'Responsable Formation': { fr: 'Responsable Formation', en: 'Head of Training' },
-    'Responsable Communication': { fr: 'Responsable Communication', en: 'Head of Communications' },
-    'Notre Référent': { fr: 'Notre Référent', en: 'Our Referent' },
 };
 
 type TeamSectionProps = {

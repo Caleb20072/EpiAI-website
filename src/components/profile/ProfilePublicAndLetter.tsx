@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { FileText, Linkedin, Loader2 } from 'lucide-react';
 import { Button, Input, Panel, Select, Textarea } from '@/components/ui';
+import { teamRoleLabel } from '@/lib/team/role-labels';
 
 type ProfilePayload = {
   firstName: string;
@@ -30,7 +31,7 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
   const [memberRole, setMemberRole] = useState('');
   const [focus, setFocus] = useState(fr ? "l'intelligence artificielle" : 'artificial intelligence');
   const [contributions, setContributions] = useState('');
-  const [letterBusy, setLetterBusy] = useState(false);
+  const [letterBusy, setLetterBusy] = useState<'fr' | 'en' | null>(null);
   const [letterError, setLetterError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,10 +43,10 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
         setLinkedin(data.linkedin || '');
         setFirstName(data.firstName || user?.firstName || '');
         setLastName(data.lastName || user?.lastName || '');
-        setMemberRole(data.teamRole || '');
+        setMemberRole(teamRoleLabel(data.teamRole || '', fr ? 'fr' : 'en'));
       })
       .catch(() => {});
-  }, [user?.firstName, user?.lastName]);
+  }, [user?.firstName, user?.lastName, fr]);
 
   async function saveLinkedin() {
     setSaving(true);
@@ -107,8 +108,8 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
     }
   }
 
-  async function generateLetter() {
-    setLetterBusy(true);
+  async function generateLetter(letterLocale: 'fr' | 'en') {
+    setLetterBusy(letterLocale);
     setLetterError(null);
     try {
       const res = await fetch('/api/letters/recommendation', {
@@ -121,7 +122,8 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
           memberRole,
           focus,
           contributions,
-          locale: fr ? 'fr' : 'en',
+          locale: letterLocale,
+          uiLocale: fr ? 'fr' : 'en',
         }),
       });
       if (!res.ok) {
@@ -132,13 +134,16 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${firstName}_${lastName}_Lettre_de_recommandation.pdf`.replace(/\s+/g, '_');
+      a.download =
+        letterLocale === 'en'
+          ? `${firstName}_${lastName}_Letter_of_recommendation.pdf`.replace(/\s+/g, '_')
+          : `${firstName}_${lastName}_Lettre_de_recommandation.pdf`.replace(/\s+/g, '_');
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setLetterError(err instanceof Error ? err.message : 'Erreur');
+      setLetterError(err instanceof Error ? err.message : fr ? 'Erreur' : 'Error');
     } finally {
-      setLetterBusy(false);
+      setLetterBusy(null);
     }
   }
 
@@ -205,8 +210,8 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
         <div className="space-y-4">
           <p className="text-sm text-secondary">
             {fr
-              ? 'Tous les membres peuvent générer une lettre officielle Epi’AI / EPITECH au format PDF. Remplis tes informations, puis télécharge le document.'
-              : 'Every member can generate an official Epi’AI / EPITECH PDF letter. Fill in your details, then download it.'}
+              ? 'Tous les membres peuvent générer une lettre officielle Epi’AI / EPITECH en français ou en anglais. Tu peux remplir les champs en français : la version anglaise traduit le rôle, le domaine et le complément.'
+              : 'Every member can generate an official Epi’AI / EPITECH letter in French or English. You can fill in the fields in French: the English version translates the role, field and extra paragraph.'}
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             <Input label={fr ? 'Prénom' : 'First name'} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
@@ -246,16 +251,37 @@ export function ProfilePublicAndLetter({ locale }: { locale: string }) {
             }
           />
           {letterError ? <p className="text-sm text-red-500">{letterError}</p> : null}
-          <Button type="button" disabled={letterBusy || !gender} onClick={() => void generateLetter()}>
-            {letterBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-            {letterBusy
-              ? fr
-                ? 'Génération…'
-                : 'Generating…'
-              : fr
-                ? 'Télécharger la lettre PDF'
-                : 'Download the PDF letter'}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              disabled={letterBusy !== null || !gender}
+              onClick={() => void generateLetter('fr')}
+            >
+              {letterBusy === 'fr' ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              {letterBusy === 'fr'
+                ? fr
+                  ? 'Génération…'
+                  : 'Generating…'
+                : fr
+                  ? 'PDF français'
+                  : 'French PDF'}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={letterBusy !== null || !gender}
+              onClick={() => void generateLetter('en')}
+            >
+              {letterBusy === 'en' ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              {letterBusy === 'en'
+                ? fr
+                  ? 'Traduction…'
+                  : 'Translating…'
+                : fr
+                  ? 'PDF anglais'
+                  : 'English PDF'}
+            </Button>
+          </div>
         </div>
       </Panel>
     </>
