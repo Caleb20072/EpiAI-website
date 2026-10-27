@@ -38,6 +38,7 @@ async function sendToSubscriptions(
           keys: { p256dh: sub.p256dh, auth: sub.auth },
         },
         body,
+        { TTL: 60 * 60 * 24, urgency: 'high' },
       );
       sent++;
     } catch (err: unknown) {

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getVapidPublicKey } from '@/lib/push/vapid';
 
+export const dynamic = 'force-dynamic';
+
 /** GET /api/push/vapid-key — clé publique VAPID pour l'abonnement navigateur */
 export async function GET() {
   const key = getVapidPublicKey();

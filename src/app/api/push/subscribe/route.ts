@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getUserByClerkId } from '@/lib/users/repository';
 import { savePushSubscription, removePushSubscription } from '@/lib/push/subscriptions';
+import { configureWebPush } from '@/lib/push/vapid';
+import { sendPushToUserId } from '@/lib/push/send';
+import { createNotification } from '@/lib/notifications/repository';
+
+export const dynamic = 'force-dynamic';
 
 /** POST /api/push/subscribe — enregistrer un abonnement push navigateur */
 export async function POST(request: NextRequest) {
@@ -17,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { endpoint, keys } = body;
+    const { endpoint, keys, sendTest } = body;
 
     if (!endpoint || !keys?.p256dh || !keys?.auth) {
       return NextResponse.json({ error: 'Invalid subscription' }, { status: 400 });
@@ -29,7 +34,28 @@ export async function POST(request: NextRequest) {
       request.headers.get('user-agent') || undefined,
     );
 
-    return NextResponse.json({ success: true });
+    const pushReady = configureWebPush();
+    let pushed = 0;
+    if (sendTest !== false) {
+      await createNotification({
+        userId: dbUser.id,
+        type: 'system',
+        title: 'Alertes activées',
+        message: 'Tu seras prévenu pour le forum, le chat et les événements, même hors ligne.',
+        link: '/dashboard',
+      });
+      if (pushReady) {
+        const site = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
+        pushed = await sendPushToUserId(dbUser.id, {
+          title: "Epi'AI",
+          body: 'Alertes activées. Tu seras prévenu pour le forum, le chat et les événements, même hors ligne.',
+          url: `${site}/fr/dashboard`,
+          tag: 'epiai-push-enabled',
+        });
+      }
+    }
+
+    return NextResponse.json({ success: true, pushReady, pushed });
   } catch (error) {
     console.error('[push/subscribe] POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

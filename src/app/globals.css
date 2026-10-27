@@ -485,3 +485,18 @@ iframe {
   color: #edf0f5 !important;
   border-color: rgba(134, 174, 246, 0.28) !important;
 }
+
+/* Netlify injects a “Powered by Netlify” iframe that covers the mobile tab bar */
+iframe[title="Powered by Netlify"],
+iframe[title="Netlify Badge"],
+iframe[src*="netlify-cdp-loader"],
+iframe[src*="app.netlify.com/logo"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: fixed !important;
+  left: -9999px !important;
+}
