@@ -3,14 +3,43 @@
    Surcharge le thème dark officiel de stream-chat-react v13
    ============================================================= */
 
-.chat-wrapper .str-chat {
+.chat-wrapper .str-chat,
+.chat-wrapper .str-chat__channel {
   background: transparent;
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-wrapper .str-chat__container {
+  height: 100% !important;
+  min-height: 0 !important;
+  flex: 1 1 auto;
+}
+
+.chat-wrapper .str-chat__main-panel,
+.chat-wrapper .str-chat__main-panel-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  align-items: stretch !important;
 }
 
 /* Fond principal */
 .chat-wrapper .str-chat__container {
   background: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 1023px) {
+  /* Un seul header mobile (menu + nom du canal) — comme WhatsApp */
+  .chat-wrapper .str-chat__channel-header {
+    display: none;
+  }
 }
 
 /* Header du canal */
@@ -27,10 +56,22 @@
   font-size: 1rem;
 }
 
-/* Liste de messages */
+/* Liste : prend le reste, pas 100% — sinon le champ est poussé hors du chat */
 .chat-wrapper .str-chat__list {
   background: transparent;
-  padding: 16px 20px;
+  padding: 12px 16px;
+  flex: 1 1 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat-wrapper .str-chat__list .str-chat__message-list-scroll,
+.chat-wrapper .str-chat__message-list-scroll {
+  min-height: 0;
+  height: auto !important;
 }
 
 /* Messages */
@@ -68,11 +109,19 @@
   border-radius: 50%;
 }
 
-/* Zone de saisie */
+/* Zone de saisie — collée en bas, au-dessus du clavier */
 .chat-wrapper .str-chat__message-input {
   background: rgba(255, 255, 255, 0.04);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 12px 16px;
+  padding: 8px 12px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1023px) {
+  .chat-wrapper .str-chat__message-input {
+    padding: 6px 10px max(6px, env(safe-area-inset-bottom));
+  }
 }
 
 .chat-wrapper .str-chat__message-input-inner {

@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useChatViewport } from '@/hooks/useChatViewport';
 import {
     Chat,
     Channel,
@@ -14,7 +15,9 @@ import {
 import type { Channel as StreamChannel } from 'stream-chat';
 import { ChannelSidebar } from './ChannelSidebar';
 import { CHAT_CHANNEL_IDS } from '@/lib/chat/channels';
-import { Loader2, Menu } from 'lucide-react';
+import { ArrowLeft, Loader2, Menu } from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import 'stream-chat-react/dist/css/v2/index.css';
 import '@/styles/stream-chat-custom.css';
@@ -28,6 +31,8 @@ interface TokenData {
 }
 
 function ChatClient({ tokenData }: { tokenData: TokenData }) {
+    const params = useParams();
+    const locale = (params.locale as string) || 'fr';
     const [activeChannelId, setActiveChannelId] = useState<string>('general');
     const [activeChannel, setActiveChannel] = useState<StreamChannel | undefined>();
     const [connected, setConnected] = useState(false);
@@ -125,7 +130,7 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
 
     return (
         <Chat client={client} theme="str-chat__theme-dark">
-            <div className="flex h-full relative min-w-0">
+            <div className="flex h-full min-h-0 relative min-w-0">
                 {sidebarOpen && (
                     <button
                         type="button"
@@ -147,8 +152,15 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                     )}
                 />
 
-                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    <div className="lg:hidden shrink-0 flex items-center gap-2 px-3 py-2 border-b border-default bg-input">
+                <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+                    <div className="lg:hidden shrink-0 flex items-center gap-1 px-2 h-12 border-b border-default bg-surface">
+                        <Link
+                            href={`/${locale}/dashboard`}
+                            className="p-2.5 rounded-xl text-primary hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            aria-label="Retour"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </Link>
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
@@ -185,7 +197,7 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                             <Window>
                                 <ChannelHeader />
                                 <MessageList />
-                                <MessageInput focus />
+                                <MessageInput />
                             </Window>
                             <Thread />
                         </Channel>
@@ -268,8 +280,22 @@ export function ChatPage() {
     }
 
     return (
-        <div className="chat-wrapper h-[calc(100dvh-11rem)] lg:h-[calc(100vh-140px)] min-h-[320px] rounded-2xl overflow-hidden border border-default">
+        <ChatShell>
             <ChatClient tokenData={tokenData} />
+        </ChatShell>
+    );
+}
+
+function ChatShell({ children }: { children: ReactNode }) {
+    const ref = useRef<HTMLDivElement>(null);
+    useChatViewport(ref);
+
+    return (
+        <div
+            ref={ref}
+            className="chat-wrapper h-full min-h-0 lg:h-[calc(100vh-140px)] lg:min-h-[320px] rounded-none lg:rounded-2xl overflow-hidden border-0 lg:border border-default bg-surface"
+        >
+            {children}
         </div>
     );
 }

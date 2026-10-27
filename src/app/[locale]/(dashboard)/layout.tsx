@@ -103,6 +103,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const dashboardHref = `/${locale}/dashboard`;
   const isOnDashboard = pathname === dashboardHref;
+  const isChatPage = pathname?.includes('/chat') ?? false;
 
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     setSidebarOpen(false);
@@ -387,14 +388,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </aside>
 
-        <div className="lg:pl-64 min-h-screen flex flex-col">
+        <div className={cn('lg:pl-64 min-h-screen flex flex-col', isChatPage && 'max-lg:h-dvh max-lg:overflow-hidden')}>
           <header className="sticky top-0 z-30 hidden lg:flex items-center justify-end gap-1 px-6 h-[60px] border-b border-subtle bg-surface/95 backdrop-blur-sm">
             <GlobalSearch />
             <NotificationBell />
             <ThemeToggle />
           </header>
 
-          <header className="sticky top-0 z-30 flex items-center justify-between px-3 h-14 bg-surface border-b border-subtle lg:hidden">
+          <header className={cn(
+            'sticky top-0 z-30 items-center justify-between px-3 h-14 bg-surface border-b border-subtle lg:hidden',
+            isChatPage ? 'hidden' : 'flex',
+          )}>
             <button
               onClick={() => setSidebarOpen(true)}
               className="inline-flex items-center justify-center w-11 h-11 text-secondary hover:text-primary hover:bg-card-muted rounded-lg"
@@ -417,13 +421,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 max-w-[1280px]">
-            <PushNotificationManager />
+          <main
+            className={cn(
+              'flex-1 max-w-[1280px]',
+              isChatPage
+                ? 'min-h-0 p-0 lg:p-8 lg:pb-8 flex flex-col overflow-hidden'
+                : 'p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8',
+            )}
+          >
+            {!isChatPage && <PushNotificationManager />}
             {children}
           </main>
         </div>
         <OnboardingWizard />
-        <MobileBottomNav />
+        {!isChatPage && <MobileBottomNav />}
       </div>
     </ProtectedRoute>
   );
