@@ -56,13 +56,22 @@
   font-size: 1rem;
 }
 
-/* Liste : prend le reste, pas 100% — sinon le champ est poussé hors du chat */
+/* Cadre messages : frère du champ, se compacte quand le clavier sort */
+.chat-wrapper .chat-message-pane {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Liste : 100% du cadre messages (le champ est un frère, pas dedans) */
 .chat-wrapper .str-chat__list {
   background: transparent;
   padding: 12px 16px;
   flex: 1 1 0 !important;
-  height: auto !important;
-  max-height: none !important;
+  height: 100% !important;
+  max-height: 100% !important;
   min-height: 0 !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
@@ -71,7 +80,20 @@
 .chat-wrapper .str-chat__list .str-chat__message-list-scroll,
 .chat-wrapper .str-chat__message-list-scroll {
   min-height: 0;
-  height: auto !important;
+  height: 100% !important;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+@media (max-width: 1023px) {
+  .chat-wrapper .str-chat__list {
+    overscroll-behavior: contain;
+  }
+
+  /* Évite le zoom iOS sur le champ, qui décale le viewport */
+  .chat-wrapper .str-chat__textarea textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* Messages */

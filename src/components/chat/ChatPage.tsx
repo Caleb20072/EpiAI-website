@@ -196,7 +196,9 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                         <Channel channel={activeChannel}>
                             <Window>
                                 <ChannelHeader />
-                                <MessageList />
+                                <div className="chat-message-pane">
+                                    <MessageList />
+                                </div>
                                 <MessageInput />
                             </Window>
                             <Thread />

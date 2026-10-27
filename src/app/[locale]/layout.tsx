@@ -75,8 +75,8 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // Le clavier recouvre l’écran : on rétrécit le chat nous-mêmes (comme WhatsApp).
-  interactiveWidget: "overlays-content",
+  // Le visual viewport rétrécit avec le clavier : le chat se compacte au-dessus.
+  interactiveWidget: "resizes-visual",
 };
 
 export default async function RootLayout({
