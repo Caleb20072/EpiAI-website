@@ -78,6 +78,8 @@ model User {
   role             String   @default("membre")
   roleLevel        Int      @default(1) @map("role_level")
   memberStatus     MemberStatus @default(pending) @map("member_status")
+  imageUrl         String?  @map("image_url")
+  linkedin         String?
   onboardingDone   Boolean  @default(false) @map("onboarding_done")
   onboardingStep   Int      @default(0) @map("onboarding_step")
   createdAt        DateTime @default(now()) @map("created_at")
@@ -405,7 +407,7 @@ model MembershipDue {
   userName   String    @map("user_name")
   userEmail  String    @map("user_email")
   period     String
-  baseAmount Int       @default(2000) @map("base_amount")
+  baseAmount Int       @default(1500) @map("base_amount")
   lateFee    Int       @default(0) @map("late_fee")
   status     String    @default("pending")
   dueDate    DateTime  @map("due_date")
@@ -471,6 +473,7 @@ model TeamMember {
   linkedin     String?
   github       String?
   twitter      String?
+  clerkId      String?     @unique @map("clerk_id")
   displayOrder Int         @default(0) @map("display_order")
   isActive     Boolean     @default(true) @map("is_active")
   createdAt    DateTime    @default(now()) @map("created_at")

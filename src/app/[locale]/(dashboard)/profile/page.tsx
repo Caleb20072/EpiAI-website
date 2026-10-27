@@ -22,6 +22,7 @@ import {
 import { useState, useEffect } from 'react';
 import { PageHeader, Panel, Badge } from '@/components/ui';
 import { WorkspaceCard } from '@/components/modules/WorkspaceCard';
+import { ProfilePublicAndLetter } from '@/components/profile/ProfilePublicAndLetter';
 
 export default function ProfilePage() {
   const params = useParams();
@@ -158,6 +159,8 @@ export default function ProfilePage() {
             </div>
           </div>
         </Panel>
+
+        <ProfilePublicAndLetter locale={locale} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Panel

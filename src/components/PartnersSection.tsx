@@ -46,20 +46,20 @@ export default function PartnersSection({ partners, locale }: PartnersSectionPro
           const card = (
             <>
               {(profile || partner.logoUrl) && (
-                <div className="h-14 relative mb-4">
+                <div className="h-12 sm:h-14 relative mb-4">
                   {profile ? (
                     <>
                       <Image
                         src={profile.logoLight}
                         alt={partner.name}
                         fill
-                        className="object-contain object-left dark:hidden"
+                        className="partner-logo-on-light object-contain object-left"
                       />
                       <Image
                         src={profile.logoDark}
                         alt=""
                         fill
-                        className="object-contain object-left hidden dark:block"
+                        className="partner-logo-on-dark object-contain object-left"
                       />
                     </>
                   ) : (
@@ -118,6 +118,14 @@ export default function PartnersSection({ partners, locale }: PartnersSectionPro
   );
 }
 
+function visitHost(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
 function PartnerDialog({
   profile,
   locale,
@@ -146,13 +154,13 @@ function PartnerDialog({
               src={profile.logoLight}
               alt={profile.name}
               fill
-              className="object-contain object-left dark:hidden"
+              className="partner-logo-on-light object-contain object-left"
             />
             <Image
               src={profile.logoDark}
               alt=""
               fill
-              className="object-contain object-left hidden dark:block"
+              className="partner-logo-on-dark object-contain object-left"
             />
           </div>
           <button
@@ -186,7 +194,7 @@ function PartnerDialog({
           rel="noopener noreferrer"
           className="inline-block mt-4 text-sm font-medium text-brand-700 hover:text-brand-600"
         >
-          {fr ? 'Visiter olomoon.org →' : 'Visit olomoon.org →'}
+          {fr ? `Visiter ${visitHost(profile.websiteUrl)} →` : `Visit ${visitHost(profile.websiteUrl)} →`}
         </a>
       </div>
     </div>

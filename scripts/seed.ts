@@ -5,40 +5,64 @@ import { seedResources } from './seed-resources';
 
 const prisma = new PrismaClient();
 
-async function seedPartners() {
-  const count = await prisma.partner.count();
-  if (count > 0) {
-    console.log('Partners already seeded, skipping.');
+async function ensurePartner(data: {
+  name: string;
+  description: string;
+  type: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+  displayOrder: number;
+}) {
+  const existing = await prisma.partner.findFirst({ where: { name: data.name } });
+  if (existing) {
+    await prisma.partner.update({
+      where: { id: existing.id },
+      data: {
+        description: data.description,
+        type: data.type,
+        websiteUrl: data.websiteUrl,
+        logoUrl: data.logoUrl,
+        displayOrder: data.displayOrder,
+        isActive: true,
+      },
+    });
     return;
   }
+  await prisma.partner.create({ data: { ...data, isActive: true } });
+}
 
-  await prisma.partner.createMany({
-    data: [
-      {
-        name: 'Epitech Bénin',
-        description: 'École d\'informatique à Cotonou — premier campus Epitech en Afrique, au sein de Sèmè City.',
-        type: 'school',
-        websiteUrl: 'https://epitech.bj',
-        displayOrder: 1,
-      },
-      {
-        name: 'EPI\'AI Alumni',
-        description: 'Réseau des anciens membres de l\'association.',
-        type: 'alumni',
-        displayOrder: 2,
-      },
-      {
-        name: 'Olomoon',
-        description: 'L’IA peut être comprise. Elle peut servir à résoudre de vrais problèmes.',
-        type: 'partner',
-        logoUrl: '/assets/partners/olomoon-clair.png',
-        websiteUrl: 'https://olomoon.org',
-        displayOrder: 3,
-      },
-    ],
+async function seedPartners() {
+  await ensurePartner({
+    name: 'Epitech Bénin',
+    description: "École d'informatique à Cotonou — premier campus Epitech en Afrique, au sein de Sèmè City.",
+    type: 'school',
+    websiteUrl: 'https://epitech.bj',
+    displayOrder: 1,
+  });
+  await ensurePartner({
+    name: "EPI'AI Alumni",
+    description: "Réseau des anciens membres de l'association.",
+    type: 'alumni',
+    displayOrder: 2,
+  });
+  await ensurePartner({
+    name: 'Olomoon',
+    description: 'L’IA peut être comprise. Elle peut servir à résoudre de vrais problèmes.',
+    type: 'partner',
+    logoUrl: '/assets/partners/olomoon-clair.png',
+    websiteUrl: 'https://olomoon.org',
+    displayOrder: 3,
+  });
+  await ensurePartner({
+    name: 'Black Synapses',
+    description: 'Un holding IA, trois façons d’entrer dans l’intelligence artificielle africaine.',
+    type: 'partner',
+    logoUrl: '/assets/partners/black-synapses-clair.png',
+    websiteUrl: 'https://www.blacksynapses.com/',
+    displayOrder: 4,
   });
 
-  console.log('Partners seeded.');
+  console.log('Partners ensured.');
 }
 
 async function seedTeam() {

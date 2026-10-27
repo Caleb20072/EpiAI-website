@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Epi'AI system. Warm paper, ink text, one blue sampled from the logo
    (#3479F0) plus its navy (#0D1B4A). Darker blue steps carry text and
@@ -108,6 +109,12 @@ html.light {
 html.dark .text-amber-400 {
   color: #ffd60a;
 }
+
+/* Logos partenaires : suivre le thème du site (html.dark), pas le OS. */
+.partner-logo-on-light { display: block !important; }
+.partner-logo-on-dark { display: none !important; }
+html.dark .partner-logo-on-light { display: none !important; }
+html.dark .partner-logo-on-dark { display: block !important; }
 
 @theme inline {
   --color-background: var(--background);

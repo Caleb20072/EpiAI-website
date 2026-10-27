@@ -98,6 +98,72 @@ export const PARTNER_PROFILES: Record<string, PartnerProfile> = {
     closingFr: 'Votre projet pourrait être le prochain. olomoon.org · @Olomoon',
     closingEn: 'Your project could be next. olomoon.org · @Olomoon',
   },
+  'black synapses': {
+    name: 'Black Synapses',
+    logoLight: '/assets/partners/black-synapses-clair.png',
+    logoDark: '/assets/partners/black-synapses-fonce.png',
+    websiteUrl: 'https://www.blacksynapses.com/',
+    taglineFr: 'Un holding IA, trois façons d’entrer dans l’intelligence artificielle africaine.',
+    taglineEn: 'One AI holding company. Three ways into African AI.',
+    introFr:
+      'Fondé en 2019 et présent entre les États-Unis et le Bénin, Black Synapses développe des applications concrètes de l’intelligence artificielle adaptées aux réalités africaines. Le groupe s’organise autour de trois entités.',
+    introEn:
+      'Founded in 2019 and present between the United States and Benin, Black Synapses builds practical AI applications adapted to African realities. The group is organised around three entities.',
+    linesTitleFr: 'Black Synapses, partenaire d’Epi’AI',
+    linesTitleEn: 'Black Synapses, partner of Epi’AI',
+    lines: [
+      {
+        titleFr: 'Benin Data — l’IA en entreprise',
+        titleEn: 'Benin Data — AI for organisations',
+        textFr:
+          'Basée à Cotonou, cette entité accompagne les organisations dans leur transformation numérique : ingénierie des données, solutions d’IA, analyse prédictive, vision par ordinateur, traitement du langage naturel, applications web et mobiles. Site : benindata.bj.',
+        textEn:
+          'Based in Cotonou, this entity supports organisations through digital transformation: data engineering, AI systems, predictive analytics, computer vision, NLP, and AI-powered web and mobile apps. Website: benindata.bj.',
+      },
+      {
+        titleFr: 'Racines & AW — recherche, incubation, talents',
+        titleEn: 'Racines & AW — research, incubation, talent',
+        textFr:
+          'Structure à but non lucratif : incubateur de startups, laboratoire Artificial Wisdom, et initiatives communautaires. Elle travaille une IA qui tient compte des langues, des valeurs et des contextes africains, et accompagne les jeunes vers des projets concrets.',
+        textEn:
+          'A not-for-profit arm: startup incubator, Artificial Wisdom research lab, and community initiatives. It designs AI that accounts for African languages, values and contexts, and helps young talent ship real projects.',
+      },
+      {
+        titleFr: 'Ventures — des projets qui deviennent des entreprises',
+        titleEn: 'Ventures — projects that become companies',
+        textFr:
+          'Les startups issues de l’incubateur, une fois autonomes : Tailleurie (confection sur mesure), Xixa (caisse et stocks pour petits commerçants), Kléounh (apprentissage par la synthèse de textes), plus des initiatives dans l’immobilier et la mode.',
+        textEn:
+          'Startups that graduate from the incubator: Tailleurie (made-to-measure), Xixa (till and stock for small merchants), Kléounh (learning through text summarisation), plus real-estate and fashion ventures.',
+      },
+      {
+        titleFr: 'Stages',
+        titleEn: 'Internships',
+        textFr: 'Explorer des expériences professionnelles au sein du groupe Black Synapses.',
+        textEn: 'Explore professional experience inside the Black Synapses group.',
+      },
+      {
+        titleFr: 'Création de contenus',
+        titleEn: 'Content',
+        textFr:
+          'Travailler des formats vidéo courts avec Benin Data pour vulgariser des sujets technologiques et les diffuser sur les réseaux.',
+        textEn:
+          'Produce short video formats with Benin Data to explain technology topics and share them on social media.',
+      },
+      {
+        titleFr: 'Projets',
+        titleEn: 'Projects',
+        textFr:
+          'Découvrir les projets du groupe et étudier comment nos membres peuvent contribuer, selon leurs compétences et les besoins identifiés.',
+        textEn:
+          'Discover the group’s projects and see how our members can contribute, matching skills to identified needs.',
+      },
+    ],
+    closingFr:
+      'Stages, contenus, projets — et d’autres axes à ouvrir ensemble. blacksynapses.com · benindata.bj',
+    closingEn:
+      'Internships, content, projects — and more to open together. blacksynapses.com · benindata.bj',
+  },
 };
 
 export function partnerProfileFor(name: string) {

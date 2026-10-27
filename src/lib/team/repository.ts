@@ -14,6 +14,7 @@ function transformTeamMember(doc: {
   linkedin: string | null;
   github: string | null;
   twitter: string | null;
+  clerkId: string | null;
   displayOrder: number;
   isActive: boolean;
   createdAt: Date;
@@ -33,6 +34,7 @@ function transformTeamMember(doc: {
       github: doc.github ?? undefined,
       twitter: doc.twitter ?? undefined,
     },
+    clerkId: doc.clerkId ?? undefined,
     displayOrder: doc.displayOrder,
     isActive: doc.isActive,
     createdAt: doc.createdAt.toISOString(),

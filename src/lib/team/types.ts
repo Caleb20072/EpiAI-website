@@ -12,6 +12,7 @@ export interface ITeamMember {
     github?: string;
     twitter?: string;
   };
+  clerkId?: string;
   displayOrder: number;
   isActive: boolean;
   createdAt: string;

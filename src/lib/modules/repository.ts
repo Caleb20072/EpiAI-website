@@ -684,7 +684,7 @@ export async function ensureCurrentDue(user: { clerkId: string; email: string; f
   const period = periodKey();
   const dueDate = dueDateFor();
   const name = `${user.firstName} ${user.lastName}`.trim() || user.email;
-  const due = await prisma.membershipDue.upsert({
+  let due = await prisma.membershipDue.upsert({
     where: { userId_period: { userId: user.clerkId, period } },
     create: {
       userId: user.clerkId,
@@ -696,6 +696,13 @@ export async function ensureCurrentDue(user: { clerkId: string; email: string; f
     },
     update: {},
   });
+
+  if (due.status !== 'paid' && due.baseAmount !== MONTHLY_FEE_FCFA) {
+    due = await prisma.membershipDue.update({
+      where: { id: due.id },
+      data: { baseAmount: MONTHLY_FEE_FCFA },
+    });
+  }
 
   if (due.status !== 'paid' && due.dueDate < new Date() && due.lateFee === 0) {
     return prisma.membershipDue.update({

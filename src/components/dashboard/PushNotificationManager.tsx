@@ -26,21 +26,72 @@ function isStandaloneDisplay() {
 }
 
 async function getPushRegistration(): Promise<ServiceWorkerRegistration> {
-  const reg = await navigator.serviceWorker.register('/push-sw.js', { scope: '/' });
-  if (reg.installing) {
-    await new Promise<void>((resolve) => {
-      const worker = reg.installing;
-      if (!worker) {
-        resolve();
-        return;
-      }
-      worker.addEventListener('statechange', () => {
-        if (worker.state === 'activated' || worker.state === 'redundant') resolve();
-      });
-    });
+  const reg = await navigator.serviceWorker.register('/push-sw.js', {
+    scope: '/',
+    updateViaCache: 'none',
+  });
+  const ready = await navigator.serviceWorker.ready;
+  return ready.scope.endsWith('/') || ready.scope.includes(location.origin)
+    ? ready
+    : reg;
+}
+
+async function subscribeWithKey(
+  reg: ServiceWorkerRegistration,
+  publicKey: string,
+): Promise<PushSubscription> {
+  const applicationServerKey = urlBase64ToUint8Array(publicKey.trim());
+  const existing = await reg.pushManager.getSubscription();
+  if (existing) {
+    const same =
+      existing.options.applicationServerKey &&
+      uint8Equal(new Uint8Array(existing.options.applicationServerKey as ArrayBuffer), applicationServerKey);
+    if (same) return existing;
+    await existing.unsubscribe().catch(() => undefined);
   }
-  await reg.update().catch(() => undefined);
-  return reg;
+  try {
+    return await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey,
+    });
+  } catch (err) {
+    const leftover = await reg.pushManager.getSubscription();
+    if (leftover) {
+      await leftover.unsubscribe().catch(() => undefined);
+      return reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey,
+      });
+    }
+    throw err;
+  }
+}
+
+function uint8Equal(a: Uint8Array, b: Uint8Array) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+function pushErrorMessage(err: unknown, fr: boolean) {
+  const name = err instanceof DOMException ? err.name : '';
+  const raw = err instanceof Error ? err.message : '';
+  if (name === 'NotAllowedError' || /permission|not allowed/i.test(raw)) {
+    return fr
+      ? 'Le navigateur a bloqué les notifications. Autorise-les pour epiai.eu, puis réessaie.'
+      : 'The browser blocked notifications. Allow them for epiai.eu, then try again.';
+  }
+  if (name === 'AbortError') {
+    return fr ? 'Activation annulée. Réessaie.' : 'Activation cancelled. Try again.';
+  }
+  if (/service worker|registration/i.test(raw)) {
+    return fr
+      ? 'Le service des alertes n’a pas démarré. Recharge la page et réessaie.'
+      : 'The alert service did not start. Reload the page and try again.';
+  }
+  return fr
+    ? 'L’activation a échoué. Rien n’a été enregistré. Recharge la page, autorise les notifications, puis réessaie.'
+    : 'Activation failed. Nothing was saved. Reload, allow notifications, then try again.';
 }
 
 async function persistSubscription(
@@ -101,13 +152,7 @@ export default function PushNotificationManager() {
           const { publicKey } = await keyRes.json();
           if (!publicKey) return;
           const reg = await getPushRegistration();
-          let sub = await reg.pushManager.getSubscription();
-          if (!sub) {
-            sub = await reg.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(publicKey),
-            });
-          }
+          const sub = await subscribeWithKey(reg, publicKey);
           await persistSubscription(sub, false);
         } catch {
           /* silent repair */
@@ -152,13 +197,7 @@ export default function PushNotificationManager() {
       if (perm !== 'granted') return;
 
       const reg = await getPushRegistration();
-      let sub = await reg.pushManager.getSubscription();
-      if (!sub) {
-        sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicKey),
-        });
-      }
+      const sub = await subscribeWithKey(reg, publicKey);
 
       const saved = await persistSubscription(sub, true);
       if (!saved.ok) {
@@ -183,11 +222,7 @@ export default function PushNotificationManager() {
       window.setTimeout(() => setDismissed(true), 6000);
     } catch (err) {
       console.warn('[Push] Subscription failed:', err);
-      setError(
-        fr
-          ? 'L’activation a échoué. Rien n’a été enregistré.'
-          : 'Activation failed. Nothing was saved.',
-      );
+      setError(pushErrorMessage(err, fr));
     } finally {
       setLoading(false);
     }

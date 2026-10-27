@@ -7,8 +7,9 @@ export async function upsertUserFromClerk(data: {
   lastName?: string;
   role?: string;
   roleLevel?: number;
+  imageUrl?: string | null;
 }) {
-  return prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { clerkId: data.clerkId },
     create: {
       clerkId: data.clerkId,
@@ -18,6 +19,7 @@ export async function upsertUserFromClerk(data: {
       role: data.role || 'membre',
       roleLevel: data.roleLevel || 1,
       memberStatus: 'pending',
+      imageUrl: data.imageUrl || null,
     },
     update: {
       email: data.email,
@@ -25,8 +27,20 @@ export async function upsertUserFromClerk(data: {
       lastName: data.lastName || '',
       ...(data.role !== undefined ? { role: data.role } : {}),
       ...(data.roleLevel !== undefined ? { roleLevel: data.roleLevel } : {}),
+      ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl || null } : {}),
     },
   });
+
+  const { syncTeamMemberFromUser } = await import('@/lib/team/sync-from-user');
+  await syncTeamMemberFromUser({
+    clerkId: user.clerkId,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl,
+    linkedin: user.linkedin ?? undefined,
+  });
+
+  return user;
 }
 
 export async function deleteUserByClerkId(clerkId: string) {

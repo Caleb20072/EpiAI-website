@@ -38,7 +38,7 @@ export default function FeesPage() {
     <div className="space-y-5">
       <PageHeader
         title="Cotisations"
-        description="2 000 FCFA / mois. +500 FCFA si le paiement dépasse le 5 du mois. Le paiement mobile (m'bon) sera branché plus tard."
+        description="1 500 FCFA / mois. +500 FCFA si le paiement dépasse le 5 du mois. Le paiement mobile (m'bon) sera branché plus tard."
       />
       <Panel>
         <ul className="divide-y divide-default">

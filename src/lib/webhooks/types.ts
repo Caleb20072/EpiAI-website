@@ -6,6 +6,7 @@ export interface UserWebhookPayload {
     email_addresses: Array<{ email_address: string }>;
     first_name?: string;
     last_name?: string;
+    image_url?: string;
     public_metadata?: Record<string, any>;
     deleted?: boolean;
   };

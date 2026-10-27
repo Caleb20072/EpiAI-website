@@ -37,12 +37,13 @@ export async function POST(req: NextRequest) {
     switch (evt.type) {
       case 'user.created':
       case 'user.updated': {
-        const { id, email_addresses, first_name, last_name, public_metadata } = evt.data;
+        const { id, email_addresses, first_name, last_name, image_url, public_metadata } = evt.data;
         await upsertUserFromClerk({
           clerkId: id,
           email: email_addresses[0]?.email_address || '',
           firstName: first_name || '',
           lastName: last_name || '',
+          imageUrl: image_url || null,
           role: (public_metadata?.role as string) || 'membre',
           roleLevel: Number(public_metadata?.roleId) || 1,
         });
