@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
@@ -5,8 +6,29 @@ import { Link } from '@/i18n/routing';
 import { getEventById } from '@/lib/events/repository';
 import { EventDetail } from '@/components/events/EventDetail';
 import { ArrowLeft } from 'lucide-react';
+import { buildPageMetadata } from '@/lib/seo';
+import { eventField } from '@/lib/events/locale';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; locale: string }>;
+}): Promise<Metadata> {
+  const { id, locale } = await params;
+  const event = await getEventById(id);
+  if (!event || !event.isPublished) return {};
+  const title = eventField(event, locale, 'title');
+  const description = eventField(event, locale, 'description');
+  return buildPageMetadata({
+    locale,
+    path: `/calendar/${id}`,
+    title,
+    description: description.slice(0, 160),
+    image: event.imageUrl || undefined,
+  });
+}
 
 export default async function PublicEventDetailPage({
   params,

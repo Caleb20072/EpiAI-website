@@ -5,7 +5,7 @@ const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = ['fr', 'en'];
-  const staticPaths = ['', '/blog', '/partners', '/calendar', '/team', '/projects', '/join'];
+  const staticPaths = ['', '/about', '/blog', '/partners', '/calendar', '/team', '/projects', '/join'];
 
   const entries: MetadataRoute.Sitemap = [];
 
@@ -21,13 +21,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    const [posts, events] = await Promise.all([
+    const [posts, events, projects] = await Promise.all([
       prisma.blogPost.findMany({
         where: { status: 'published' },
         select: { slug: true, updatedAt: true },
       }),
       prisma.event.findMany({
         where: { isPublished: true },
+        select: { id: true, updatedAt: true },
+      }),
+      prisma.project.findMany({
+        where: { published: true },
         select: { id: true, updatedAt: true },
       }),
     ]);
@@ -43,10 +47,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
       for (const event of events) {
         entries.push({
-          url: `${BASE}/${locale}/events/${event.id}`,
+          url: `${BASE}/${locale}/calendar/${event.id}`,
           lastModified: event.updatedAt,
           changeFrequency: 'weekly',
           priority: 0.5,
+        });
+      }
+      for (const project of projects) {
+        entries.push({
+          url: `${BASE}/${locale}/projects/${project.id}`,
+          lastModified: project.updatedAt,
+          changeFrequency: 'monthly',
+          priority: 0.6,
         });
       }
     }

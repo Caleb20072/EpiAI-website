@@ -14,8 +14,10 @@ export function buildPageMetadata(opts: {
   const url = `${BASE}/${locale}${opts.path}`;
   const image = opts.image || `${BASE}/assets/epiai-logo.png`;
 
+  const fullTitle = opts.title.includes(SITE) ? opts.title : `${opts.title} | ${SITE}`;
+
   return {
-    title: `${opts.title} | ${SITE}`,
+    title: { absolute: fullTitle },
     description: opts.description,
     openGraph: {
       title: opts.title,

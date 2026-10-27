@@ -21,9 +21,47 @@ const serif = Source_Serif_4({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
+
 export const metadata: Metadata = {
-  title: "EPI'AI",
-  description: "Association Étudiante",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Epi'AI — Association IA et data science | Epitech",
+    template: "%s | Epi'AI",
+  },
+  description:
+    "Association étudiante Epitech dédiée aux mathématiques, à l'intelligence artificielle et à la data science. Projets, talks, formation et communauté.",
+  keywords: [
+    "Epi'AI",
+    'EpiAI',
+    'Epitech',
+    'intelligence artificielle',
+    'data science',
+    'machine learning',
+    'association étudiante',
+    'Bénin',
+  ],
+  authors: [{ name: "Epi'AI" }],
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    alternateLocale: 'en_US',
+    url: SITE_URL,
+    siteName: "Epi'AI",
+    title: "Epi'AI — Association IA et data science | Epitech",
+    description:
+      "Les maths, l'IA et la data, apprises ensemble. Association étudiante Epitech.",
+    images: [{ url: '/assets/epiai-logo.png', width: 512, height: 512, alt: "Epi'AI" }],
+  },
+  twitter: {
+    card: 'summary',
+    title: "Epi'AI — Association IA et data science",
+    description: "Association étudiante Epitech : mathématiques, IA et data science.",
+  },
+  robots: { index: true, follow: true },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: [
       { url: '/favicon.png', type: 'image/png' },

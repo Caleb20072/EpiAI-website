@@ -1,11 +1,30 @@
+import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import Footer from '@/components/Footer';
 import { prisma } from '@/lib/prisma';
 import { Link } from '@/i18n/routing';
 import { normalizeImageUrl } from '@/lib/utils/image-url';
 import { eventField, eventLocation } from '@/lib/events/locale';
+import { buildPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({
+    locale,
+    path: '/calendar',
+    title: locale === 'fr' ? "Événements Epi'AI" : "Epi'AI events",
+    description:
+      locale === 'fr'
+        ? "Talks, workshops et événements de l'association Epi'AI."
+        : "Talks, workshops and events from the Epi'AI association.",
+  });
+}
 
 export default async function CalendarPage() {
   const locale = await getLocale();

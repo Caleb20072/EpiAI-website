@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
@@ -6,8 +7,26 @@ import { BlogMarkdown } from '@/components/blog/BlogMarkdown';
 import { getPostBySlug } from '@/lib/blog/repository';
 import { localizeCategory } from '@/lib/i18n/labels';
 import { notFound } from 'next/navigation';
+import { buildPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
+  const post = await getPostBySlug(slug);
+  if (!post || post.status !== 'published') return {};
+  return buildPageMetadata({
+    locale,
+    path: `/blog/${slug}`,
+    title: locale === 'fr' ? post.titleFr : post.titleEn,
+    description: (locale === 'fr' ? post.excerptFr : post.excerptEn).slice(0, 160),
+    image: post.imageUrl || undefined,
+  });
+}
 
 export default async function BlogDetailPage({
   params,

@@ -1,4 +1,23 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+import { buildPageMetadata } from '@/lib/seo';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({
+    locale,
+    path: '/about',
+    title: locale === 'fr' ? "À propos d'Epi'AI" : "About Epi'AI",
+    description:
+      locale === 'fr'
+        ? "Epi'AI est l'association étudiante Epitech dédiée à l'IA, aux maths et à la data science."
+        : "Epi'AI is the Epitech student association for AI, maths and data science.",
+  });
+}
 
 export default function About() {
   const t = useTranslations('About');

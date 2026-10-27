@@ -1,9 +1,28 @@
+import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import Footer from '@/components/Footer';
 import PartnersSection from '@/components/PartnersSection';
 import { getActivePartners } from '@/lib/partners/repository';
+import { buildPageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildPageMetadata({
+    locale,
+    path: '/partners',
+    title: locale === 'fr' ? "Partenaires d'Epi'AI" : "Epi'AI partners",
+    description:
+      locale === 'fr'
+        ? "Partenaires et organisations qui soutiennent Epi'AI."
+        : "Partners and organisations supporting Epi'AI.",
+  });
+}
 
 export default async function PartnersPage() {
   const locale = await getLocale();
