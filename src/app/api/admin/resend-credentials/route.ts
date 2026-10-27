@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { randomBytes } from 'crypto';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
-import { sendWelcomeEmail } from '@/lib/email/resend';
+import { sendWelcomeEmail, resendErrorMessage } from '@/lib/email/resend';
 
 function generateSecurePassword(): string {
   return randomBytes(12).toString('base64url').slice(0, 16) + '!A1';
@@ -48,7 +48,16 @@ export async function POST(request: NextRequest) {
       });
       emailSent = true;
     } catch (emailError) {
-      console.error('[Resend credentials] Email failed:', emailError);
+      console.error('[Resend credentials] Email failed:', resendErrorMessage(emailError));
+      return NextResponse.json({
+        success: true,
+        emailSent: false,
+        credentials: {
+          email: normalizedEmail,
+          password: newPassword,
+          note: resendErrorMessage(emailError),
+        },
+      });
     }
 
     return NextResponse.json({

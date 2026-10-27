@@ -1,27 +1,59 @@
 import { Resend } from 'resend';
 import { logger } from '@/lib/logger';
 
+const DEFAULT_FROM = `"Epi'AI" <noreply@epiai.eu>`;
+
 function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) return null;
   return new Resend(apiKey);
 }
 
-/** Expéditeur — doit être un domaine vérifié dans Resend (ou onboarding@resend.dev en test). */
+function quoteFromAddress(value: string) {
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(.*?)\s*<([^>]+)>\s*$/);
+  if (!match) return trimmed;
+  let name = match[1].trim().replace(/^["']|["']$/g, '');
+  const email = match[2].trim();
+  if (!name) return email;
+  if (/['"\\,]/.test(name) || /[^\x20-\x7E]/.test(name)) {
+    name = `"${name.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  }
+  return `${name} <${email}>`;
+}
+
+/** Expéditeur : adresse d'un domaine vérifié dans Resend (epiai.eu). */
 export function getFromAddress(): string {
-  return process.env.RESEND_FROM_EMAIL || "Epi'AI <onboarding@resend.dev>";
+  return quoteFromAddress(process.env.RESEND_FROM_EMAIL?.trim() || DEFAULT_FROM);
 }
 
 export function getSiteUrl(): string {
   return (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3002').replace(/\/$/, '');
 }
 
+export function resendErrorMessage(error: unknown): string {
+  if (!error) return "Échec de l'envoi de l'email.";
+  if (typeof error === 'object' && error && 'message' in error) {
+    return String((error as { message: unknown }).message);
+  }
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 function ensureResend() {
   const client = getResendClient();
   if (!client) {
-    throw new Error('RESEND_API_KEY manquant — configure la variable sur Vercel');
+    throw new Error("RESEND_API_KEY manquante — ajoute-la dans les variables d'environnement Netlify.");
   }
   return client;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 interface WelcomeEmailParams {
@@ -33,11 +65,14 @@ interface WelcomeEmailParams {
 export async function sendWelcomeEmail({ email, firstName, password }: WelcomeEmailParams) {
   const resend = ensureResend();
   const signInUrl = `${getSiteUrl()}/fr/sign-in`;
+  const safeName = escapeHtml(firstName);
+  const safeEmail = escapeHtml(email);
+  const safePassword = escapeHtml(password);
 
   const { data, error } = await resend.emails.send({
     from: getFromAddress(),
     to: [email],
-    subject: 'Bienvenue chez Epi\'AI - Tes identifiants de connexion',
+    subject: "Bienvenue chez Epi'AI — tes identifiants de connexion",
     html: `
       <!DOCTYPE html>
       <html>
@@ -55,7 +90,7 @@ export async function sendWelcomeEmail({ email, firstName, password }: WelcomeEm
             </tr>
             <tr>
               <td style="background-color: #27272a; padding: 40px;">
-                <h2 style="color: #ffffff; margin: 0 0 20px 0;">Bienvenue, ${firstName} !</h2>
+                <h2 style="color: #ffffff; margin: 0 0 20px 0;">Bienvenue, ${safeName} !</h2>
                 <p style="color: #d4d4d8; line-height: 1.6; margin: 0 0 20px 0;">
                   Ta candidature a été approuvée par l'équipe Epi'AI. Tu fais maintenant partie de notre communauté !
                 </p>
@@ -65,12 +100,12 @@ export async function sendWelcomeEmail({ email, firstName, password }: WelcomeEm
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                     <tr>
                       <td style="color: #d4d4d8; padding: 8px 0; border-bottom: 1px solid #3f3f46;">
-                        <strong>Email :</strong> ${email}
+                        <strong>Email :</strong> ${safeEmail}
                       </td>
                     </tr>
                     <tr>
                       <td style="color: #d4d4d8; padding: 8px 0;">
-                        <strong>Mot de passe :</strong> ${password}
+                        <strong>Mot de passe :</strong> ${safePassword}
                       </td>
                     </tr>
                   </table>
@@ -103,8 +138,8 @@ export async function sendWelcomeEmail({ email, firstName, password }: WelcomeEm
   });
 
   if (error) {
-    console.error('Resend error:', error);
-    throw error;
+    logger.error('Resend welcome email failed', { error: resendErrorMessage(error) });
+    throw new Error(resendErrorMessage(error));
   }
 
   return data;
@@ -149,8 +184,8 @@ export async function sendApplicationReceivedEmail(email: string, firstName: str
   });
 
   if (error) {
-    console.error('Resend error:', error);
-    throw error;
+    logger.error('Resend application email failed', { error: resendErrorMessage(error) });
+    throw new Error(resendErrorMessage(error));
   }
 }
 
@@ -220,8 +255,8 @@ export async function sendGenericEmail({ email, subject, html }: GenericEmailPar
     html,
   });
   if (error) {
-    logger.error('Resend send failed', { email, subject, error: String(error) });
-    throw error;
+    logger.error('Resend send failed', { email, subject, error: resendErrorMessage(error) });
+    throw new Error(resendErrorMessage(error));
   }
   return true;
 }

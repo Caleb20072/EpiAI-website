@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { checkUserPermission } from '@/lib/auth/checkPermission';
 import { getApplicationById, reviewApplication } from '@/lib/membership/repository';
-import { sendWelcomeEmail, sendMembershipRejectedEmail } from '@/lib/email/resend';
+import { sendWelcomeEmail, sendMembershipRejectedEmail, resendErrorMessage } from '@/lib/email/resend';
 import { upsertUserFromClerk } from '@/lib/users/repository';
 import { prisma } from '@/lib/prisma';
 import { notifyUser } from '@/lib/notifications/service';
@@ -90,8 +90,8 @@ export async function POST(
       let emailSentSuccessfully = false;
       let emailError: string | null = null;
 
-      if (!process.env.RESEND_API_KEY) {
-        emailError = 'RESEND_API_KEY manquante sur le serveur (Vercel → Environment Variables)';
+      if (!process.env.RESEND_API_KEY?.trim()) {
+        emailError = "RESEND_API_KEY manquante sur Netlify (Site settings → Environment variables).";
       } else {
         try {
           await sendWelcomeEmail({
@@ -101,8 +101,8 @@ export async function POST(
           });
           emailSentSuccessfully = true;
         } catch (err: unknown) {
-          emailError = err instanceof Error ? err.message : 'Échec envoi email';
-          console.error('[Approve API] Failed to send welcome email:', err);
+          emailError = resendErrorMessage(err);
+          console.error('[Approve API] Failed to send welcome email:', emailError);
         }
       }
 
