@@ -36,6 +36,8 @@ enum RegistrationStatus {
 
 enum MembershipStatus {
   pending
+  testing
+  interviewing
   approved
   rejected
 }
@@ -491,14 +493,227 @@ model MembershipApplication {
   whatsapp        String
   motivations     String
   status          MembershipStatus @default(pending)
+  pipelineStage   String           @default("received") @map("pipeline_stage")
+  accessToken     String           @unique @default(dbgenerated("gen_random_uuid()")) @map("access_token")
   reviewedBy      String?          @map("reviewed_by")
   reviewedAt      DateTime?        @map("reviewed_at")
   rejectionReason String?          @map("rejection_reason")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
 
+  examBookings      ExamBooking[]
+  examAttempts      ExamAttempt[]
+  interviewBookings InterviewBooking[]
+
   @@index([status, createdAt])
+  @@index([pipelineStage])
   @@map("membership_applications")
+}
+
+model EntranceExam {
+  id              String   @id @default(cuid())
+  title           String
+  durationMinutes Int      @map("duration_minutes")
+  passingScore    Float?   @map("passing_score")
+  instructions    String   @default("")
+  examPdfName     String?  @map("exam_pdf_name")
+  examPdfBytes    Bytes?   @map("exam_pdf_bytes")
+  keyPdfName      String?  @map("key_pdf_name")
+  keyPdfBytes     Bytes?   @map("key_pdf_bytes")
+  published       Boolean  @default(false)
+  createdBy       String   @map("created_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  questions EntranceExamQuestion[]
+  slots     ExamSlot[]
+  attempts  ExamAttempt[]
+
+  @@map("entrance_exams")
+}
+
+model EntranceExamQuestion {
+  id             String @id @default(cuid())
+  examId         String @map("exam_id")
+  sortOrder      Int    @default(0) @map("sort_order")
+  prompt         String
+  type           String @default("short")
+  points         Float  @default(1)
+  officialAnswer String @default("") @map("official_answer")
+  gradingHint    String @default("") @map("grading_hint")
+
+  exam    EntranceExam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+  answers ExamAnswer[]
+
+  @@index([examId, sortOrder])
+  @@map("entrance_exam_questions")
+}
+
+model ExamSlot {
+  id       String   @id @default(cuid())
+  examId   String   @map("exam_id")
+  startsAt DateTime @map("starts_at")
+  capacity Int      @default(40)
+  label    String   @default("")
+
+  exam     EntranceExam  @relation(fields: [examId], references: [id], onDelete: Cascade)
+  bookings ExamBooking[]
+
+  @@index([examId, startsAt])
+  @@map("exam_slots")
+}
+
+model ExamBooking {
+  id               String    @id @default(cuid())
+  slotId           String    @map("slot_id")
+  applicationId    String    @map("application_id")
+  examLogin        String    @unique @map("exam_login")
+  examPasswordHash String    @default("") @map("exam_password_hash")
+  credentialsSentAt DateTime? @map("credentials_sent_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  slot        ExamSlot              @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  application MembershipApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  attempt     ExamAttempt?
+
+  @@unique([slotId, applicationId])
+  @@index([applicationId])
+  @@map("exam_bookings")
+}
+
+model ExamAttempt {
+  id             String    @id @default(cuid())
+  bookingId      String    @unique @map("booking_id")
+  applicationId  String    @map("application_id")
+  examId         String    @map("exam_id")
+  startedAt      DateTime? @map("started_at")
+  submittedAt    DateTime? @map("submitted_at")
+  timedOut       Boolean   @default(false) @map("timed_out")
+  autoScore      Float?    @map("auto_score")
+  adminScore     Float?    @map("admin_score")
+  maxScore       Float     @default(0) @map("max_score")
+  adminNotes     String    @default("") @map("admin_notes")
+  gradeStatus    String    @default("pending") @map("grade_status")
+  integrityFlag  Boolean   @default(false) @map("integrity_flag")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  booking     ExamBooking           @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  application MembershipApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  exam        EntranceExam          @relation(fields: [examId], references: [id], onDelete: Cascade)
+  answers     ExamAnswer[]
+  events      ExamIntegrityEvent[]
+
+  @@index([examId, gradeStatus])
+  @@index([applicationId])
+  @@map("exam_attempts")
+}
+
+model ExamAnswer {
+  id          String @id @default(cuid())
+  attemptId   String @map("attempt_id")
+  questionId  String @map("question_id")
+  response    String @default("")
+  autoScore   Float? @map("auto_score")
+  adminScore  Float? @map("admin_score")
+
+  attempt  ExamAttempt           @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question EntranceExamQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@map("exam_answers")
+}
+
+model ExamIntegrityEvent {
+  id        String   @id @default(cuid())
+  attemptId String   @map("attempt_id")
+  type      String
+  detail    String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  attempt ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@index([attemptId, createdAt])
+  @@map("exam_integrity_events")
+}
+
+model InterviewTemplate {
+  id        String   @id @default(cuid())
+  title     String   @default("Entretien de motivation")
+  pdfName   String?  @map("pdf_name")
+  pdfBytes  Bytes?   @map("pdf_bytes")
+  active    Boolean  @default(true)
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  questions InterviewQuestion[]
+
+  @@map("interview_templates")
+}
+
+model InterviewQuestion {
+  id         String @id @default(cuid())
+  templateId String @map("template_id")
+  sortOrder  Int    @default(0) @map("sort_order")
+  prompt     String
+  kind       String @default("scale")
+  maxPoints  Float  @default(5) @map("max_points")
+
+  template InterviewTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  scores   InterviewScore[]
+
+  @@index([templateId, sortOrder])
+  @@map("interview_questions")
+}
+
+model InterviewSlot {
+  id       String   @id @default(cuid())
+  startsAt DateTime @map("starts_at")
+  room     String   @default("")
+  capacity Int      @default(1)
+  label    String   @default("")
+
+  bookings InterviewBooking[]
+
+  @@index([startsAt])
+  @@map("interview_slots")
+}
+
+model InterviewBooking {
+  id            String    @id @default(cuid())
+  slotId        String    @map("slot_id")
+  applicationId String    @map("application_id")
+  totalScore    Float?    @map("total_score")
+  maxScore      Float     @default(0) @map("max_score")
+  notes         String    @default("")
+  status        String    @default("scheduled")
+  scoredBy      String?   @map("scored_by")
+  scoredAt      DateTime? @map("scored_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  slot        InterviewSlot         @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  application MembershipApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  scores      InterviewScore[]
+
+  @@unique([applicationId])
+  @@index([slotId])
+  @@map("interview_bookings")
+}
+
+model InterviewScore {
+  id          String @id @default(cuid())
+  bookingId   String @map("booking_id")
+  questionId  String @map("question_id")
+  points      Float  @default(0)
+  remark      String @default("")
+
+  booking  InterviewBooking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  question InterviewQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingId, questionId])
+  @@map("interview_scores")
 }
 
 // ─── Projects (bilingue) ─────────────────────────────────────────────────────

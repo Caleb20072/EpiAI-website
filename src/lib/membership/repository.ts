@@ -9,6 +9,8 @@ function transformApplication(doc: {
   whatsapp: string;
   motivations: string;
   status: string;
+  pipelineStage?: string | null;
+  accessToken?: string | null;
   reviewedBy: string | null;
   reviewedAt: Date | null;
   rejectionReason: string | null;
@@ -24,6 +26,7 @@ function transformApplication(doc: {
     whatsapp: doc.whatsapp,
     motivations: doc.motivations,
     status: doc.status,
+    pipelineStage: doc.pipelineStage || 'received',
     reviewedBy: doc.reviewedBy,
     reviewedAt: doc.reviewedAt?.toISOString() || null,
     rejectionReason: doc.rejectionReason,
@@ -43,7 +46,10 @@ export async function getApplications(options: {
   limit?: number;
 } = {}) {
   const { status, page = 1, limit = 10 } = options;
-  const where = status && status !== 'all' ? { status: status as 'pending' | 'approved' | 'rejected' } : {};
+  const where =
+    status && status !== 'all'
+      ? { status: status as 'pending' | 'testing' | 'interviewing' | 'approved' | 'rejected' }
+      : {};
 
   const [applications, total] = await Promise.all([
     prisma.membershipApplication.findMany({
@@ -76,7 +82,7 @@ export async function getApplicationByEmail(email: string) {
 
 export async function hasPendingApplication(email: string): Promise<boolean> {
   const application = await prisma.membershipApplication.findFirst({
-    where: { email: email.toLowerCase(), status: { in: ['pending', 'approved'] } },
+    where: { email: email.toLowerCase(), status: { in: ['pending', 'testing', 'interviewing', 'approved'] } },
   });
   return !!application;
 }
@@ -99,13 +105,31 @@ export async function reviewApplication(
 }
 
 export async function getApplicationStats() {
-  const [pending, approved, rejected, total] = await Promise.all([
+  const [pending, testing, interviewing, approved, rejected, total] = await Promise.all([
     prisma.membershipApplication.count({ where: { status: 'pending' } }),
+    prisma.membershipApplication.count({ where: { status: 'testing' } }),
+    prisma.membershipApplication.count({ where: { status: 'interviewing' } }),
     prisma.membershipApplication.count({ where: { status: 'approved' } }),
     prisma.membershipApplication.count({ where: { status: 'rejected' } }),
     prisma.membershipApplication.count(),
   ]);
-  return { pending, approved, rejected, total };
+  return { pending, testing, interviewing, approved, rejected, total };
+}
+
+export async function setApplicationPipeline(
+  id: string,
+  data: { status?: 'pending' | 'testing' | 'interviewing' | 'approved' | 'rejected'; pipelineStage: string; reviewedBy?: string },
+) {
+  return prisma.membershipApplication.update({
+    where: { id },
+    data: {
+      pipelineStage: data.pipelineStage,
+      ...(data.status ? { status: data.status } : {}),
+      ...(data.reviewedBy
+        ? { reviewedBy: data.reviewedBy, reviewedAt: new Date() }
+        : {}),
+    },
+  });
 }
 
 export async function deleteApplication(id: string): Promise<boolean> {

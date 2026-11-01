@@ -5,6 +5,7 @@ const DASHBOARD_SEGMENTS = [
     'dashboard', 'admin', 'profile', 'settings',
     'resources', 'forum', 'events', 'modules', 'presence', 'my-registrations',
     'my-resources', 'change-password', 'intranet', 'chat', 'attendance',
+    'concours',
 ];
 
 /**
@@ -18,8 +19,9 @@ export default async function HeaderWrapper() {
 
     const segments = pathname.split('/');
     const isDashboard = DASHBOARD_SEGMENTS.some((seg) => segments.includes(seg));
+    const isExam = segments.includes('concours');
 
-    if (isDashboard) return null;
+    if (isDashboard || isExam) return null;
 
     return <Header />;
 }

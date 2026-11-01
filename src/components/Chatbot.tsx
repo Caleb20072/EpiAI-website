@@ -30,7 +30,8 @@ export default function Chatbot() {
     pathname?.includes('/resources') ||
     pathname?.includes('/intranet') ||
     pathname?.includes('/admin') ||
-    pathname?.includes('/profile');
+    pathname?.includes('/profile') ||
+    pathname?.includes('/concours');
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {

@@ -7,7 +7,8 @@ import { ApplicationCard } from '@/components/membership/ApplicationCard';
 import { InviteUserForm } from '@/components/admin/InviteUserForm';
 import { BulkInviteForm } from '@/components/admin/BulkInviteForm';
 import { formatDistanceToNow } from '@/lib/utils/date';
-import { Users, Clock, CheckCircle, XCircle, FileSpreadsheet } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, FileSpreadsheet, ClipboardCheck } from 'lucide-react';
+import { AdmissionWorkspace } from '@/components/admin/admission/AdmissionWorkspace';
 import type { PaginatedResponse } from '@/lib/membership/types';
 import { PageHeader, StatCard, Button, EmptyState, Panel, Pagination } from '@/components/ui';
 
@@ -20,11 +21,14 @@ interface Application {
   whatsapp: string;
   motivations: string;
   status: string;
+  pipelineStage?: string;
   createdAt: string;
 }
 
 interface Stats {
   pending: number;
+  testing?: number;
+  interviewing?: number;
   approved: number;
   rejected: number;
   total: number;
@@ -36,9 +40,10 @@ export default function MembershipAdminClient() {
   const t = useTranslations('MembershipAdmin');
 
   const [applications, setApplications] = useState<Application[]>([]);
-  const [stats, setStats] = useState<Stats>({ pending: 0, approved: 0, rejected: 0, total: 0 });
+  const [stats, setStats] = useState<Stats>({ pending: 0, testing: 0, interviewing: 0, approved: 0, rejected: 0, total: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
+  const [section, setSection] = useState<'applications' | 'pipeline'>('applications');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -91,9 +96,29 @@ export default function MembershipAdminClient() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title={t('title')} description={t('description')} actions={<InviteUserForm />} />
+      <PageHeader
+        title={t('title')}
+        description={locale === 'fr'
+          ? 'Candidatures, tests d’entrée, copies, entretiens — l’accès membre n’est donné qu’à la fin.'
+          : 'Applications, entrance tests, papers, interviews — member access only at the end.'}
+        actions={<InviteUserForm />}
+      />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="flex flex-wrap gap-2">
+        <Button variant={section === 'applications' ? 'primary' : 'secondary'} size="sm" onClick={() => setSection('applications')}>
+          {locale === 'fr' ? 'Candidatures' : 'Applications'}
+        </Button>
+        <Button variant={section === 'pipeline' ? 'primary' : 'secondary'} size="sm" onClick={() => setSection('pipeline')}>
+          <ClipboardCheck className="h-4 w-4" />
+          {locale === 'fr' ? 'Tests & entretiens' : 'Tests & interviews'}
+        </Button>
+      </div>
+
+      {section === 'pipeline' ? <AdmissionWorkspace locale={locale} /> : null}
+
+      {section === 'applications' ? (
+      <>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <StatCard label={t('total')} value={stats.total} icon={Users} />
         <StatCard
           label={t('pending')}
@@ -102,6 +127,8 @@ export default function MembershipAdminClient() {
           iconClassName="text-amber-600"
           iconBgClassName="bg-amber-500/10"
         />
+        <StatCard label={locale === 'fr' ? 'Tests' : 'Tests'} value={stats.testing || 0} icon={ClipboardCheck} />
+        <StatCard label={locale === 'fr' ? 'Entretiens' : 'Interviews'} value={stats.interviewing || 0} icon={Clock} />
         <StatCard label={t('approved')} value={stats.approved} icon={CheckCircle} />
         <StatCard
           label={t('rejected')}
@@ -113,20 +140,34 @@ export default function MembershipAdminClient() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {['pending', 'approved', 'rejected', 'all'].map((status) => (
+        {['pending', 'testing', 'interviewing', 'approved', 'rejected', 'all'].map((status) => (
           <Button
             key={status}
             variant={filter === status ? 'primary' : 'secondary'}
             size="sm"
             onClick={() => { setFilter(status); setPage(1); }}
           >
-            {status === 'all' ? t('all') : t(status)}
+            {status === 'all'
+              ? t('all')
+              : status === 'testing'
+                ? locale === 'fr' ? 'Tests' : 'Tests'
+                : status === 'interviewing'
+                  ? locale === 'fr' ? 'Entretiens' : 'Interviews'
+                  : t(status as 'pending' | 'approved' | 'rejected')}
           </Button>
         ))}
       </div>
 
       <Panel
-        title={filter === 'all' ? t('all') : t(filter)}
+        title={
+          filter === 'all'
+            ? t('all')
+            : filter === 'testing'
+              ? locale === 'fr' ? 'Tests' : 'Tests'
+              : filter === 'interviewing'
+                ? locale === 'fr' ? 'Entretiens' : 'Interviews'
+                : t(filter as 'pending' | 'approved' | 'rejected')
+        }
       >
         {isLoading ? (
           <div className="space-y-4">
@@ -168,6 +209,8 @@ export default function MembershipAdminClient() {
       >
         <BulkInviteForm />
       </Panel>
+      </>
+      ) : null}
     </div>
   );
 }

@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
     const application = await createApplication(body);
 
     try {
-      const { sendApplicationReceivedEmail } = await import('@/lib/email/resend');
-      await sendApplicationReceivedEmail(body.email, body.firstName);
+      const { sendAdmissionReceivedEmail } = await import('@/lib/admission/emails');
+      await sendAdmissionReceivedEmail(body.email, body.firstName);
     } catch (emailErr) {
       console.error('Application received email failed:', emailErr);
     }

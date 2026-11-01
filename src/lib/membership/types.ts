@@ -1,4 +1,4 @@
-export type MembershipStatus = 'pending' | 'approved' | 'rejected';
+export type MembershipStatus = 'pending' | 'testing' | 'interviewing' | 'approved' | 'rejected';
 
 export interface IMembershipApplication {
   firstName: string;

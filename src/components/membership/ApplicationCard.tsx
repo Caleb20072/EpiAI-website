@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Modal } from '@/components/shared/Modal';
+import { InviteTestButton } from '@/components/admin/admission/AdmissionWorkspace';
 
 interface ApplicationCardProps {
   application: {
@@ -29,6 +30,7 @@ interface ApplicationCardProps {
     whatsapp: string;
     motivations: string;
     status: string;
+    pipelineStage?: string;
     createdAt: string;
   };
   locale: 'en' | 'fr';
@@ -176,6 +178,20 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
             Approved
           </span>
         );
+      case 'testing':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-medium border border-amber-500/30">
+            <Clock className="w-3.5 h-3.5" />
+            {application.pipelineStage === 'test_submitted' ? 'Copie reçue' : 'Test'}
+          </span>
+        );
+      case 'interviewing':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 text-xs font-medium border border-violet-500/30">
+            <Clock className="w-3.5 h-3.5" />
+            Entretien
+          </span>
+        );
       case 'rejected':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-medium border border-red-500/30">
@@ -189,9 +205,9 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
   return (
     <div className={cn(
       'p-6 rounded-xl bg-card border transition-all',
-      application.status === 'pending'
-        ? 'border-default hover:border-default'
-        : 'border-subtle opacity-75'
+      application.status === 'approved' || application.status === 'rejected'
+        ? 'border-subtle opacity-75'
+        : 'border-default hover:border-default'
     )}>
       {/* Header */}
       <div className="flex items-start justify-between">
@@ -253,14 +269,17 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
             </span>
           </div>
 
-          {/* Actions (only for pending) */}
-          {application.status === 'pending' && (
+          {(application.status === 'pending' || application.status === 'testing' || application.status === 'interviewing') && (
             <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-default">
               {error && (
                 <div className="w-full p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm">
                   {error}
                 </div>
               )}
+
+              {application.status === 'pending' ? (
+                <InviteTestButton applicationId={application.id} locale={locale} onDone={onUpdate} />
+              ) : null}
 
               <button
                 onClick={handleApprove}
@@ -272,7 +291,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
                 ) : (
                   <Check className="w-4 h-4" />
                 )}
-                Approve
+                {locale === 'fr' ? 'Admettre sans parcours' : 'Admit without pipeline'}
               </button>
 
               <button
@@ -281,7 +300,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 font-medium hover:bg-red-500/30 transition-all disabled:opacity-50"
               >
                 <X className="w-4 h-4" />
-                Reject
+                {locale === 'fr' ? 'Rejeter' : 'Reject'}
               </button>
             </div>
           )}

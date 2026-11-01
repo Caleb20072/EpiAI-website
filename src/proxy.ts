@@ -34,6 +34,7 @@ const isProtectedRoute = createRouteMatcher([
   '/api/modules(.*)',
   '/api/me(.*)',
   '/api/admin/fees(.*)',
+  '/api/admin/admission(.*)',
   '/api/chat(.*)',
   '/api/stats(.*)',
   '/api/users(.*)',
@@ -86,6 +87,12 @@ const isPublicRoute = createRouteMatcher([
   '/(fr|en)/about(.*)',
   '/(fr|en)/calendar(.*)',
   '/(fr|en)/partners(.*)',
+  '/concours(.*)',
+  '/(fr|en)/concours(.*)',
+  '/admission(.*)',
+  '/(fr|en)/admission(.*)',
+  '/api/exam(.*)',
+  '/api/admission(.*)',
   '/api/webhooks(.*)',
 ]);
 

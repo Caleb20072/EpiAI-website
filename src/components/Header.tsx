@@ -13,6 +13,7 @@ const dashboardRoutes = [
     '/dashboard', '/admin', '/profile', '/settings',
     '/resources', '/forum', '/events', '/modules', '/presence', '/my-registrations',
     '/my-resources', '/change-password', '/intranet', '/chat', '/attendance',
+    '/concours',
 ];
 
 export default function Header() {
