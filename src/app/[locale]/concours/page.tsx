@@ -52,7 +52,7 @@ export default function ExamLoginPage() {
             onChange={(e) => setLogin(e.target.value)}
             autoCapitalize="none"
             autoCorrect="off"
-            className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white transition-colors hover:border-white/25 focus:border-[#3479F0] focus:outline-none focus:ring-2 focus:ring-[#3479F0]/40"
             required
           />
         </label>
@@ -62,14 +62,14 @@ export default function ExamLoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white transition-colors hover:border-white/25 focus:border-[#3479F0] focus:outline-none focus:ring-2 focus:ring-[#3479F0]/40"
             required
           />
         </label>
         <button
           type="submit"
           disabled={loading}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3479F0] py-3 text-sm font-semibold disabled:opacity-50"
+          className="mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#3479F0] py-3 text-sm font-semibold transition-colors hover:bg-[#2b6ae3] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {fr ? 'Entrer' : 'Enter'}

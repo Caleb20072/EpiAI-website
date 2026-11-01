@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
     started,
     submitted: Boolean(attempt.submittedAt),
     ended,
+    hasSubjectPdf: Boolean(exam.examPdfBytes),
     serverNow: new Date(now).toISOString(),
     questions:
       started && !ended

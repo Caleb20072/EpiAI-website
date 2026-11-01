@@ -31,6 +31,8 @@ export default function AdmissionSlotPage() {
     interviewBooking: { startsAt: string; room: string } | null;
     examSlots: Slot[];
     interviewSlots: Slot[];
+    declined?: boolean;
+    canDecline?: boolean;
   } | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -53,14 +55,14 @@ export default function AdmissionSlotPage() {
     void load();
   }, [token]);
 
-  async function book(kind: 'exam' | 'interview', slotId: string) {
-    setSaving(slotId);
+  async function book(kind: 'exam' | 'interview', slotId: string, decline = false) {
+    setSaving(decline ? 'decline' : slotId);
     setError(null);
     try {
       const res = await fetch(`/api/admission/${token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind, slotId }),
+        body: JSON.stringify(decline ? { kind, decline: true } : { kind, slotId }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Impossible de réserver');
@@ -123,7 +125,7 @@ export default function AdmissionSlotPage() {
                 </h2>
                 <ul className="space-y-2">
                   {data.examSlots.map((slot) => (
-                    <li key={slot.id} className="flex items-center justify-between gap-3 rounded-xl border border-default p-3">
+                    <li key={slot.id} className="flex items-center justify-between gap-3 rounded-xl border border-default p-3 transition-colors hover:border-brand-400/50">
                       <div>
                         <p className="text-sm font-medium text-primary">{slot.examTitle}</p>
                         <p className="text-xs text-secondary">
@@ -135,7 +137,7 @@ export default function AdmissionSlotPage() {
                         type="button"
                         disabled={!!saving}
                         onClick={() => book('exam', slot.id)}
-                        className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                        className="cursor-pointer rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {saving === slot.id ? '…' : fr ? 'Choisir' : 'Choose'}
                       </button>
@@ -152,7 +154,7 @@ export default function AdmissionSlotPage() {
                 </h2>
                 <ul className="space-y-2">
                   {data.interviewSlots.map((slot) => (
-                    <li key={slot.id} className="flex items-center justify-between gap-3 rounded-xl border border-default p-3">
+                    <li key={slot.id} className="flex items-center justify-between gap-3 rounded-xl border border-default p-3 transition-colors hover:border-brand-400/50">
                       <div>
                         <p className="text-sm text-primary">{formatWhen(slot.startsAt, locale)}</p>
                         {slot.room ? (
@@ -166,7 +168,7 @@ export default function AdmissionSlotPage() {
                         type="button"
                         disabled={!!saving}
                         onClick={() => book('interview', slot.id)}
-                        className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                        className="cursor-pointer rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {saving === slot.id ? '…' : fr ? 'Choisir' : 'Choose'}
                       </button>
@@ -176,7 +178,28 @@ export default function AdmissionSlotPage() {
               </section>
             ) : null}
 
-            {!data.examBooking && !data.interviewBooking && data.examSlots.length === 0 && data.interviewSlots.length === 0 ? (
+            {data.canDecline ? (
+              <button
+                type="button"
+                disabled={!!saving}
+                onClick={() =>
+                  void book(data.stage.startsWith('interview') ? 'interview' : 'exam', '', true)
+                }
+                className="cursor-pointer text-xs text-muted underline decoration-transparent transition-colors hover:text-primary hover:decoration-current"
+              >
+                {fr ? 'Je ne pourrai pas me présenter' : 'I cannot attend'}
+              </button>
+            ) : null}
+
+            {data.declined ? (
+              <p className="text-sm text-amber-400">
+                {fr
+                  ? 'Tu as indiqué que tu ne pourras pas te présenter. L’équipe en est informée.'
+                  : 'You declined this invitation. The board has been notified.'}
+              </p>
+            ) : null}
+
+            {!data.examBooking && !data.interviewBooking && data.examSlots.length === 0 && data.interviewSlots.length === 0 && !data.declined ? (
               <p className="text-sm text-secondary">
                 {fr
                   ? 'Aucun créneau n’est ouvert pour le moment. Surveille ta boîte mail.'

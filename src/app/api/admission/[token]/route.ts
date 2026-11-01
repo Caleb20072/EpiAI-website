@@ -25,8 +25,13 @@ export async function GET(
   });
 
   const stage = application.pipelineStage;
-  const needExamSlot = stage === 'test_invited' || (stage === 'testing' && !examBooking);
-  const needInterviewSlot = stage === 'interview_invited' || (application.status === 'interviewing' && !interviewBooking);
+  const declined = stage === 'test_declined' || stage === 'interview_declined';
+  const needExamSlot =
+    !declined && (stage === 'test_invited' || (application.status === 'testing' && !examBooking && stage !== 'test_declined'));
+  const needInterviewSlot =
+    !declined &&
+    (stage === 'interview_invited' ||
+      (application.status === 'interviewing' && !interviewBooking && stage !== 'interview_declined'));
 
   const examSlots = needExamSlot
     ? await prisma.examSlot.findMany({
@@ -64,6 +69,8 @@ export async function GET(
           room: interviewBooking.slot.room,
         }
       : null,
+    declined,
+    canDecline: needExamSlot || needInterviewSlot,
     examSlots: examSlots
       .filter((s) => s._count.bookings < s.capacity)
       .map((s) => ({
@@ -91,7 +98,29 @@ export async function POST(
   const { token } = await params;
   const application = await prisma.membershipApplication.findUnique({ where: { accessToken: token } });
   if (!application) return NextResponse.json({ error: 'Lien invalide ou expiré.' }, { status: 404 });
-  const body = (await request.json()) as { kind?: string; slotId?: string };
+  const body = (await request.json()) as { kind?: string; slotId?: string; decline?: boolean };
+
+  if (body.decline) {
+    if (body.kind === 'interview' || application.status === 'interviewing') {
+      if (await prisma.interviewBooking.findUnique({ where: { applicationId: application.id } })) {
+        return NextResponse.json({ error: 'Créneau déjà confirmé.' }, { status: 409 });
+      }
+      await setApplicationPipeline(application.id, {
+        status: 'interviewing',
+        pipelineStage: 'interview_declined',
+      });
+    } else {
+      if (await prisma.examBooking.findFirst({ where: { applicationId: application.id } })) {
+        return NextResponse.json({ error: 'Créneau déjà confirmé.' }, { status: 409 });
+      }
+      await setApplicationPipeline(application.id, {
+        status: 'testing',
+        pipelineStage: 'test_declined',
+      });
+    }
+    return NextResponse.json({ success: true, declined: true });
+  }
+
   if (!body.slotId) return NextResponse.json({ error: 'Créneau requis' }, { status: 400 });
 
   if (body.kind === 'interview') {

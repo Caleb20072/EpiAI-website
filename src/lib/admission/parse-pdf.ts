@@ -50,7 +50,7 @@ export async function parseExamPdfs(examPdf: Buffer, keyPdf?: Buffer | null) {
 
   const parsed = await chatCompletionJson<{ questions: ParsedExamQuestion[] }>({
     system:
-      "Tu convertis un sujet d'examen PDF en questions numériques. Tu ne modifies PAS le fond : tu recopies les énoncés. Réponds en JSON { questions: [{ prompt, type, points, officialAnswer, gradingHint }] }. type = short | long | blank | numeric. officialAnswer vient uniquement du corrigé type, sinon ''. Si plusieurs réponses acceptées, sépare-les par |. Ne fabrique pas de questions qui n'existent pas.",
+      "Tu extrais TOUTES les questions / sous-questions / items à trous d'un sujet PDF pour créer des zones de réponse. Le candidat voit le PDF original (cartes, schémas, consignes) : ici tu ne résumes pas et tu n'omets rien. JSON { questions: [{ prompt, type, points, officialAnswer, gradingHint }] }. type = short | long | blank | numeric. Recopie l'énoncé (1.a, 2.b, « d'après la carte »…). officialAnswer uniquement depuis le corrigé, sinon ''. Plusieurs réponses : |. Pas d'invention.",
     messages: [
       {
         role: 'user',
@@ -89,7 +89,7 @@ export async function parseInterviewPdf(pdf: Buffer) {
   }
   const parsed = await chatCompletionJson<{ questions: ParsedInterviewQuestion[] }>({
     system:
-      "Tu convertis une grille d'entretien PDF en questions pour l'examinateur. JSON { questions: [{ prompt, kind, maxPoints }] }. kind = scale | text | pass_fail. Tu ne changes pas le fond.",
+      "Tu extrais TOUTE la grille d'entretien PDF (chaque critère, sous-question, consigne). L'examinateur voit aussi le PDF original. JSON { questions: [{ prompt, kind, maxPoints }] }. kind = scale | text | pass_fail. Tu ne changes pas le fond et tu n'omets rien.",
     messages: [{ role: 'user', content: text }],
     temperature: 0,
   });

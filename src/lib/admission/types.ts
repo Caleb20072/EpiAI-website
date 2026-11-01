@@ -1,11 +1,13 @@
 export const PIPELINE_STAGES = [
   'received',
   'test_invited',
+  'test_declined',
   'test_scheduled',
   'test_live',
   'test_submitted',
   'test_reviewed',
   'interview_invited',
+  'interview_declined',
   'interview_scheduled',
   'interview_reviewed',
   'admitted',

@@ -110,7 +110,7 @@ export default function MembershipAdminClient() {
         </Button>
         <Button variant={section === 'pipeline' ? 'primary' : 'secondary'} size="sm" onClick={() => setSection('pipeline')}>
           <ClipboardCheck className="h-4 w-4" />
-          {locale === 'fr' ? 'Tests & entretiens' : 'Tests & interviews'}
+          {locale === 'fr' ? 'Suivi, tests & entretiens' : 'Status, tests & interviews'}
         </Button>
       </div>
 

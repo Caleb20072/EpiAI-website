@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils/cn';
 import { Modal } from '@/components/shared/Modal';
 import { InviteTestButton } from '@/components/admin/admission/AdmissionWorkspace';
+import { admissionStatusLabel, admissionStatusTone } from '@/lib/admission/status';
 
 interface ApplicationCardProps {
   application: {
@@ -163,6 +164,26 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
   };
 
   const getStatusBadge = () => {
+    const stage = application.pipelineStage;
+    if (stage && stage !== 'received') {
+      const tone = admissionStatusTone(stage);
+      const cls =
+        tone === 'wait'
+          ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+          : tone === 'ok'
+            ? 'bg-brand-500/20 text-brand-300 border-brand-500/30'
+            : tone === 'run'
+              ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
+              : tone === 'no'
+                ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+      return (
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${cls}`}>
+          {tone === 'no' ? <AlertCircle className="w-3.5 h-3.5" /> : tone === 'done' ? <CheckCircle className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+          {admissionStatusLabel(stage, locale)}
+        </span>
+      );
+    }
     switch (application.status) {
       case 'pending':
         return (
@@ -182,7 +203,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-medium border border-amber-500/30">
             <Clock className="w-3.5 h-3.5" />
-            {application.pipelineStage === 'test_submitted' ? 'Copie reçue' : 'Test'}
+            Test
           </span>
         );
       case 'interviewing':
@@ -236,7 +257,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
           {getStatusBadge()}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 rounded-lg bg-card hover:bg-card-muted transition-colors"
+            className="p-2 rounded-lg bg-card cursor-pointer hover:bg-card-muted transition-colors"
           >
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-secondary" />
@@ -284,7 +305,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
               <button
                 onClick={handleApprove}
                 disabled={isLoading}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-500/20 text-brand-400 font-medium hover:bg-brand-500/30 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-500/20 text-brand-400 font-medium cursor-pointer hover:bg-brand-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -297,7 +318,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
               <button
                 onClick={() => setShowRejectModal(true)}
                 disabled={isLoading}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 font-medium hover:bg-red-500/30 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 font-medium cursor-pointer hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <X className="w-4 h-4" />
                 {locale === 'fr' ? 'Rejeter' : 'Reject'}
@@ -314,7 +335,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
               <button
                 onClick={handleResendCredentials}
                 disabled={isResending}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-500/15 text-brand-400 font-medium hover:bg-brand-500/30 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-500/15 text-brand-400 font-medium cursor-pointer hover:bg-brand-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isResending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -360,7 +381,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
         <button
           type="button"
           onClick={() => setCredentialsModal(null)}
-          className="mt-4 w-full px-4 py-2 rounded-xl bg-card-muted text-primary font-medium hover:bg-white/15"
+          className="mt-4 w-full px-4 py-2 rounded-xl bg-card-muted text-primary font-medium cursor-pointer hover:bg-white/15 transition-colors"
         >
           Fermer
         </button>
@@ -395,7 +416,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
                 setShowRejectModal(false);
                 setRejectReason('');
               }}
-              className="flex-1 px-4 py-2 rounded-xl bg-card text-primary font-medium hover:bg-card-muted transition-all"
+              className="flex-1 px-4 py-2 rounded-xl bg-card text-primary font-medium cursor-pointer hover:bg-card-muted transition-all"
             >
               Cancel
             </button>
@@ -403,7 +424,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
               type="button"
               onClick={handleReject}
               disabled={isLoading || !rejectReason.trim()}
-              className="flex-1 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 font-medium hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 font-medium cursor-pointer hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Rejecting...' : 'Reject'}
             </button>

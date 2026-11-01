@@ -35,6 +35,8 @@ export async function GET(
       startedAt: attempt.startedAt?.toISOString() || null,
       submittedAt: attempt.submittedAt?.toISOString() || null,
       examTitle: attempt.exam.title,
+      examId: attempt.exam.id,
+      hasSubjectPdf: Boolean(attempt.exam.examPdfBytes),
       passingScore: attempt.exam.passingScore,
       candidate: {
         id: attempt.application.id,

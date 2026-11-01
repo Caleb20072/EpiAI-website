@@ -41,6 +41,7 @@ export async function GET() {
           id: template.id,
           title: template.title,
           pdfName: template.pdfName,
+          hasPdf: Boolean(template.pdfBytes),
           questions: template.questions,
         }
       : null,
