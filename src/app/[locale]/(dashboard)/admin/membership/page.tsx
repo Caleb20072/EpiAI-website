@@ -1,48 +1,42 @@
 import { redirect } from 'next/navigation';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { isAdminRole } from '@/lib/roles/utils';
+import { hasPermission, resolveRoleSlug } from '@/lib/roles/utils';
 import MembershipAdminClient from './client-page';
 
 export default async function MembershipAdminPage() {
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
 
   if (!userId) {
     redirect('/sign-in');
   }
 
-  let canManage = false;
-  let roleId: string | number = 0;
+  let roleSlug = resolveRoleSlug(
+    ((sessionClaims?.publicMetadata as Record<string, unknown>) || null),
+  );
 
-  try {
-    // Get user from Clerk with metadata - SERVER SIDE
-    const client = await clerkClient();
-    const user = await client.users.getUser(userId!);
-
-    roleId = (user.publicMetadata?.roleId as number) || (user.publicMetadata?.role as string) || 0;
-    const isAdmin = isAdminRole(String(roleId));
-
-    // President = level 9, should have full access
-    canManage = roleId === 9 || isAdmin;
-
-    console.log('[Membership Page Server] User:', user.id, '| RoleId:', roleId, '| CanManage:', canManage);
-  } catch (err) {
-    console.error('[Membership Page Server] Clerk API error:', err);
-    // Fallback: allow access if auth passed but Clerk metadata unavailable
-    canManage = true;
+  if (!roleSlug) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      roleSlug = resolveRoleSlug(user.publicMetadata as Record<string, unknown>);
+    } catch (err) {
+      console.error('[Membership Page Server] Clerk API error:', err);
+    }
   }
+
+  const canManage = hasPermission(roleSlug, 'membership.manage');
 
   if (!canManage) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-page">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-primary mb-4">Access Denied</h1>
-          <p className="text-secondary">You don't have permission to manage memberships.</p>
-          <p className="text-sm text-muted mt-2">Role ID: {roleId}</p>
+          <p className="text-secondary">You don&apos;t have permission to manage memberships.</p>
+          <p className="text-sm text-muted mt-2">Role: {roleSlug || 'none'}</p>
         </div>
       </div>
     );
   }
 
-  // User has permission, render the client component
   return <MembershipAdminClient />;
 }
