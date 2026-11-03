@@ -26,31 +26,31 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-3 px-5 py-4 rounded-xl bg-card border border-default shadow-card',
-        className
+        'flex min-w-0 items-center justify-between gap-2 rounded-xl border border-default bg-card px-3 py-3 shadow-card sm:gap-3 sm:px-5 sm:py-4',
+        className,
       )}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         {loading ? (
           <div className="animate-pulse space-y-2">
-            <div className="h-3 bg-card-muted rounded w-20" />
-            <div className="h-7 bg-card-muted rounded w-12" />
+            <div className="h-3 w-20 rounded bg-card-muted" />
+            <div className="h-7 w-12 rounded bg-card-muted" />
           </div>
         ) : (
           <>
-            <p className="text-[13px] font-medium text-muted truncate">
+            <p className="text-[11px] font-medium leading-snug text-muted sm:text-[13px] line-clamp-2">
               {label}
             </p>
-            <p className="text-[26px] font-semibold text-primary tabular-nums leading-none mt-1.5 tracking-[-0.02em]">
+            <p className="mt-1 text-[22px] font-semibold tabular-nums leading-none tracking-[-0.02em] text-primary sm:mt-1.5 sm:text-[26px]">
               {value}
             </p>
-            {trend ? <p className="text-xs text-muted mt-0.5">{trend}</p> : null}
+            {trend ? <p className="mt-0.5 text-xs text-muted">{trend}</p> : null}
           </>
         )}
       </div>
       {Icon && !loading ? (
-        <div className={cn('p-2.5 rounded-lg shrink-0', iconBgClassName)}>
-          <Icon className={cn('w-4 h-4', iconClassName)} />
+        <div className={cn('hidden shrink-0 rounded-lg p-2 sm:block sm:p-2.5', iconBgClassName)}>
+          <Icon className={cn('h-4 w-4', iconClassName)} />
         </div>
       ) : null}
     </div>

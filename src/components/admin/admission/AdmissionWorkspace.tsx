@@ -149,13 +149,13 @@ function SuiviPanel({ fr }: { fr: boolean }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-        <StatCard label={fr ? 'Test — en attente' : 'Test waiting'} value={data.stats.testWaiting} />
-        <StatCard label={fr ? 'Test — confirmé' : 'Test confirmed'} value={data.stats.testConfirmed} />
-        <StatCard label={fr ? 'Test — décliné' : 'Test declined'} value={data.stats.testDeclined} />
-        <StatCard label={fr ? 'Entretien — en attente' : 'Interview waiting'} value={data.stats.interviewWaiting} />
-        <StatCard label={fr ? 'Entretien — confirmé' : 'Interview confirmed'} value={data.stats.interviewConfirmed} />
-        <StatCard label={fr ? 'Entretien — décliné' : 'Interview declined'} value={data.stats.interviewDeclined} />
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-6">
+        <StatCard label={fr ? 'Test · attente' : 'Test waiting'} value={data.stats.testWaiting} />
+        <StatCard label={fr ? 'Test · confirmé' : 'Test confirmed'} value={data.stats.testConfirmed} />
+        <StatCard label={fr ? 'Test · décliné' : 'Test declined'} value={data.stats.testDeclined} />
+        <StatCard label={fr ? 'Entretien · attente' : 'Interview waiting'} value={data.stats.interviewWaiting} />
+        <StatCard label={fr ? 'Entretien · confirmé' : 'Interview confirmed'} value={data.stats.interviewConfirmed} />
+        <StatCard label={fr ? 'Entretien · décliné' : 'Interview declined'} value={data.stats.interviewDeclined} />
       </div>
 
       <Panel title={fr ? 'Tests : qui a confirmé' : 'Tests: who confirmed'} description={fr ? 'En attente = mail envoyé, pas encore de créneau. Relance si besoin.' : 'Waiting = emailed, no slot yet.'}>

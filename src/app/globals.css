@@ -151,13 +151,22 @@ html.dark .partner-logo-on-dark { display: block !important; }
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+html {
+  width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.55;
-  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -336,6 +345,23 @@ iframe {
   .shadow-md, .shadow-lg { box-shadow: var(--shadow-md); }
   .shadow-xl, .shadow-2xl { box-shadow: var(--shadow-md); }
   .product-shadow { box-shadow: var(--shadow-product); }
+
+  /* Bottom nav (~52px) + home indicator — keeps content above the fixed bar */
+  .pb-mobile-nav {
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  /* Prevent wide children from forcing the page sideways */
+  .contain-x {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
 }
 
 .nav-link-underline { position: relative; }

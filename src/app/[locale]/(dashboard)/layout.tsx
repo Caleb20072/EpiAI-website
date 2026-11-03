@@ -258,7 +258,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       }
     >
-      <div className="min-h-screen bg-page">
+      <div className="min-h-screen w-full max-w-[100vw] overflow-x-clip bg-page">
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
@@ -389,20 +389,28 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </aside>
 
-        <div className={cn('lg:pl-64 min-h-screen flex flex-col', isChatPage && 'max-lg:h-dvh max-lg:overflow-hidden')}>
+        <div
+          className={cn(
+            'lg:pl-64 min-h-screen flex flex-col w-full min-w-0 contain-x',
+            isChatPage && 'max-lg:h-dvh max-lg:max-h-dvh max-lg:overflow-hidden',
+          )}
+        >
           <header className="sticky top-0 z-30 hidden lg:flex items-center justify-end gap-1 px-6 h-[60px] border-b border-subtle bg-surface/95 backdrop-blur-sm">
             <GlobalSearch />
             <NotificationBell />
             <ThemeToggle />
           </header>
 
-          <header className={cn(
-            'sticky top-0 z-30 items-center justify-between px-3 h-14 bg-surface border-b border-subtle lg:hidden',
-            isChatPage ? 'hidden' : 'flex',
-          )}>
+          <header
+            className={cn(
+              'sticky top-0 z-30 items-center gap-1 px-2 bg-surface border-b border-subtle lg:hidden',
+              'pt-[env(safe-area-inset-top,0px)] min-h-[calc(3.5rem+env(safe-area-inset-top,0px))]',
+              isChatPage ? 'hidden' : 'grid grid-cols-[auto_minmax(0,1fr)_auto]',
+            )}
+          >
             <button
               onClick={() => setSidebarOpen(true)}
-              className="inline-flex items-center justify-center w-11 h-11 text-secondary hover:text-primary hover:bg-card-muted rounded-lg"
+              className="inline-flex items-center justify-center w-11 h-11 shrink-0 text-secondary hover:text-primary hover:bg-card-muted rounded-lg"
               aria-label={locale === 'fr' ? 'Ouvrir le menu' : 'Open menu'}
             >
               <Menu className="w-5 h-5" />
@@ -410,24 +418,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Link
               href={dashboardHref}
               onClick={handleLogoClick}
-              className="flex items-center"
+              className="flex min-w-0 items-center justify-center overflow-hidden"
               aria-label={locale === 'fr' ? 'Tableau de bord' : 'Dashboard'}
             >
-              <BrandWordmark size="sm" />
+              <BrandWordmark size="sm" className="max-h-7 w-auto max-w-[7.5rem]" />
             </Link>
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-0.5">
               <GlobalSearch />
               <NotificationBell />
-              <ThemeToggle />
+              <ThemeToggle compact />
             </div>
           </header>
 
           <main
             className={cn(
-              'flex-1 max-w-[1280px]',
+              'flex-1 w-full max-w-[1280px] min-w-0 contain-x',
               isChatPage
                 ? 'min-h-0 p-0 lg:p-8 lg:pb-8 flex flex-col overflow-hidden'
-                : 'p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8',
+                : 'p-3 sm:p-6 lg:p-8 pb-mobile-nav lg:pb-8',
             )}
           >
             {!isChatPage && (

@@ -43,9 +43,9 @@ export default function Header() {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 border-b border-default bg-paper/95 backdrop-blur-sm supports-[backdrop-filter]:bg-paper/85">
-            <div className="max-w-[1280px] mx-auto h-16 flex items-center justify-between gap-6">
-                <Link href="/" className="flex items-center shrink-0 rounded-md" aria-label={t('home_label')}>
-                    <BrandWordmark priority />
+            <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-2 sm:gap-6">
+                <Link href="/" className="flex min-w-0 items-center shrink-0 rounded-md" aria-label={t('home_label')}>
+                    <BrandWordmark priority size="sm" className="max-h-8 w-auto max-w-[9rem] sm:max-w-none" />
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-1" aria-label="Main">
@@ -91,11 +91,11 @@ export default function Header() {
                     </Link>
                 </div>
 
-                <div className="lg:hidden flex items-center gap-1">
-                    <ThemeToggle />
+                <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
+                    <ThemeToggle compact />
                     <button
                         type="button"
-                        className="inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-lg text-primary hover:bg-card-muted"
+                        className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-primary hover:bg-card-muted"
                         onClick={() => setMobileOpen(!mobileOpen)}
                         aria-expanded={mobileOpen}
                         aria-label={mobileOpen ? t('menu_close') : t('menu_open')}

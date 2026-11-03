@@ -110,7 +110,8 @@ export default function MembershipAdminClient() {
         </Button>
         <Button variant={section === 'pipeline' ? 'primary' : 'secondary'} size="sm" onClick={() => setSection('pipeline')}>
           <ClipboardCheck className="h-4 w-4" />
-          {locale === 'fr' ? 'Suivi, tests & entretiens' : 'Status, tests & interviews'}
+          <span className="sm:hidden">{locale === 'fr' ? 'Suivi & tests' : 'Status & tests'}</span>
+          <span className="hidden sm:inline">{locale === 'fr' ? 'Suivi, tests & entretiens' : 'Status, tests & interviews'}</span>
         </Button>
       </div>
 
@@ -118,7 +119,7 @@ export default function MembershipAdminClient() {
 
       {section === 'applications' ? (
       <>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
         <StatCard label={t('total')} value={stats.total} icon={Users} />
         <StatCard
           label={t('pending')}

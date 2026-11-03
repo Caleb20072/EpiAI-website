@@ -108,7 +108,9 @@
   font-size: 0.9rem;
   line-height: 1.5;
   padding: 8px 14px;
-  max-width: 600px;
+  max-width: min(600px, 85vw);
+  overflow-wrap: anywhere;
+  word-break: break-word;
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 

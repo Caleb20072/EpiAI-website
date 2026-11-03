@@ -79,14 +79,14 @@ export default function PwaInstallBanner() {
   if (!deferred && !iosHint) return null;
 
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-default bg-card px-4 py-3">
+    <div className="mb-3 flex flex-col gap-3 rounded-xl border border-default bg-card px-3 py-3 sm:mb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
       <div className="flex min-w-0 items-start gap-3">
         <Download className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" />
-        <div>
+        <div className="min-w-0">
           <p className="text-sm font-medium text-primary">
             {fr ? 'Installer Epi’AI sur ton téléphone' : 'Install Epi’AI on your phone'}
           </p>
-          <p className="mt-0.5 text-xs text-secondary">
+          <p className="mt-0.5 text-xs text-secondary break-words">
             {iosHint
               ? fr
                 ? 'Sur iPhone : touche Partager, puis « Sur l’écran d’accueil ». Ensuite ouvre l’icône et active les alertes pour le chat.'

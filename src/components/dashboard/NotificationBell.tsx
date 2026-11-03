@@ -91,7 +91,7 @@ export default function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="relative flex items-center justify-center px-3 py-1.5 rounded-lg bg-card border border-default text-secondary hover:text-primary hover:border-brand-500/25 transition-colors"
+        className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-default bg-card text-secondary transition-colors hover:border-brand-500/25 hover:text-primary sm:h-auto sm:w-auto sm:px-3 sm:py-1.5"
         aria-label="Notifications"
       >
         <Bell className="w-4 h-4" />
@@ -104,7 +104,7 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-surface border border-default rounded-2xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-default bg-surface shadow-xl">
           <div className="flex items-center justify-between px-4 py-3 border-b border-default">
             <span className="text-primary font-medium text-sm">
               {locale === 'fr' ? 'Notifications' : 'Notifications'}

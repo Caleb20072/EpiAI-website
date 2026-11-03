@@ -52,7 +52,7 @@ export default function GlobalSearch() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card border border-default text-secondary hover:text-primary hover:border-brand-500/25 text-xs font-medium transition-colors"
+        className="flex items-center justify-center gap-2 w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-lg bg-card border border-default text-secondary hover:text-primary hover:border-brand-500/25 text-xs font-medium transition-colors shrink-0"
         aria-label={locale === 'fr' ? 'Rechercher' : 'Search'}
         aria-expanded={open}
       >

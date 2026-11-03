@@ -173,10 +173,10 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                 />
 
                 <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
-                    <div className="lg:hidden shrink-0 flex items-center gap-1 px-2 h-12 border-b border-default bg-surface">
+                    <div className="lg:hidden shrink-0 flex items-center gap-1 px-2 h-12 max-w-full border-b border-default bg-surface pt-[env(safe-area-inset-top,0px)] min-h-[calc(3rem+env(safe-area-inset-top,0px))]">
                         <Link
                             href={`/${locale}/dashboard`}
-                            className="p-2.5 rounded-xl text-primary hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            className="p-2.5 rounded-xl text-primary hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
                             aria-label="Retour"
                         >
                             <ArrowLeft className="w-5 h-5" />
@@ -184,12 +184,12 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(true)}
-                            className="p-2.5 rounded-xl bg-card-muted text-primary hover:bg-white/15 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            className="p-2.5 rounded-xl bg-card-muted text-primary hover:bg-white/15 min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
                             aria-label="Ouvrir les canaux"
                         >
                             <Menu className="w-5 h-5" />
                         </button>
-                        <span className="text-sm font-medium text-secondary truncate">
+                        <span className="min-w-0 flex-1 text-sm font-medium text-secondary truncate">
                             {CHAT_CHANNEL_IDS.includes(activeChannelId as typeof CHAT_CHANNEL_IDS[number])
                                 ? activeChannelId.replace(/-/g, ' ')
                                 : activeChannelId}

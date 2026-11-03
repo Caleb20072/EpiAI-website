@@ -157,7 +157,10 @@ export default function JoinPage() {
                         {/* Fees */}
                         <div className="glass-panel p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent">
                             <h3 className="text-brand-300 text-xs font-bold tracking-widest mb-4">{t('fees_title')}</h3>
-                            <p className="text-2xl font-black mb-2">5.00€ <span className="text-sm font-normal text-gray-400">/ {t('fees_per_year')}</span></p>
+                            <p className="text-2xl font-black mb-2">
+                              {t('fees_amount')}{' '}
+                              <span className="text-sm font-normal text-gray-400">/ {t('fees_per_month')}</span>
+                            </p>
                             <p className="text-xs text-gray-400 italic leading-relaxed">
                                 {t('fees_text')}
                             </p>

@@ -47,35 +47,38 @@ export default function MobileBottomNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-[200] bg-surface/95 backdrop-blur-sm border-t border-default pb-[env(safe-area-inset-bottom)]"
+      className="lg:hidden fixed bottom-0 inset-x-0 z-[200] w-full max-w-[100vw] bg-surface/95 backdrop-blur-sm border-t border-default pb-[env(safe-area-inset-bottom,0px)]"
       aria-label={locale === 'fr' ? 'Navigation principale' : 'Main navigation'}
     >
-      <ul className="flex items-center justify-around">
+      <ul className="flex w-full items-stretch justify-between px-0.5">
         {items.map(({ href, icon: Icon, labelFr, labelEn, seg }) => {
           const active = pathname.includes(`/${seg}`);
           const badge = badgeFor(seg);
+          const label = locale === 'fr' ? labelFr : labelEn;
           return (
-            <li key={href}>
+            <li key={href} className="min-w-0 flex-1">
               <Link
                 href={`/${locale}${href}`}
                 className={cn(
-                  'relative flex flex-col items-center gap-0.5 px-2 py-2 text-[11px] font-medium min-w-[56px] min-h-[52px] justify-center transition-colors duration-[160ms]',
+                  'relative flex h-full min-h-[52px] w-full flex-col items-center justify-center gap-0.5 px-0.5 py-1.5 text-[10px] font-medium leading-tight transition-colors duration-[160ms] sm:text-[11px]',
                   active
-                    ? 'text-brand-700 before:absolute before:top-0 before:inset-x-3 before:h-0.5 before:rounded-full before:bg-brand-600'
-                    : badge > 0 ? 'text-secondary' : 'text-muted'
+                    ? 'text-brand-700 before:absolute before:top-0 before:inset-x-2 before:h-0.5 before:rounded-full before:bg-brand-600'
+                    : badge > 0
+                      ? 'text-secondary'
+                      : 'text-muted',
                 )}
                 aria-current={active ? 'page' : undefined}
               >
-                <span className="relative">
-                  <Icon className="w-5 h-5" aria-hidden />
-                  {badge > 0 && (
+                <span className="relative shrink-0">
+                  <Icon className="h-5 w-5" aria-hidden />
+                  {badge > 0 ? (
                     <UnreadBadge
                       count={badge}
-                      className="absolute -top-1.5 -right-2 min-w-[16px] h-4 text-[9px]"
+                      className="absolute -right-2 -top-1.5 h-4 min-w-[16px] text-[9px]"
                     />
-                  )}
+                  ) : null}
                 </span>
-                {locale === 'fr' ? labelFr : labelEn}
+                <span className="max-w-full truncate px-0.5 text-center">{label}</span>
               </Link>
             </li>
           );

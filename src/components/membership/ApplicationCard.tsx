@@ -225,35 +225,35 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
 
   return (
     <div className={cn(
-      'p-6 rounded-xl bg-card border transition-all',
+      'p-4 sm:p-6 rounded-xl bg-card border transition-all contain-x',
       application.status === 'approved' || application.status === 'rejected'
         ? 'border-subtle opacity-75'
         : 'border-default hover:border-default'
     )}>
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-default flex items-center justify-center">
-            <User className="w-6 h-6 text-brand-400" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-default bg-gradient-to-br from-blue-500/20 to-purple-500/20 sm:h-12 sm:w-12">
+            <User className="h-5 w-5 text-brand-400 sm:h-6 sm:w-6" />
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-primary">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-semibold text-primary sm:text-lg break-words">
               {application.firstName} {application.lastName}
             </h3>
-            <div className="flex flex-wrap items-center gap-3 mt-1">
-              <span className="inline-flex items-center gap-1.5 text-sm text-secondary">
-                <Mail className="w-4 h-4" />
-                {application.email}
+            <div className="mt-1 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+              <span className="inline-flex min-w-0 items-center gap-1.5 text-sm text-secondary">
+                <Mail className="h-4 w-4 shrink-0" />
+                <span className="truncate">{application.email}</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 text-sm text-secondary">
-                <Phone className="w-4 h-4" />
-                {application.whatsapp}
+              <span className="inline-flex min-w-0 items-center gap-1.5 text-sm text-secondary">
+                <Phone className="h-4 w-4 shrink-0" />
+                <span className="truncate">{application.whatsapp}</span>
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center justify-between gap-2 sm:justify-end sm:gap-3">
           {getStatusBadge()}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
