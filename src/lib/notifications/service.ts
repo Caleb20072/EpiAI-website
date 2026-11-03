@@ -39,11 +39,15 @@ function buildActionUrl(link?: string): string | undefined {
 
 async function sendOfflinePush(userId: string, params: NotifyPayload) {
   try {
+    const channelTag =
+      params.type === 'chat' && params.link?.includes('channel=')
+        ? params.link.split('channel=')[1]?.split('&')[0]
+        : null;
     await sendPushToUserId(userId, {
-      title: `[${TYPE_LABELS[params.type]}] ${params.title}`,
+      title: params.type === 'chat' ? params.title : `[${TYPE_LABELS[params.type]}] ${params.title}`,
       body: params.message,
       url: buildActionUrl(params.link),
-      tag: `${params.type}-alert`,
+      tag: channelTag ? `chat-${channelTag}` : `${params.type}-alert`,
     });
   } catch (err) {
     logger.warn('Push alert failed', { userId, type: params.type, err: String(err) });

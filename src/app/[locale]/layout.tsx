@@ -62,12 +62,26 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
   },
+  manifest: '/manifest.webmanifest',
+  applicationName: "Epi'AI",
+  appleWebApp: {
+    capable: true,
+    title: "Epi'AI",
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   icons: {
     icon: [
+      { url: '/icons/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icons/icon-512.png', type: 'image/png', sizes: '512x512' },
       { url: '/favicon.png', type: 'image/png' },
-      { url: '/assets/epiai-logo.png', type: 'image/png', sizes: '512x512' },
     ],
-    apple: '/assets/epiai-logo.png',
+    apple: [{ url: '/icons/icon-180.png', sizes: '180x180', type: 'image/png' }],
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
   },
 };
 
@@ -75,6 +89,10 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#0D1B4A' },
+    { media: '(prefers-color-scheme: dark)', color: '#0D1B4A' },
+  ],
   // Le visual viewport rétrécit avec le clavier : le chat se compacte au-dessus.
   interactiveWidget: "resizes-visual",
 };

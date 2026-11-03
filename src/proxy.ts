@@ -101,14 +101,22 @@ export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname;
   if (
     pathname === '/push-sw.js' ||
+    pathname === '/manifest.webmanifest' ||
+    pathname.startsWith('/icons/') ||
     pathname.startsWith('/assets/') ||
     pathname.startsWith('/uploads/') ||
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|pdf|docx?|xlsx?|pptx?|zip|rar|gz|tar|mp4|webm|mp3|wav|csv|json|xml|txt)$/)
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|pdf|docx?|xlsx?|pptx?|zip|rar|gz|tar|mp4|webm|mp3|wav|csv|json|xml|txt|webmanifest)$/)
   ) {
     if (pathname === '/push-sw.js') {
       const res = NextResponse.next();
       res.headers.set('Service-Worker-Allowed', '/');
       res.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      return res;
+    }
+    if (pathname === '/manifest.webmanifest') {
+      const res = NextResponse.next();
+      res.headers.set('Content-Type', 'application/manifest+json; charset=utf-8');
+      res.headers.set('Cache-Control', 'public, max-age=3600');
       return res;
     }
     return;
@@ -154,6 +162,6 @@ export const config = {
     // - _next/image (image optimization files)
     // - favicon.ico (favicon file)
     // - static files in public folder are handled in the middleware function
-    '/((?!_next/static|_next/image|favicon.ico|push-sw\\.js).*)',
+    '/((?!_next/static|_next/image|favicon.ico|push-sw\\.js|manifest\\.webmanifest|icons/).*)',
   ],
 };

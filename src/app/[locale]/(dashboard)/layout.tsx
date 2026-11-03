@@ -38,6 +38,7 @@ import { getRoleName } from '@/lib/roles/utils';
 import GlobalSearch from '@/components/dashboard/GlobalSearch';
 import NotificationBell from '@/components/dashboard/NotificationBell';
 import PushNotificationManager from '@/components/dashboard/PushNotificationManager';
+import PwaInstallBanner from '@/components/dashboard/PwaInstallBanner';
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileBottomNav from '@/components/dashboard/MobileBottomNav';
@@ -429,7 +430,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 : 'p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8',
             )}
           >
-            {!isChatPage && <PushNotificationManager />}
+            {!isChatPage && (
+              <>
+                <PwaInstallBanner />
+                <PushNotificationManager />
+              </>
+            )}
             {children}
           </main>
         </div>

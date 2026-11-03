@@ -17,10 +17,15 @@ import { ChannelSidebar } from './ChannelSidebar';
 import { CHAT_CHANNEL_IDS } from '@/lib/chat/channels';
 import { ArrowLeft, Loader2, Menu } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import 'stream-chat-react/dist/css/v2/index.css';
 import '@/styles/stream-chat-custom.css';
+
+function initialChannelFromQuery(raw: string | null): string {
+  if (!raw) return 'general';
+  return CHAT_CHANNEL_IDS.includes(raw as (typeof CHAT_CHANNEL_IDS)[number]) ? raw : 'general';
+}
 
 interface TokenData {
     token: string;
@@ -32,14 +37,22 @@ interface TokenData {
 
 function ChatClient({ tokenData }: { tokenData: TokenData }) {
     const params = useParams();
+    const searchParams = useSearchParams();
     const locale = (params.locale as string) || 'fr';
-    const [activeChannelId, setActiveChannelId] = useState<string>('general');
+    const [activeChannelId, setActiveChannelId] = useState<string>(() =>
+      initialChannelFromQuery(searchParams.get('channel')),
+    );
     const [activeChannel, setActiveChannel] = useState<StreamChannel | undefined>();
     const [connected, setConnected] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [channelError, setChannelError] = useState<string | null>(null);
     const [channelLoading, setChannelLoading] = useState(false);
     const [channelRetry, setChannelRetry] = useState(0);
+
+    useEffect(() => {
+      const fromUrl = initialChannelFromQuery(searchParams.get('channel'));
+      setActiveChannelId((prev) => (prev === fromUrl ? prev : fromUrl));
+    }, [searchParams]);
 
     const client = useCreateChatClient({
         apiKey: tokenData.apiKey,
@@ -115,6 +128,13 @@ function ChatClient({ tokenData }: { tokenData: TokenData }) {
     const handleChannelSelect = (id: string) => {
         setActiveChannelId(id);
         setSidebarOpen(false);
+        try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('channel', id);
+            window.history.replaceState({}, '', url.toString());
+        } catch {
+            /* ignore */
+        }
     };
 
     if (!client || !connected) {

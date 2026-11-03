@@ -66,21 +66,23 @@ export async function POST(request: NextRequest) {
 
   const channelName = channelDisplayName(channelId);
   const preview = text.length > 120 ? `${text.slice(0, 117)}…` : text;
-  let notified = 0;
+  const link = `/chat?channel=${encodeURIComponent(channelId)}`;
 
-  for (const memberId of memberIds) {
-    if (memberId === senderId || memberId === 'system') continue;
-
-    await notifyUser({
-      clerkId: memberId,
-      type: 'chat',
-      title: `Nouveau message — ${channelName}`,
-      message: `${senderName} : ${preview}`,
-      link: '/chat',
-      skipEmail: true,
-    });
-    notified++;
-  }
+  const results = await Promise.all(
+    memberIds
+      .filter((memberId) => memberId !== senderId && memberId !== 'system')
+      .map((memberId) =>
+        notifyUser({
+          clerkId: memberId,
+          type: 'chat',
+          title: `Nouveau message — ${channelName}`,
+          message: `${senderName} : ${preview}`,
+          link,
+          skipEmail: true,
+        }),
+      ),
+  );
+  const notified = results.filter(Boolean).length;
 
   logger.info('Stream chat push sent', { channelId, notified, senderId });
   return NextResponse.json({ ok: true, notified });
