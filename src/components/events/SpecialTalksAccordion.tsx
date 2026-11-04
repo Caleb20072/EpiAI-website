@@ -74,13 +74,8 @@ export function SpecialTalksAccordion({ talks, locale, initialOpenId = null }: P
               onClick={() => setOpenId(open ? null : cat.id)}
               className="flex w-full cursor-pointer items-start gap-4 py-5 text-left transition-colors duration-160 hover:bg-card-muted/50"
             >
-              <span
-                className={cn(
-                  'mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-                  cat.bgColor,
-                )}
-              >
-                <Icon className={cn('h-5 w-5', cat.color)} aria-hidden />
+              <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-default bg-card">
+                <Icon className="h-5 w-5 text-brand-700" strokeWidth={1.5} aria-hidden />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">

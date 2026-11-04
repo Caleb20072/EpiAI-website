@@ -1,8 +1,16 @@
 'use client';
 
 import { StreamChat, type Event } from 'stream-chat';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ComponentType } from 'react';
 import { useParams } from 'next/navigation';
+import {
+    BarChart3,
+    FolderKanban,
+    Globe2,
+    Megaphone,
+    MessageCircle,
+    Sparkles,
+} from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { CHAT_CHANNELS } from '@/lib/chat/channels';
 import { showClientNotification } from '@/lib/push/client-notify';
@@ -11,17 +19,17 @@ import { UnreadBadge } from './UnreadBadge';
 interface ChannelDef {
     id: string;
     label: string;
-    icon: string;
+    Icon: ComponentType<{ className?: string; strokeWidth?: number }>;
     description: string;
 }
 
 const CHANNEL_UI: ChannelDef[] = [
-    { id: 'general', label: 'Général', icon: '💬', description: 'Canal principal' },
-    { id: 'ai-discussion', label: 'Intelligence Artificielle', icon: '🧠', description: 'IA & ML' },
-    { id: 'web-dev', label: 'Web & Mobile', icon: '🌐', description: 'Dev web et mobile' },
-    { id: 'data', label: 'Data Science', icon: '📊', description: 'Data & analyse' },
-    { id: 'projets', label: 'Projets', icon: '🚀', description: 'Projets asso' },
-    { id: 'annonces', label: 'Annonces', icon: '📢', description: 'Annonces officielles' },
+    { id: 'general', label: 'Général', Icon: MessageCircle, description: 'Canal principal' },
+    { id: 'ai-discussion', label: 'Intelligence Artificielle', Icon: Sparkles, description: 'IA & ML' },
+    { id: 'web-dev', label: 'Web & Mobile', Icon: Globe2, description: 'Dev web et mobile' },
+    { id: 'data', label: 'Data Science', Icon: BarChart3, description: 'Data & analyse' },
+    { id: 'projets', label: 'Projets', Icon: FolderKanban, description: 'Projets asso' },
+    { id: 'annonces', label: 'Annonces', Icon: Megaphone, description: 'Annonces officielles' },
 ];
 
 interface ChannelSidebarProps {
@@ -134,6 +142,7 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
                 {CHANNEL_UI.map((ch) => {
                     const isActive = activeChannelId === ch.id;
                     const unread = unreadCounts[ch.id] || 0;
+                    const { Icon } = ch;
 
                     return (
                         <button
@@ -148,16 +157,16 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
                                       : 'text-muted hover:bg-card hover:text-secondary'
                             )}
                         >
-                            <span className="text-lg shrink-0 relative">
-                                {ch.icon}
-                                {unread > 0 && isActive && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-zinc-900" />
-                                )}
+                            <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-default bg-card">
+                                <Icon className="h-4 w-4 text-brand-700" strokeWidth={1.5} />
+                                {unread > 0 && isActive ? (
+                                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-600 ring-2 ring-surface" />
+                                ) : null}
                             </span>
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0 flex-1">
                                 <p className={cn(
-                                    'text-sm font-medium truncate',
-                                    unread > 0 && !isActive ? 'text-primary font-semibold' : isActive ? 'text-primary' : ''
+                                    'truncate text-sm font-medium',
+                                    unread > 0 && !isActive ? 'font-semibold text-primary' : isActive ? 'text-primary' : ''
                                 )}>
                                     {ch.label}
                                 </p>

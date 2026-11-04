@@ -14,8 +14,8 @@ export const CATEGORIES: ICategory[] = [
       fr: 'Parcours et leadership des femmes dans l’IA.',
     },
     icon: 'Sparkles',
-    color: 'text-rose-400',
-    bgColor: 'bg-rose-400/10',
+    color: 'text-brand-700',
+    bgColor: 'bg-brand-50',
   },
   {
     id: 'ai-leaders',
@@ -26,8 +26,8 @@ export const CATEGORIES: ICategory[] = [
       fr: 'Échanges avec des professionnels et décideurs de l’IA.',
     },
     icon: 'Mic2',
-    color: 'text-brand-400',
-    bgColor: 'bg-brand-400/10',
+    color: 'text-brand-700',
+    bgColor: 'bg-brand-50',
   },
   {
     id: 'research',
@@ -38,8 +38,8 @@ export const CATEGORIES: ICategory[] = [
       fr: 'Échanges avec des chercheurs et doctorants en IA.',
     },
     icon: 'FlaskConical',
-    color: 'text-teal-400',
-    bgColor: 'bg-teal-400/10',
+    color: 'text-brand-700',
+    bgColor: 'bg-brand-50',
   },
   {
     id: 'builders',
@@ -50,8 +50,8 @@ export const CATEGORIES: ICategory[] = [
       fr: 'Entrepreneurs et ingénieurs qui construisent des solutions concrètes en IA.',
     },
     icon: 'Hammer',
-    color: 'text-amber-400',
-    bgColor: 'bg-amber-400/10',
+    color: 'text-brand-700',
+    bgColor: 'bg-brand-50',
   },
   {
     id: 'masterclass',
@@ -62,8 +62,8 @@ export const CATEGORIES: ICategory[] = [
       fr: 'Sessions approfondies pour apprendre, pratiquer et aller plus loin.',
     },
     icon: 'GraduationCap',
-    color: 'text-cyan-400',
-    bgColor: 'bg-cyan-400/10',
+    color: 'text-brand-700',
+    bgColor: 'bg-brand-50',
   },
 ];
 

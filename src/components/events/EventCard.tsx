@@ -63,9 +63,9 @@ export function EventCard({ event, href, className }: EventCardProps) {
           imgClassName="group-hover:scale-105 transition-transform duration-500"
         />
 
-        <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm border border-default">
-          <Icon className={cn('w-3.5 h-3.5', event.categoryColor)} />
-          <span className="text-primary text-xs font-medium">{categoryName}</span>
+        <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-lg border border-default bg-card/95 px-2.5 py-1 backdrop-blur-sm">
+          <Icon className="h-3.5 w-3.5 text-brand-700" strokeWidth={1.5} />
+          <span className="text-xs font-medium text-primary">{categoryName}</span>
         </div>
       </div>
 

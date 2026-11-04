@@ -74,7 +74,7 @@ export function CategoryFilter({ className }: CategoryFilterProps) {
                 : 'border-default bg-card text-secondary hover:bg-card-muted hover:text-primary',
             )}
           >
-            <Icon className={cn('h-4 w-4', category.color)} />
+            <Icon className="h-4 w-4 text-brand-700" strokeWidth={1.5} />
             <span>{category.name[locale as 'en' | 'fr'] || category.name.en}</span>
           </button>
         );
