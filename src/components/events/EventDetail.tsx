@@ -88,7 +88,7 @@ export function EventDetail({
         />
 
         <div className="absolute top-6 left-6 z-[2] inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-default pointer-events-none">
-          <Icon className="h-5 w-5 text-brand-700" strokeWidth={1.5} />
+          <Icon className="h-5 w-5 text-brand-700" />
           <span className="text-primary font-medium">{categoryName}</span>
         </div>
 

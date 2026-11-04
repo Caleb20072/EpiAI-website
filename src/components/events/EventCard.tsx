@@ -64,7 +64,7 @@ export function EventCard({ event, href, className }: EventCardProps) {
         />
 
         <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-lg border border-default bg-card/95 px-2.5 py-1 backdrop-blur-sm">
-          <Icon className="h-3.5 w-3.5 text-brand-700" strokeWidth={1.5} />
+          <Icon className="h-3.5 w-3.5 text-brand-700" />
           <span className="text-xs font-medium text-primary">{categoryName}</span>
         </div>
       </div>
