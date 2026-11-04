@@ -9,6 +9,7 @@ import ImpactSection from '@/components/ImpactSection';
 import TeamSection from '@/components/TeamSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import EventsSection from '@/components/EventsSection';
+import WeeklySection from '@/components/WeeklySection';
 import JoinSection from '@/components/JoinSection';
 import Footer from '@/components/Footer';
 import { getTeamMembersForDisplay } from '@/lib/team/repository';
@@ -42,7 +43,7 @@ export default async function Home() {
   const [teamMembers, projects, events] = await Promise.all([
     getTeamMembersForDisplay().catch(() => []),
     getProjects(true).catch(() => []),
-    getPublicEvents(6).catch(() => []),
+    getPublicEvents(50).catch(() => []),
   ]);
 
   const nextEvent =
@@ -87,6 +88,7 @@ export default async function Home() {
         <TeamSection initialMembers={teamMembers} locale={locale} />
         <ProjectsSection initialProjects={projects} />
         <EventsSection initialEvents={events} />
+        <WeeklySection />
         <JoinSection />
       </main>
 

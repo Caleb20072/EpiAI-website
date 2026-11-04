@@ -12,10 +12,10 @@ import {
   MapPin,
   Users,
   Globe,
-  Wrench,
   Mic2,
-  Code2,
-  Users2,
+  FlaskConical,
+  Hammer,
+  Sparkles,
   GraduationCap,
   ExternalLink,
   Expand,
@@ -24,10 +24,10 @@ import { EventCoverImage } from './EventCoverImage';
 import { ImageLightbox } from './ImageLightbox';
 
 const iconComponents: Record<string, React.ComponentType<{ className?: string }>> = {
-  Wrench,
+  Sparkles,
   Mic2,
-  Code2,
-  Users: Users2,
+  FlaskConical,
+  Hammer,
   GraduationCap,
 };
 

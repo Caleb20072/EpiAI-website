@@ -30,9 +30,10 @@ export default function AboutSection() {
                             className="p-8 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/[0.08] hover:border-brand-500/25 hover:bg-white/[0.05] transition-all duration-300"
                         >
                             <h3 className="text-2xl font-semibold mb-4 text-brand-300">{card.title}</h3>
-                            <p className="text-zinc-400 leading-relaxed text-base font-light">
-                                {card.text}
-                            </p>
+                            <div className="space-y-3 text-base font-light leading-relaxed text-zinc-400">
+                                <p>{card.text}</p>
+                                {card.title === t('impact_title') ? <p>{t('impact_text_2')}</p> : null}
+                            </div>
                         </div>
                     ))}
                 </div>

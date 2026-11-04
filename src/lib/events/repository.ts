@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { normalizeImageUrl } from '@/lib/utils/image-url';
-import { CATEGORIES as EVENT_CATEGORIES } from './categories';
+import { getCategory } from './categories';
 import type {
   EventWithDetails,
   RegistrationWithUser,
@@ -15,7 +15,7 @@ export { CATEGORIES } from './categories';
 
 // Helper pour transformer un event MongoDB en format API
 function transformEvent(doc: any, isRegistered: boolean = false): EventWithDetails {
-  const category = EVENT_CATEGORIES.find(c => c.id === doc.categoryId);
+  const category = getCategory(doc.categoryId);
   const now = new Date();
   const eventDate = new Date(doc.date);
   const isPast = eventDate < now;
@@ -31,10 +31,10 @@ function transformEvent(doc: any, isRegistered: boolean = false): EventWithDetai
     descriptionFr: doc.descriptionFr || undefined,
     contentEn: doc.contentEn || undefined,
     contentFr: doc.contentFr || undefined,
-    categoryId: doc.categoryId,
-    categoryName: category?.name.en || 'Event',
-    categoryColor: category?.color || 'text-gray-400',
-    categoryIcon: category?.icon || 'Calendar',
+    categoryId: category.id,
+    categoryName: category.name.en || 'Talk',
+    categoryColor: category.color || 'text-gray-400',
+    categoryIcon: category.icon || 'Calendar',
     date: doc.date.toISOString(),
     endDate: doc.endDate?.toISOString(),
     location: doc.location,

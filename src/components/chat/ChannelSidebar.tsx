@@ -1,9 +1,11 @@
 'use client';
 
-import { StreamChat } from 'stream-chat';
+import { StreamChat, type Event } from 'stream-chat';
 import { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import { CHAT_CHANNELS } from '@/lib/chat/channels';
+import { showClientNotification } from '@/lib/push/client-notify';
 import { UnreadBadge } from './UnreadBadge';
 
 interface ChannelDef {
@@ -31,6 +33,8 @@ interface ChannelSidebarProps {
 }
 
 export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelect, className }: ChannelSidebarProps) {
+    const params = useParams();
+    const locale = (params.locale as string) || 'fr';
     const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
 
     const syncUnread = useCallback((channels: Awaited<ReturnType<StreamChat['queryChannels']>>) => {
@@ -70,23 +74,53 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
             window.dispatchEvent(new CustomEvent('chat-unread-changed'));
         };
 
+        const handleIncoming = (event: Event) => {
+            handleUpdate();
+            const msg = event.message;
+            const senderId = msg?.user?.id;
+            if (!senderId || senderId === userId || senderId === 'system') return;
+
+            const channelId =
+                event.channel_id ||
+                (typeof event.cid === 'string' ? event.cid.split(':')[1] : undefined) ||
+                '';
+            if (!channelId) return;
+
+            // Canal ouvert et onglet visible → pas de notif OS
+            if (!document.hidden && channelId === activeChannelId) return;
+
+            const channelMeta = CHANNEL_UI.find((c) => c.id === channelId);
+            const text = (msg?.text || '').trim();
+            if (!text) return;
+            const preview = text.length > 120 ? `${text.slice(0, 117)}…` : text;
+            const senderName = msg?.user?.name || 'Un membre';
+
+            void showClientNotification({
+                title: `Nouveau message — ${channelMeta?.label || channelId}`,
+                body: `${senderName} : ${preview}`,
+                url: `/${locale}/chat?channel=${encodeURIComponent(channelId)}`,
+                tag: `chat-${channelId}`,
+                force: true,
+            });
+        };
+
         watchChannels();
 
-        client.on('message.new', handleUpdate);
+        client.on('message.new', handleIncoming);
         client.on('message.read', handleUpdate);
-        client.on('notification.message_new', handleUpdate);
+        client.on('notification.message_new', handleIncoming);
         client.on('notification.mark_read', handleUpdate);
         client.on('notification.mark_unread', handleUpdate);
 
         return () => {
             mounted = false;
-            client.off('message.new', handleUpdate);
+            client.off('message.new', handleIncoming);
             client.off('message.read', handleUpdate);
-            client.off('notification.message_new', handleUpdate);
+            client.off('notification.message_new', handleIncoming);
             client.off('notification.mark_read', handleUpdate);
             client.off('notification.mark_unread', handleUpdate);
         };
-    }, [client, userId, syncUnread]);
+    }, [client, userId, syncUnread, activeChannelId, locale]);
 
     return (
         <div className={cn('w-64 max-w-[85vw] shrink-0 border-r border-default bg-surface lg:bg-black/30 flex flex-col h-full', className)}>

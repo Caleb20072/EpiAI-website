@@ -27,7 +27,7 @@ const items: NavItem[] = [
   { href: '/resources', icon: FolderOpen, labelFr: 'Ressources', labelEn: 'Resources', seg: 'resources' },
   { href: '/forum', icon: MessageSquare, labelFr: 'Forum', labelEn: 'Forum', seg: 'forum' },
   { href: '/chat', icon: MessagesSquare, labelFr: 'Chat', labelEn: 'Chat', seg: 'chat' },
-  { href: '/events', icon: Calendar, labelFr: 'Événements', labelEn: 'Events', seg: 'events' },
+  { href: '/events', icon: Calendar, labelFr: 'Talks', labelEn: 'Talks', seg: 'events' },
 ];
 
 export default function MobileBottomNav() {

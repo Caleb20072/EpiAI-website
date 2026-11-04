@@ -42,6 +42,8 @@ import PwaInstallBanner from '@/components/dashboard/PwaInstallBanner';
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileBottomNav from '@/components/dashboard/MobileBottomNav';
+import InAppAlertBridge from '@/components/dashboard/InAppAlertBridge';
+import ChatLiveAlerts from '@/components/chat/ChatLiveAlerts';
 import { UnreadBadge } from '@/components/chat/UnreadBadge';
 import { useChatUnreadCount } from '@/hooks/useChatUnreadCount';
 import { markNotificationTypeRead, useNotificationCounts } from '@/hooks/useNotificationCounts';
@@ -262,129 +264,127 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-overlay z-40 lg:hidden"
+            className="fixed inset-0 z-[210] bg-overlay lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Sidebar */}
+        {/* Sidebar — footer always visible; bottom nav is hidden while open on mobile */}
         <aside
           className={cn(
-            'fixed top-0 left-0 z-50 h-full w-64 bg-surface border-r border-default transform transition-transform duration-300 lg:translate-x-0',
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            'fixed top-0 left-0 z-[220] flex h-dvh max-h-dvh w-[min(16rem,88vw)] flex-col border-r border-default bg-surface transform transition-transform duration-300 lg:z-50 lg:w-64 lg:translate-x-0',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           )}
         >
-          <div className="flex flex-col h-full">
-            <div className="px-4 h-[60px] flex items-center border-b border-subtle">
-              <Link
-                href={dashboardHref}
-                onClick={handleLogoClick}
-                className="flex items-center gap-3 rounded-md"
-                aria-label={locale === 'fr' ? 'Tableau de bord EPI\'AI' : 'EPI\'AI dashboard'}
-              >
-                <BrandWordmark size="sm" />
-                <span className="text-muted text-[13px] font-medium">{t('memberSpace')}</span>
-              </Link>
-            </div>
+          <div className="flex min-h-[calc(3.75rem+env(safe-area-inset-top,0px))] shrink-0 items-center border-b border-subtle px-4 pt-[env(safe-area-inset-top,0px)]">
+            <Link
+              href={dashboardHref}
+              onClick={handleLogoClick}
+              className="flex min-w-0 items-center gap-3 rounded-md"
+              aria-label={locale === 'fr' ? 'Tableau de bord EPI\'AI' : 'EPI\'AI dashboard'}
+            >
+              <BrandWordmark size="sm" />
+              <span className="truncate text-[13px] font-medium text-muted">{t('memberSpace')}</span>
+            </Link>
+          </div>
 
-            <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'nav-item',
-                      item.active ? 'nav-item-active' : 'nav-item-inactive'
-                    )}
-                  >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span className="flex-1 truncate">{item.label}</span>
-                    {'badge' in item && typeof item.badge === 'number' && item.badge > 0 ? (
-                      <UnreadBadge count={item.badge} />
-                    ) : null}
-                  </Link>
-                );
-              })}
-
-              {isAdmin && (
-                <>
-                  <div className="pt-4 pb-1.5">
-                    <p className="px-3 text-[12px] font-semibold text-muted">
-                      {t('adminSection')}
-                    </p>
-                  </div>
-                  {adminItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          'nav-item',
-                          item.active ? 'nav-item-admin-active' : 'nav-item-inactive'
-                        )}
-                      >
-                        <Icon className="w-4 h-4 shrink-0" />
-                        <span className="flex-1 truncate">{item.label}</span>
-                        {'badge' in item && typeof item.badge === 'number' && item.badge > 0 ? (
-                          <UnreadBadge count={item.badge} />
-                        ) : null}
-                      </Link>
-                    );
-                  })}
-
-                  {isAdmin && (
-                    <div className="px-1 pt-3">
-                      <a
-                        href={`/${locale}/admin/projects/new`}
-                        className="flex items-center justify-center gap-2 w-full min-h-10 rounded-lg bg-brand-600 hover:bg-brand-700 dark:hover:bg-brand-500 text-white text-[14px] font-medium transition-[background-color,transform] duration-[180ms] active:scale-[0.98] no-underline"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>{t('newProject')}</span>
-                      </a>
-                    </div>
-                  )}
-                </>
-              )}
-            </nav>
-
-            <div className="p-3 border-t border-subtle">
-              <div className="flex items-center gap-2.5 mb-3 px-1">
-                <UserButton
-                  {...userButtonProps(locale)}
-                  appearance={{
-                    elements: {
-                      avatarBox: 'w-9 h-9 rounded-full ring-2 ring-default',
-                    },
-                  }}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-primary font-medium text-sm truncate leading-tight">
-                    {user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress || 'User'}
-                  </p>
-                  <p className={cn('text-[11px] truncate mt-0.5', roleId ? 'text-brand-700' : 'text-muted')}>
-                    {roleId ? getRoleName(roleId, locale as 'en' | 'fr') : 'Member'}
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-1.5">
+          <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto overscroll-contain px-3 py-3">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
                 <Link
-                  href={`/${locale}`}
-                  className="flex items-center justify-center gap-2 w-full min-h-9 rounded-lg border border-default bg-card text-secondary hover:text-primary hover:bg-card-muted transition-colors duration-[160ms] text-[13px] font-medium"
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={cn(
+                    'nav-item',
+                    item.active ? 'nav-item-active' : 'nav-item-inactive',
+                  )}
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  {t('backHome')}
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {'badge' in item && typeof item.badge === 'number' && item.badge > 0 ? (
+                    <UnreadBadge count={item.badge} />
+                  ) : null}
                 </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center justify-center gap-2 w-full min-h-9 rounded-lg text-muted hover:text-primary hover:bg-card-muted transition-colors duration-[160ms] text-[13px] font-medium"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  {t('signOut')}
-                </button>
+              );
+            })}
+
+            {isAdmin ? (
+              <>
+                <div className="pb-1.5 pt-4">
+                  <p className="px-3 text-[12px] font-semibold text-muted">{t('adminSection')}</p>
+                </div>
+                {adminItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={cn(
+                        'nav-item',
+                        item.active ? 'nav-item-admin-active' : 'nav-item-inactive',
+                      )}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span className="flex-1 truncate">{item.label}</span>
+                      {'badge' in item && typeof item.badge === 'number' && item.badge > 0 ? (
+                        <UnreadBadge count={item.badge} />
+                      ) : null}
+                    </Link>
+                  );
+                })}
+                <div className="px-1 pb-2 pt-3">
+                  <a
+                    href={`/${locale}/admin/projects/new`}
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 text-[14px] font-medium text-white no-underline transition-[background-color,transform] duration-[180ms] hover:bg-brand-700 active:scale-[0.98] dark:hover:bg-brand-500"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>{t('newProject')}</span>
+                  </a>
+                </div>
+              </>
+            ) : null}
+          </nav>
+
+          <div className="shrink-0 border-t border-subtle bg-surface p-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
+            <div className="mb-3 flex items-center gap-2.5 px-1">
+              <UserButton
+                {...userButtonProps(locale)}
+                appearance={{
+                  elements: {
+                    avatarBox: 'w-9 h-9 rounded-full ring-2 ring-default',
+                  },
+                }}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium leading-tight text-primary">
+                  {user?.firstName || user?.username || user?.emailAddresses[0]?.emailAddress || 'User'}
+                </p>
+                <p className={cn('mt-0.5 truncate text-[11px]', roleId ? 'text-brand-700' : 'text-muted')}>
+                  {roleId ? getRoleName(roleId, locale as 'en' | 'fr') : 'Member'}
+                </p>
               </div>
+            </div>
+            <div className="space-y-1.5">
+              <Link
+                href={`/${locale}`}
+                onClick={() => setSidebarOpen(false)}
+                className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-default bg-card text-[13px] font-medium text-secondary transition-colors duration-[160ms] hover:bg-card-muted hover:text-primary"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                {t('backHome')}
+              </Link>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500/25 bg-red-500/10 text-[13px] font-medium text-red-400 transition-colors duration-[160ms] hover:bg-red-500/20"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                {t('signOut')}
+              </button>
             </div>
           </div>
         </aside>
@@ -448,7 +448,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </main>
         </div>
         <OnboardingWizard />
-        {!isChatPage && <MobileBottomNav />}
+        {isSignedIn ? (
+          <>
+            <ChatLiveAlerts enabled />
+            <InAppAlertBridge enabled />
+          </>
+        ) : null}
+        {!isChatPage && !sidebarOpen ? <MobileBottomNav /> : null}
       </div>
     </ProtectedRoute>
   );

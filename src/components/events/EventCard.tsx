@@ -14,18 +14,18 @@ import {
   MapPin,
   Users,
   Globe,
-  Wrench,
   Mic2,
-  Code2,
-  Users2,
+  FlaskConical,
+  Hammer,
+  Sparkles,
   GraduationCap,
 } from 'lucide-react';
 
 const iconComponents: Record<string, ComponentType<{ className?: string }>> = {
-  Wrench,
+  Sparkles,
   Mic2,
-  Code2,
-  Users: Users2,
+  FlaskConical,
+  Hammer,
   GraduationCap,
 };
 

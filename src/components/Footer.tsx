@@ -55,11 +55,14 @@ export default function Footer() {
             <div className="max-w-[1280px] mx-auto pt-16 pb-10 grid gap-12 md:grid-cols-12">
                 <div className="md:col-span-5">
                     <BrandWordmark size="lg" />
-                    <p className="mt-5 text-[16px] leading-relaxed text-[#e8edf8] max-w-sm">
+                    <p className="mt-5 max-w-md text-[16px] leading-relaxed text-[#e8edf8]">
                         {t('tagline')}
                     </p>
-                    <p className="mt-2 text-[14px] leading-relaxed text-[#aab5cf] max-w-sm">
+                    <p className="mt-3 max-w-md text-[15px] font-medium leading-relaxed text-white">
                         {t('description')}
+                    </p>
+                    <p className="mt-4 text-[13px] font-semibold uppercase tracking-[0.06em] text-[#93c5fd]">
+                        {t('signature')}
                     </p>
                 </div>
 
@@ -69,7 +72,7 @@ export default function Footer() {
                         <li><Link href="/" className={navLink}>{t('home')}</Link></li>
                         <li><Link href="/#team" className={navLink}>{t('team')}</Link></li>
                         <li><Link href="/#projects" className={navLink}>{t('projects')}</Link></li>
-                        <li><Link href="/#events" className={navLink}>{t('events')}</Link></li>
+                        <li><Link href="/#special-talks" className={navLink}>{t('events')}</Link></li>
                         <li><Link href="/blog" className={navLink}>{t('blog')}</Link></li>
                         <li><Link href="/partners" className={navLink}>{t('partners')}</Link></li>
                         <li><Link href="/calendar" className={navLink}>{t('calendar')}</Link></li>

@@ -13,6 +13,20 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
 });
 
+function showAlert(payload) {
+  const url = payload.url || '/fr/dashboard';
+  return self.registration.showNotification(payload.title || "Epi'AI", {
+    body: payload.body || 'Nouvelle activité sur la plateforme',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-192.png',
+    tag: payload.tag || 'epiai-alert',
+    renotify: Boolean(payload.tag),
+    data: { url },
+    requireInteraction: false,
+    silent: false,
+  });
+}
+
 self.addEventListener('push', (event) => {
   let payload = { title: "Epi'AI", body: 'Nouvelle activité sur la plateforme', url: '/fr/dashboard' };
   try {
@@ -20,17 +34,19 @@ self.addEventListener('push', (event) => {
   } catch {
     if (event.data) payload.body = event.data.text();
   }
+  event.waitUntil(showAlert(payload));
+});
 
-  const url = payload.url || '/fr/dashboard';
+/** Notifications locales (onglet en arrière-plan / message chat reçu via WebSocket). */
+self.addEventListener('message', (event) => {
+  const data = event.data;
+  if (!data || data.type !== 'SHOW_NOTIFICATION') return;
   event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      tag: payload.tag || 'epiai-alert',
-      renotify: Boolean(payload.tag),
-      data: { url },
-      requireInteraction: false,
+    showAlert({
+      title: data.title,
+      body: data.body,
+      url: data.url,
+      tag: data.tag,
     }),
   );
 });

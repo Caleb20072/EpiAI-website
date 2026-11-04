@@ -58,9 +58,10 @@ export default function About() {
             {/* Card 3: Impact */}
             <div className="p-8 rounded-3xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors shadow-xl">
               <h2 className="text-2xl font-bold mb-4 text-cyan-300">{t('impact_title')}</h2>
-              <p className="text-gray-300 leading-relaxed">
-                {t('impact_text')}
-              </p>
+              <div className="space-y-3 text-gray-300 leading-relaxed">
+                <p>{t('impact_text')}</p>
+                <p>{t('impact_text_2')}</p>
+              </div>
             </div>
           </div>
         </div>

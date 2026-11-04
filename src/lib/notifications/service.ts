@@ -140,8 +140,11 @@ export async function notifyAllActiveMembers(params: NotifyPayload & { sendEmail
     })),
   });
 
-  if (params.sendEmail !== false) {
-    for (const user of users) {
+  // Toujours tenter le push OS ; l'email reste optionnel via sendEmail.
+  for (const user of users) {
+    if (params.sendEmail === false) {
+      await sendOfflinePush(user.id, params);
+    } else {
       await sendOfflineAlert(user, params);
     }
   }

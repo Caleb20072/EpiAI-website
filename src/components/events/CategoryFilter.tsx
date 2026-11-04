@@ -4,21 +4,20 @@ import { CATEGORIES } from '@/lib/events/categories';
 import { cn } from '@/lib/utils/cn';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Wrench,
-  Mic2,
-  Code2,
-  Users2,
+  FlaskConical,
   GraduationCap,
+  Hammer,
+  Mic2,
+  Sparkles,
   Calendar,
 } from 'lucide-react';
 
-const iconComponents: Record<string, any> = {
-  Wrench,
+const iconComponents: Record<string, typeof Calendar> = {
+  Sparkles,
   Mic2,
-  Code2,
-  Users: Users2,
+  FlaskConical,
+  Hammer,
   GraduationCap,
-  Calendar,
 };
 
 interface CategoryFilterProps {
@@ -29,7 +28,8 @@ export function CategoryFilter({ className }: CategoryFilterProps) {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const locale = params.locale as string || 'en';
+  const locale = (params.locale as string) || 'en';
+  const fr = locale === 'fr';
 
   const selectedCategory = searchParams.get('category') || 'all';
 
@@ -46,15 +46,16 @@ export function CategoryFilter({ className }: CategoryFilterProps) {
   return (
     <div className={cn('flex flex-wrap gap-2', className)}>
       <button
+        type="button"
         onClick={() => handleCategoryChange('all')}
         className={cn(
-          'px-4 py-2 rounded-xl text-sm font-medium transition-all',
+          'rounded-xl border px-4 py-2 text-sm font-medium transition-all',
           selectedCategory === 'all'
-            ? 'bg-white/20 text-primary border border-white/40'
-            : 'bg-card text-secondary hover:text-primary hover:bg-card-muted border border-default'
+            ? 'border-white/40 bg-white/20 text-primary'
+            : 'border-default bg-card text-secondary hover:bg-card-muted hover:text-primary',
         )}
       >
-        All
+        {fr ? 'Toutes les séries' : 'All series'}
       </button>
 
       {CATEGORIES.map((category) => {
@@ -63,16 +64,17 @@ export function CategoryFilter({ className }: CategoryFilterProps) {
 
         return (
           <button
+            type="button"
             key={category.id}
             onClick={() => handleCategoryChange(category.id)}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all',
+              'flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all',
               isSelected
-                ? 'bg-white/20 text-primary border border-white/40'
-                : 'bg-card text-secondary hover:text-primary hover:bg-card-muted border border-default'
+                ? 'border-white/40 bg-white/20 text-primary'
+                : 'border-default bg-card text-secondary hover:bg-card-muted hover:text-primary',
             )}
           >
-            <Icon className={cn('w-4 h-4', category.color)} />
+            <Icon className={cn('h-4 w-4', category.color)} />
             <span>{category.name[locale as 'en' | 'fr'] || category.name.en}</span>
           </button>
         );

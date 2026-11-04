@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Epi'AI",
     title: "Epi'AI — Association IA et data science | Epitech",
     description:
-      "Les maths, l'IA et la data, apprises ensemble. Association étudiante Epitech.",
+      "Une association pensée par les étudiants, dirigée par les étudiants et au service de la communauté étudiante.",
     images: [{ url: '/assets/epiai-logo.png', width: 512, height: 512, alt: "Epi'AI" }],
   },
   twitter: {

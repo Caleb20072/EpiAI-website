@@ -135,14 +135,23 @@ export async function sendInterviewSlotEmail(params: {
 }
 
 export async function sendAdmissionRejectedEmail(email: string, firstName: string, stage: string) {
+  const isTest = /test/i.test(stage);
+  const participationLine = isTest
+    ? `<p>Nous tenons surtout à te remercier d’avoir pris le temps de candidater et de participer au test d’entrée. Ton engagement compte vraiment pour nous.</p>`
+    : `<p>Nous tenons surtout à te remercier d’avoir pris le temps de candidater et de participer à l’entretien. Ton engagement compte vraiment pour nous.</p>`;
+
   return sendGenericEmail({
     email,
-    subject: "Candidature Epi'AI — décision",
+    subject: "Candidature Epi'AI — décision du jury",
     html: wrap(
-      'Décision',
+      'Décision du jury',
       `<p>Bonjour ${firstName},</p>
-       <p>Merci pour ta candidature. Après l’étape « ${stage} », l’équipe ne donne pas suite pour le moment.</p>
-       <p>Tu pourras représenter un dossier lors d’une prochaine session.</p>`,
+       <p>Après un examen attentif de ta candidature, nous ne pouvons malheureusement pas te proposer d’intégrer l’association Epi’AI à l’issue de cette session.</p>
+       ${participationLine}
+       <p>Les places sont limitées, et les résultats de cette session étaient particulièrement serrés. Faire un choix a été difficile pour le jury — cela ne remet pas en cause ta motivation ni ton parcours.</p>
+       <p>Tu ne pourras donc pas faire partie de l’association en tant que membre pour cette session. En revanche, tu continues d’avoir toute ta place dans la communauté Epi’AI : nos Special Talks, Epi’AI Weekly et les activités ouvertes au public restent accessibles à toutes et à tous.</p>
+       <p>Merci encore pour ta confiance. On te souhaite le meilleur pour la suite.</p>
+       <p style="margin-top:20px;color:#a1a1aa;">L’équipe Epi’AI</p>`,
     ),
   });
 }

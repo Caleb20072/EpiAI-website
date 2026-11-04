@@ -1,8 +1,12 @@
-// Catégorie d'événement
+// Série / catégorie Special Talks
 export interface ICategory {
   id: string;
   slug: string;
   name: {
+    en: string;
+    fr: string;
+  };
+  description?: {
     en: string;
     fr: string;
   };

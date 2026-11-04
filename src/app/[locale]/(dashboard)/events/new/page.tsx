@@ -25,7 +25,7 @@ export default function CreateEventPage() {
     title: '',
     description: '',
     content: '',
-    categoryId: CATEGORIES[0]?.id || 'workshop',
+    categoryId: CATEGORIES.find((c) => c.id === 'ai-leaders')?.id || CATEGORIES[0]?.id || 'ai-leaders',
     date: '',
     endDate: '',
     location: '',

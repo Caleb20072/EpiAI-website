@@ -31,7 +31,8 @@ export default function Header() {
         { href: '/#about', label: t('about') },
         { href: '/#team', label: t('team') },
         { href: '/#projects', label: t('projects') },
-        { href: '/#events', label: t('events') },
+        { href: '/#special-talks', label: t('events') },
+        { href: '/#weekly', label: t('weekly') },
         { href: '/blog', label: t('blog') },
         { href: '/partners', label: t('partners') },
     ];

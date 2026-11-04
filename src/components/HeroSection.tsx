@@ -39,12 +39,13 @@ export default function HeroSection({ nextEvent }: HeroSectionProps) {
                         <span className="h-0.5 w-8 rounded-full bg-logo" aria-hidden />
                         {t('hero_kicker')}
                     </p>
-                    <h1 className="display mt-5 max-w-[15ch] text-primary">
+                    <h1 className="font-display mt-5 max-w-2xl text-[clamp(28px,2.4vw+14px,44px)] font-semibold leading-[1.12] tracking-[-0.015em] text-primary">
                         {t('hero_title')}
                     </h1>
-                    <p className="mt-6 max-w-[34rem] text-[18px] leading-[1.6] text-secondary sm:text-[19px]">
-                        {t('description')}
-                    </p>
+                    <div className="mt-6 max-w-[36rem] space-y-4 text-[17px] leading-[1.65] text-secondary sm:text-[18px]">
+                        <p>{t('description')}</p>
+                        <p>{t('hero_belief')}</p>
+                    </div>
                     <div className="mt-9 flex flex-wrap items-center gap-3">
                         <Link href="/join" className="btn-cta">
                             {t('join_btn')}

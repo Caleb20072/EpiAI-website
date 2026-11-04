@@ -16,7 +16,10 @@ export default function ImpactSection() {
             <div className="mx-auto grid max-w-[1280px] items-start gap-10 lg:grid-cols-12 lg:gap-16">
                 <div className="lg:col-span-5">
                     <h2 className="section-title text-primary">{t('impact_title')}</h2>
-                    <p className="mt-4 text-[17px] leading-[1.6] text-secondary">{t('impact_text')}</p>
+                    <div className="mt-4 space-y-4 text-[17px] leading-[1.65] text-secondary">
+                        <p>{t('impact_text')}</p>
+                        <p>{t('impact_text_2')}</p>
+                    </div>
                 </div>
                 <ul className="overflow-hidden rounded-xl border border-default bg-card shadow-card divide-y divide-subtle lg:col-span-7">
                     {items.map((label) => (

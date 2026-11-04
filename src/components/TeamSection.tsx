@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import type { ITeamMember } from '@/lib/team/types';
 import { COMMISSIONS } from '@/lib/team/commissions';
 import { ROLE_LABELS } from '@/lib/team/role-labels';
@@ -20,6 +21,7 @@ type TeamSectionProps = {
 };
 
 export default function TeamSection({ initialMembers, locale: localeProp }: TeamSectionProps) {
+    const tTeam = useTranslations('Team');
     const [members, setMembers] = useState<ITeamMember[]>(initialMembers ?? []);
     const [loading, setLoading] = useState(!initialMembers?.length);
     const [locale, setLocale] = useState<'en' | 'fr'>(localeProp ?? 'fr');
@@ -135,9 +137,14 @@ export default function TeamSection({ initialMembers, locale: localeProp }: Team
             <section id="team" className="scroll-mt-16 bg-card border-t border-default py-20 lg:py-24 px-6">
 
             <div className="max-w-[1280px] mx-auto w-full">
-                <h2 className="section-title mb-12 text-primary">
-                    {locale === 'fr' ? 'Notre Équipe' : 'Our Team'}
-                </h2>
+                <div className="mb-12 max-w-3xl">
+                    <h2 className="section-title text-primary">
+                        {tTeam('title')}
+                    </h2>
+                    <p className="mt-4 border-l-2 border-brand-600 pl-5 text-[17px] leading-[1.65] text-secondary">
+                        {tTeam('intro')}
+                    </p>
+                </div>
 
                 {referents.length > 0 && (
                     <div className="mb-16">

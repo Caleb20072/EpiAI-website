@@ -73,7 +73,7 @@ export default async function PublicEventDetailPage({
             href="/calendar"
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 text-sm font-medium transition-colors"
           >
-            {fr ? 'Autres événements' : 'More events'}
+            {fr ? 'Autres talks' : 'More talks'}
           </Link>
         </div>
       </main>

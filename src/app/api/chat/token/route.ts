@@ -47,6 +47,9 @@ export async function GET() {
     const serverClient = StreamChat.getInstance(apiKey, apiSecret);
     const token = serverClient.createToken(userId);
 
+    // Enregistre le webhook push hors ligne (idempotent, non bloquant).
+    void import('@/lib/chat/ensure-webhook').then((m) => m.ensureStreamWebhook());
+
     return NextResponse.json({ token, userId, name, imageUrl, apiKey });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to generate token';
