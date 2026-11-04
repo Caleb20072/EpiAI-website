@@ -8,7 +8,7 @@ function generateSecurePassword(): string {
   return randomBytes(12).toString('base64url').slice(0, 16) + '!A1';
 }
 
-/** POST /api/admin/resend-credentials — regénère le mot de passe et renvoie l'email de bienvenue */
+/** POST /api/admin/resend-credentials - regénère le mot de passe et renvoie l'email de bienvenue */
 export async function POST(request: NextRequest) {
   try {
     const permCheck = await checkUserPermission('membership.manage');
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         : {
             email: normalizedEmail,
             password: newPassword,
-            note: "Email non envoyé — transmets ces identifiants manuellement (WhatsApp, etc.)",
+            note: "Email non envoyé - transmets ces identifiants manuellement (WhatsApp, etc.)",
           },
     });
   } catch (error: unknown) {

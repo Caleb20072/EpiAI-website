@@ -124,7 +124,7 @@ export function EventDetail({
         ) : null}
       </div>
 
-      {/* Capacity Bar — members only */}
+      {/* Capacity Bar - members only */}
       {showRegistrationStats ? (
         <div className="p-4 rounded-xl bg-card border border-default">
           <div className="flex items-center justify-between mb-2">

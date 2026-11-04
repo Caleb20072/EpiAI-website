@@ -17,7 +17,7 @@ function activeChannelFromUrl(): string {
 /**
  * Connexion Stream légère hors page chat : vraie notification OS
  * dès qu'un message arrive (secours si le webhook serveur est absent).
- * Sur /chat, ChatPage gère déjà le WebSocket — on ne double pas ici.
+ * Sur /chat, ChatPage gère déjà le WebSocket - on ne double pas ici.
  */
 export default function ChatLiveAlerts({ enabled }: { enabled: boolean }) {
   const params = useParams();
@@ -106,7 +106,7 @@ export default function ChatLiveAlerts({ enabled }: { enabled: boolean }) {
           const preview = text.length > 120 ? `${text.slice(0, 117)}…` : text;
 
           void showClientNotification({
-            title: `Nouveau message — ${channelName}`,
+            title: `Nouveau message - ${channelName}`,
             body: `${senderName} : ${preview}`,
             url: `/${locale}/chat?channel=${encodeURIComponent(channelId)}`,
             tag: `chat-${channelId}`,

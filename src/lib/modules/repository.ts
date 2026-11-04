@@ -387,7 +387,7 @@ export async function provisionReposForStudent(moduleId: string, userId: string)
     }
 
     const repoName = `${slugify(module.name)}-${slugify(project.title)}-${userId.slice(-6)}`.slice(0, 80);
-    const repo = await createOrgRepo(repoName, `${module.name} — ${project.title} — ${enrollment.userName}`);
+    const repo = await createOrgRepo(repoName, `${module.name} - ${project.title} - ${enrollment.userName}`);
     await ensureRepoPushWebhook(repo.name).catch(() => undefined);
     if (enrollment.githubUsername) {
       await addCollaborator(repo.name, enrollment.githubUsername, 'push');

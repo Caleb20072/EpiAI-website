@@ -771,7 +771,7 @@ export default function ModuleDetailPage() {
                   ) : (
                     <strong>{who}</strong>
                   )}
-                  {' — '}
+                  {' - '}
                   {event.message.split('\n')[0]}
                   {event.burst ? (
                     <Badge variant="danger" className="ml-2">burst</Badge>

@@ -104,7 +104,7 @@ export function ChannelSidebar({ client, userId, activeChannelId, onChannelSelec
             const senderName = msg?.user?.name || 'Un membre';
 
             void showClientNotification({
-                title: `Nouveau message — ${channelMeta?.label || channelId}`,
+                title: `Nouveau message - ${channelMeta?.label || channelId}`,
                 body: `${senderName} : ${preview}`,
                 url: `/${locale}/chat?channel=${encodeURIComponent(channelId)}`,
                 tag: `chat-${channelId}`,

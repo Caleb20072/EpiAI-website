@@ -1,9 +1,9 @@
 import type { RoleDefinition } from './types';
 
-/** Adhérent asso (hors bureau) — consommation & participation, pas de publication éditoriale. */
+/** Adhérent asso (hors bureau) - consommation & participation, pas de publication éditoriale. */
 const MEMBER_PERMISSIONS = ['dashboard.access', 'profile.edit', 'content.edit.own'] as const;
 
-/** Contributeurs de pôle / équipe — peuvent ouvrir des discussions et proposer du contenu. */
+/** Contributeurs de pôle / équipe - peuvent ouvrir des discussions et proposer du contenu. */
 const POLE_TEAM_PERMISSIONS = [...MEMBER_PERMISSIONS, 'content.create'] as const;
 
 export const ROLES: Record<string, RoleDefinition> = {

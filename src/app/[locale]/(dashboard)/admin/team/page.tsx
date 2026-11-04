@@ -244,7 +244,7 @@ export default function AdminTeamPage() {
               value={form.poleKey || ''}
               onChange={(e) => setForm((f) => ({ ...f, poleKey: e.target.value }))}
             >
-              <option value="">—</option>
+              <option value="">-</option>
               {TEAM_POLES.map((p) => (
                 <option key={p.key} value={p.key}>
                   {fr ? p.nameFr : p.nameEn}
@@ -384,7 +384,7 @@ export default function AdminTeamPage() {
                       <p className="text-primary font-medium text-sm truncate">{member.name}</p>
                       <p className="text-secondary text-xs truncate">
                         {member.role}
-                        {member.title ? ` — ${member.title}` : ''}
+                        {member.title ? ` - ${member.title}` : ''}
                       </p>
                       {member.poleKey ? (
                         <p className="text-muted text-[10px] truncate">{member.poleKey}</p>

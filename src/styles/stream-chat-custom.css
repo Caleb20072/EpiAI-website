@@ -1,5 +1,5 @@
 /* =============================================================
-   Stream Chat — Thème sombre custom Epi'AI
+   Stream Chat - Thème sombre custom Epi'AI
    Surcharge le thème dark officiel de stream-chat-react v13
    ============================================================= */
 
@@ -36,7 +36,7 @@
 }
 
 @media (max-width: 1023px) {
-  /* Un seul header mobile (menu + nom du canal) — comme WhatsApp */
+  /* Un seul header mobile (menu + nom du canal) - comme WhatsApp */
   .chat-wrapper .str-chat__channel-header {
     display: none;
   }
@@ -133,7 +133,7 @@
   border-radius: 50%;
 }
 
-/* Zone de saisie — collée en bas, au-dessus du clavier */
+/* Zone de saisie - collée en bas, au-dessus du clavier */
 .chat-wrapper .str-chat__message-input {
   background: rgba(255, 255, 255, 0.04);
   border-top: 1px solid rgba(255, 255, 255, 0.08);

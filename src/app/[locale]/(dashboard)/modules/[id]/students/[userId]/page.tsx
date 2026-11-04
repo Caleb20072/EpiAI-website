@@ -153,7 +153,7 @@ export default function StudentFollowUpPage() {
             {data.repos.map((repo) => (
               <li key={repo.repoUrl}>
                 <a href={repo.repoUrl} target="_blank" rel="noreferrer" className="text-brand-500 hover:underline">
-                  {repo.projectTitle} — {fr ? 'lire le code' : 'read the code'}
+                  {repo.projectTitle} - {fr ? 'lire le code' : 'read the code'}
                 </a>
               </li>
             ))}

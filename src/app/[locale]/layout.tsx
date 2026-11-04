@@ -26,7 +26,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://epiai.eu';
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Epi'AI — Association IA et data science | Epitech",
+    default: "Epi'AI - Association IA et data science | Epitech",
     template: "%s | Epi'AI",
   },
   description:
@@ -48,14 +48,14 @@ export const metadata: Metadata = {
     alternateLocale: 'en_US',
     url: SITE_URL,
     siteName: "Epi'AI",
-    title: "Epi'AI — Association IA et data science | Epitech",
+    title: "Epi'AI - Association IA et data science | Epitech",
     description:
       "Une association pensée par les étudiants, dirigée par les étudiants et au service de la communauté étudiante.",
     images: [{ url: '/assets/epiai-logo.png', width: 512, height: 512, alt: "Epi'AI" }],
   },
   twitter: {
     card: 'summary',
-    title: "Epi'AI — Association IA et data science",
+    title: "Epi'AI - Association IA et data science",
     description: "Association étudiante Epitech : mathématiques, IA et data science.",
   },
   robots: { index: true, follow: true },

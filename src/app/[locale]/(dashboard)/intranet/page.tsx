@@ -91,7 +91,7 @@ export default function IntranetPage() {
     <div className="space-y-5">
       <PageHeader
         eyebrow="Intranet"
-        title={locale === 'fr' ? 'Intranet — Activités' : 'Intranet — Activities'}
+        title={locale === 'fr' ? 'Intranet - Activités' : 'Intranet - Activities'}
         description={
           locale === 'fr'
             ? 'Planning visible par tous les membres, qu’ils soient inscrits à un module ou non. Inscription au moins 24h avant.'

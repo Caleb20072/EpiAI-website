@@ -139,7 +139,7 @@ export default function CreateEventPage() {
               return;
             }
           } catch {
-            // Event created; blog optional — fall through to events list
+            // Event created; blog optional - fall through to events list
           }
         }
 

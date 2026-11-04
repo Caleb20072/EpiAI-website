@@ -42,7 +42,7 @@ export default function AdminEventsPage() {
         return;
       }
       if (response.status === 401) {
-        setFetchError(fr ? 'Session expirée — reconnectez-vous.' : 'Session expired — sign in again.');
+        setFetchError(fr ? 'Session expirée - reconnectez-vous.' : 'Session expired - sign in again.');
       } else if (response.status === 403) {
         setFetchError(fr ? 'Permissions insuffisantes.' : 'Insufficient permissions.');
       } else {
@@ -188,11 +188,11 @@ export default function AdminEventsPage() {
                         title={
                           event.isPublished
                             ? fr
-                              ? 'Public — cliquer pour rendre privé'
-                              : 'Public — click to unpublish'
+                              ? 'Public - cliquer pour rendre privé'
+                              : 'Public - click to unpublish'
                             : fr
-                              ? 'Privé — cliquer pour rendre public'
-                              : 'Private — click to publish'
+                              ? 'Privé - cliquer pour rendre public'
+                              : 'Private - click to publish'
                         }
                       >
                         {event.isPublished ? (

@@ -114,7 +114,7 @@ export default function MyAttendancePage() {
                       <DataTableTd className="text-secondary">
                         {r.activityDate
                           ? new Date(r.activityDate).toLocaleDateString(locale)
-                          : '—'}
+                          : '-'}
                       </DataTableTd>
                       <DataTableTd>
                         <Badge variant={r.isPresent ? 'success' : 'danger'}>

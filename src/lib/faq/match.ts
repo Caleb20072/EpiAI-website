@@ -47,7 +47,7 @@ function scoreEntry(query: string, queryTokens: string[], entry: (typeof FAQ_CAT
   return score;
 }
 
-/** Deterministic FAQ matcher — returns catalog id only, never generates text. */
+/** Deterministic FAQ matcher - returns catalog id only, never generates text. */
 export function matchFaq(input: string): FaqMatchResponse {
   const query = normalizeText(input);
   if (!query) {

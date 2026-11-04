@@ -4,8 +4,8 @@ import type { Permission } from '@/lib/roles/types';
 
 /**
  * Extrait le slug de rôle depuis les sources disponibles, dans l'ordre de priorité :
- * 1. sessionClaims.publicMetadata (JWT décodé localement — rapide, pas d'appel réseau)
- * 2. clerkClient.users.getUser() — fallback si le token ne contient pas encore le metadata
+ * 1. sessionClaims.publicMetadata (JWT décodé localement - rapide, pas d'appel réseau)
+ * 2. clerkClient.users.getUser() - fallback si le token ne contient pas encore le metadata
  */
 export async function getSessionRoleSlug(
     userId: string,

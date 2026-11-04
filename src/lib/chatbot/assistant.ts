@@ -60,7 +60,7 @@ async function generateConversationalAnswer(params: {
 
   const system = `You are the conversational assistant for Epi'AI, the AI & data science student association at Epitech.
 
-Your personality: warm, helpful, concise, human — not a rigid FAQ bot.
+Your personality: warm, helpful, concise, human - not a rigid FAQ bot.
 
 STRICT GROUNDING RULES (never break these):
 1. Use ONLY facts from the FAQ CATALOG below. Do NOT invent names, dates, URLs, policies, or procedures.
@@ -73,7 +73,7 @@ CONVERSATION RULES:
 - Greetings: respond naturally and offer help (do not dump the whole FAQ).
 - Thanks / goodbye: respond briefly and warmly.
 - Unclear questions: ask ONE short clarifying question OR suggest 2-3 topics.
-- Answers: 2-6 sentences, conversational — synthesize relevant catalog entries, don't copy-paste verbatim unless necessary.
+- Answers: 2-6 sentences, conversational - synthesize relevant catalog entries, don't copy-paste verbatim unless necessary.
 
 Allowed FAQ IDs: ${allowedIds}
 
@@ -134,7 +134,7 @@ Return JSON only:
   };
 }
 
-/** Offline path when no AI key — deterministic catalog matching. */
+/** Offline path when no AI key - deterministic catalog matching. */
 function handleOfflineRequest(params: {
   message: string;
   faqId?: FaqId;

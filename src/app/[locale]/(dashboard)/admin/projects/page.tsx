@@ -42,7 +42,7 @@ export default function AdminProjectsPage() {
             }
 
             if (response.status === 401) {
-                setFetchError('Session expirée — reconnectez-vous.');
+                setFetchError('Session expirée - reconnectez-vous.');
             } else if (response.status === 403) {
                 setFetchError('Permissions insuffisantes pour voir les projets.');
             } else {

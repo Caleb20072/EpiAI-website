@@ -8,7 +8,7 @@ import { createNotification } from '@/lib/notifications/repository';
 
 export const dynamic = 'force-dynamic';
 
-/** POST /api/push/subscribe — enregistrer un abonnement push navigateur */
+/** POST /api/push/subscribe - enregistrer un abonnement push navigateur */
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/** DELETE /api/push/subscribe — désactiver les notifications push */
+/** DELETE /api/push/subscribe - désactiver les notifications push */
 export async function DELETE(request: NextRequest) {
   try {
     const { userId } = await auth();

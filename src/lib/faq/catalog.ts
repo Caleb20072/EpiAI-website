@@ -16,12 +16,12 @@ export interface FaqEntry {
   id: FaqId;
   /** Full question phrases (normalized matching). */
   variants: string[];
-  /** Short trigger tokens — only matched as whole words or substrings ≥ 4 chars. */
+  /** Short trigger tokens - only matched as whole words or substrings ≥ 4 chars. */
   keywords: string[];
   priority?: number;
 }
 
-/** Curated FAQ catalog — answers live in i18n (`Chatbot.faq.{id}`). No LLM, no invented text. */
+/** Curated FAQ catalog - answers live in i18n (`Chatbot.faq.{id}`). No LLM, no invented text. */
 export const FAQ_CATALOG: FaqEntry[] = [
   {
     id: 'about',

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-/** Shows the original PDF as-is (maps, figures, every page) — not extracted text. */
+/** Shows the original PDF as-is (maps, figures, every page) - not extracted text. */
 export function PdfPages({ src, className = '' }: { src: string; className?: string }) {
   const [url, setUrl] = useState<string | null>(null);
   const [pages, setPages] = useState<string[]>([]);

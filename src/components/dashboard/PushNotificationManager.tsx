@@ -376,8 +376,8 @@ export default function PushNotificationManager() {
                   ? 'Sur iPhone : Partager → Sur l’écran d’accueil, ouvre Epi’AI depuis l’icône, puis appuie sur Activer.'
                   : 'On iPhone: Share → Add to Home Screen, open Epi’AI from the icon, then tap Turn on.'
                 : fr
-                  ? 'Reçois une notification sur ton appareil quand il y a une réponse forum, un événement ou un message chat — même sans ouvrir Epi’AI.'
-                  : 'Get a notification on your device for a forum reply, an event, or a chat message — even when Epi’AI is closed.'}
+                  ? 'Reçois une notification sur ton appareil quand il y a une réponse forum, un événement ou un message chat - même sans ouvrir Epi’AI.'
+                  : 'Get a notification on your device for a forum reply, an event, or a chat message - even when Epi’AI is closed.'}
           </p>
           {error ? <p className="text-xs text-red-400 mt-1">{error}</p> : null}
         </div>

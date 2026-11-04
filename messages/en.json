@@ -117,7 +117,7 @@
         "title": "Epi'AI Assistant",
         "online": "Online",
         "placeholder": "Ask your question...",
-        "welcome": "Hello! I'm the Epi'AI assistant. Ask me anything about the association — membership, poles, events, resources — I'll reply naturally using our official info.",
+        "welcome": "Hello! I'm the Epi'AI assistant. Ask me anything about the association - membership, poles, events, resources - I'll reply naturally using our official info.",
         "greeting": "Hi there! Good to hear from you. I can help with membership, poles, events, resources, and the member area. What would you like to know?",
         "thanks": "You're welcome! Feel free to ask if you have more questions about Epi'AI.",
         "goodbye": "See you soon! Come back anytime if you need info about the association.",
@@ -174,7 +174,7 @@
             },
             "profile": {
                 "title": "Complete your profile",
-                "body": "Add your photo and LinkedIn — they also appear on the public Team page."
+                "body": "Add your photo and LinkedIn - they also appear on the public Team page."
             },
             "chat": {
                 "title": "Join the chat",

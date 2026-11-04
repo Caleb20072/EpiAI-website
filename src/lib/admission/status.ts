@@ -4,25 +4,25 @@ export function admissionStatusLabel(stage: string, locale: 'fr' | 'en' = 'fr') 
     case 'received':
       return fr ? 'Dossier reçu' : 'Application received';
     case 'test_invited':
-      return fr ? 'Test — en attente de confirmation' : 'Test — waiting for confirmation';
+      return fr ? 'Test - en attente de confirmation' : 'Test - waiting for confirmation';
     case 'test_declined':
-      return fr ? 'Test — a décliné' : 'Test — declined';
+      return fr ? 'Test - a décliné' : 'Test - declined';
     case 'test_scheduled':
-      return fr ? 'Test — créneau confirmé' : 'Test — slot confirmed';
+      return fr ? 'Test - créneau confirmé' : 'Test - slot confirmed';
     case 'test_live':
-      return fr ? 'Test — en composition' : 'Test — in progress';
+      return fr ? 'Test - en composition' : 'Test - in progress';
     case 'test_submitted':
-      return fr ? 'Test — copie reçue' : 'Test — paper submitted';
+      return fr ? 'Test - copie reçue' : 'Test - paper submitted';
     case 'test_reviewed':
-      return fr ? 'Test — noté' : 'Test — graded';
+      return fr ? 'Test - noté' : 'Test - graded';
     case 'interview_invited':
-      return fr ? 'Entretien — en attente de confirmation' : 'Interview — waiting for confirmation';
+      return fr ? 'Entretien - en attente de confirmation' : 'Interview - waiting for confirmation';
     case 'interview_declined':
-      return fr ? 'Entretien — a décliné' : 'Interview — declined';
+      return fr ? 'Entretien - a décliné' : 'Interview - declined';
     case 'interview_scheduled':
-      return fr ? 'Entretien — créneau confirmé' : 'Interview — slot confirmed';
+      return fr ? 'Entretien - créneau confirmé' : 'Interview - slot confirmed';
     case 'interview_reviewed':
-      return fr ? 'Entretien — noté' : 'Interview — scored';
+      return fr ? 'Entretien - noté' : 'Interview - scored';
     case 'admitted':
       return fr ? 'Admis (membre)' : 'Admitted';
     case 'rejected':

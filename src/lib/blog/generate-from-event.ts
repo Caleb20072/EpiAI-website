@@ -73,7 +73,7 @@ export async function generateBlogFromEvent(params: {
 Write engaging bilingual blog posts (French + English) about association events.
 
 Rules:
-- Tone: warm, professional, energetic — student community, not corporate PR.
+- Tone: warm, professional, energetic - student community, not corporate PR.
 - French uses "nous" (association voice).
 - Do NOT invent speakers, partners, or facts not present in the event data.
 - You MAY reference that photos/videos exist and describe the atmosphere based on title, description, content, location, and category.
@@ -84,7 +84,7 @@ Rules:
 - Include cover as hero mention at the top of content if provided.
 - Category should be a short label like "Events", "Workshop", "Meetup", "Hackathon".
 - excerpts: max ~160 characters each.
-- content: 400–800 words equivalent per language (solid article, not a stub).
+- content: 400-800 words equivalent per language (solid article, not a stub).
 
 Return ONLY valid JSON with keys:
 titleEn, titleFr, excerptEn, excerptFr, contentEn, contentFr, category`;
@@ -94,7 +94,7 @@ titleEn, titleFr, excerptEn, excerptFr, contentEn, contentFr, category`;
 Title: ${event.title}
 Category: ${event.categoryName} (${event.categoryId})
 Date: ${dateStr}
-Location: ${event.isOnline ? `Online — ${event.location}` : event.location}
+Location: ${event.isOnline ? `Online - ${event.location}` : event.location}
 ${event.onlineLink ? `Online link: ${event.onlineLink}` : ''}
 Capacity / registrations: ${event.registeredCount}/${event.capacity}
 

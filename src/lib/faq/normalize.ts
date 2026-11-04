@@ -1,4 +1,4 @@
-/** Lowercase, strip accents, collapse whitespace — for deterministic FAQ matching. */
+/** Lowercase, strip accents, collapse whitespace - for deterministic FAQ matching. */
 export function normalizeText(text: string): string {
   return text
     .toLowerCase()

@@ -63,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }
   } catch {
-    // DB unavailable at build time — static entries only
+    // DB unavailable at build time - static entries only
   }
 
   return entries;

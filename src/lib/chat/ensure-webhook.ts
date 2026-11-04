@@ -6,7 +6,7 @@ let ensurePromise: Promise<boolean> | null = null;
 
 /**
  * Enregistre le webhook Stream Chat vers notre API (push hors ligne).
- * Idempotent — un seul appel réseau par process Node.
+ * Idempotent - un seul appel réseau par process Node.
  */
 export function ensureStreamWebhook(): Promise<boolean> {
   if (ensurePromise) return ensurePromise;

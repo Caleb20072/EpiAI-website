@@ -187,7 +187,7 @@ function SuiviPanel({ fr }: { fr: boolean }) {
           {data.examSlots.map((slot) => (
             <div key={slot.id} className="rounded-xl border border-default p-3">
               <p className="text-sm font-medium text-primary">
-                {slot.examTitle} — {new Date(slot.startsAt).toLocaleString(fr ? 'fr-FR' : 'en-GB')} · {slot.people.length}/{slot.capacity}
+                {slot.examTitle} - {new Date(slot.startsAt).toLocaleString(fr ? 'fr-FR' : 'en-GB')} · {slot.people.length}/{slot.capacity}
               </p>
               {slot.people.length === 0 ? (
                 <p className="mt-2 text-xs text-muted">{fr ? 'Personne inscrit pour l’instant.' : 'Nobody registered yet.'}</p>
@@ -460,7 +460,7 @@ function TestsPanel({ fr }: { fr: boolean }) {
         <ul className="space-y-2">
           {slots.map((s) => (
             <li key={s.id} className="flex items-center justify-between rounded-lg border border-default px-3 py-2 text-sm transition-colors hover:border-brand-400/40">
-              <span>{s.examTitle} — {new Date(s.startsAt).toLocaleString(fr ? 'fr-FR' : 'en-GB')} · {s.booked}/{s.capacity}</span>
+              <span>{s.examTitle} - {new Date(s.startsAt).toLocaleString(fr ? 'fr-FR' : 'en-GB')} · {s.booked}/{s.capacity}</span>
               <button type="button" className={iconDangerClass} onClick={async () => { await fetch(`/api/admin/admission/slots?id=${s.id}&kind=exam`, { method: 'DELETE' }); await reload(); }}>
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -532,7 +532,7 @@ function CopiesPanel({ fr }: { fr: boolean }) {
           <button key={row.id} type="button" onClick={() => void openAttempt(row.id)} className={`${clickRowClass} items-start`}>
             <div>
               <p className="text-sm font-medium text-primary">{row.candidate.name}</p>
-              <p className="text-xs text-secondary">{row.examTitle} · {row.gradeStatus} · {row.adminScore ?? row.autoScore ?? '—'} / {row.maxScore}</p>
+              <p className="text-xs text-secondary">{row.examTitle} · {row.gradeStatus} · {row.adminScore ?? row.autoScore ?? '-'} / {row.maxScore}</p>
             </div>
             {row.integrityFlag ? <span className="inline-flex items-center gap-1 text-xs text-amber-400"><ShieldAlert className="h-3.5 w-3.5" /> {row.eventCount}</span> : null}
           </button>
@@ -543,7 +543,7 @@ function CopiesPanel({ fr }: { fr: boolean }) {
       {open ? (
         <div className="mt-6 space-y-4 border-t border-default pt-4">
           <h3 className="text-base font-semibold text-primary">{open.candidate.name}</h3>
-          <p className="text-xs text-secondary">{open.candidate.email} · auto {open.autoScore ?? '—'} / {open.maxScore}</p>
+          <p className="text-xs text-secondary">{open.candidate.email} · auto {open.autoScore ?? '-'} / {open.maxScore}</p>
           {open.hasSubjectPdf && open.examId ? (
             <div className="space-y-2">
               <p className="text-xs text-secondary">{fr ? 'Sujet original (toutes les pages)' : 'Original paper (every page)'}</p>
@@ -553,8 +553,8 @@ function CopiesPanel({ fr }: { fr: boolean }) {
           {open.answers.map((a) => (
             <div key={a.id} className="rounded-xl border border-default p-3 text-sm">
               <p className="font-medium text-primary">{a.prompt}</p>
-              <p className="mt-2 text-secondary"><span className="text-muted">{fr ? 'Réponse' : 'Answer'}:</span> {a.response || '—'}</p>
-              <p className="mt-1 text-xs text-brand-400">{fr ? 'Corrigé' : 'Key'}: {a.officialAnswer || '—'}</p>
+              <p className="mt-2 text-secondary"><span className="text-muted">{fr ? 'Réponse' : 'Answer'}:</span> {a.response || '-'}</p>
+              <p className="mt-1 text-xs text-brand-400">{fr ? 'Corrigé' : 'Key'}: {a.officialAnswer || '-'}</p>
               <label className="mt-2 block text-xs">
                 {fr ? 'Note' : 'Score'} / {a.points}
                 <input type="number" step="0.5" className={`ml-2 w-20 ${fieldClass}`} value={scores[a.id] ?? 0} onChange={(e) => setScores((p) => ({ ...p, [a.id]: Number(e.target.value) }))} />
@@ -567,7 +567,7 @@ function CopiesPanel({ fr }: { fr: boolean }) {
               <p className="mb-2 text-xs font-medium text-amber-400">{fr ? 'Journal anti-triche' : 'Integrity log'}</p>
               <ul className="max-h-40 space-y-1 overflow-auto text-xs text-secondary">
                 {open.events.map((e) => (
-                  <li key={e.id}>{new Date(e.createdAt).toLocaleString()} — {e.type} {e.detail}</li>
+                  <li key={e.id}>{new Date(e.createdAt).toLocaleString()} - {e.type} {e.detail}</li>
                 ))}
               </ul>
             </div>

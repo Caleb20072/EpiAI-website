@@ -99,8 +99,8 @@ export default function MembershipAdminClient() {
       <PageHeader
         title={t('title')}
         description={locale === 'fr'
-          ? 'Candidatures, tests d’entrée, copies, entretiens — l’accès membre n’est donné qu’à la fin.'
-          : 'Applications, entrance tests, papers, interviews — member access only at the end.'}
+          ? 'Candidatures, tests d’entrée, copies, entretiens - l’accès membre n’est donné qu’à la fin.'
+          : 'Applications, entrance tests, papers, interviews - member access only at the end.'}
         actions={<InviteUserForm />}
       />
 

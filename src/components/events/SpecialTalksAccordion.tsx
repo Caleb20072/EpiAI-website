@@ -112,8 +112,8 @@ export function SpecialTalksAccordion({ talks, locale, initialOpenId = null }: P
                   {items.length === 0 ? (
                     <p className="rounded-lg border border-dashed border-default bg-card px-4 py-5 text-[15px] text-secondary">
                       {fr
-                        ? 'Aucun talk dans cette série pour le moment — le contenu arrivera au fil des prochaines sessions.'
-                        : 'No talk in this series yet — content will arrive with upcoming sessions.'}
+                        ? 'Aucun talk dans cette série pour le moment - le contenu arrivera au fil des prochaines sessions.'
+                        : 'No talk in this series yet - content will arrive with upcoming sessions.'}
                     </p>
                   ) : (
                     <ul className="space-y-3">

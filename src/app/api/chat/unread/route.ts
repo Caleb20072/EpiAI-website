@@ -6,7 +6,7 @@ import { CHAT_CHANNEL_IDS } from '@/lib/chat/channels';
 const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY!;
 const apiSecret = process.env.STREAM_API_SECRET!;
 
-/** GET /api/chat/unread — nombre de messages non lus par canal (Stream). */
+/** GET /api/chat/unread - nombre de messages non lus par canal (Stream). */
 export async function GET() {
   try {
     if (!apiKey || !apiSecret) {

@@ -9,7 +9,7 @@ function wrap(title: string, body: string) {
         <p style="margin:8px 0 0;color:#93c5fd;font-size:13px;">${title}</p>
       </div>
       <div style="padding:32px;background:#27272a;">${body}</div>
-      <div style="padding:18px 32px;text-align:center;color:#71717a;font-size:12px;">Epi'AI — Epitech</div>
+      <div style="padding:18px 32px;text-align:center;color:#71717a;font-size:12px;">Epi'AI - Epitech</div>
     </div>
   `;
 }
@@ -21,7 +21,7 @@ function btn(href: string, label: string) {
 export async function sendAdmissionReceivedEmail(email: string, firstName: string) {
   return sendGenericEmail({
     email,
-    subject: "Candidature reçue — Epi'AI",
+    subject: "Candidature reçue - Epi'AI",
     html: wrap(
       'Candidature reçue',
       `<p>Bonjour ${firstName},</p>
@@ -40,7 +40,7 @@ export async function sendTestInviteEmail(params: {
   const url = `${getSiteUrl()}/fr/admission/${params.token}`;
   return sendGenericEmail({
     email: params.email,
-    subject: "Epi'AI — tu es convoqué(e) au test d’entrée",
+    subject: "Epi'AI - tu es convoqué(e) au test d’entrée",
     html: wrap(
       'Test d’entrée',
       `<p>Bonjour ${params.firstName},</p>
@@ -59,7 +59,7 @@ export async function sendSlotChosenEmail(params: {
 }) {
   return sendGenericEmail({
     email: params.email,
-    subject: `Créneau confirmé — ${params.examTitle}`,
+    subject: `Créneau confirmé - ${params.examTitle}`,
     html: wrap(
       'Créneau confirmé',
       `<p>Bonjour ${params.firstName},</p>
@@ -80,7 +80,7 @@ export async function sendExamCredentialsEmail(params: {
   const url = `${getSiteUrl()}/fr/concours`;
   return sendGenericEmail({
     email: params.email,
-    subject: `C’est bientôt — identifiants du test ${params.examTitle}`,
+    subject: `C’est bientôt - identifiants du test ${params.examTitle}`,
     html: wrap(
       'Salle d’examen',
       `<p>Bonjour ${params.firstName},</p>
@@ -104,7 +104,7 @@ export async function sendInterviewInviteEmail(params: {
   const url = `${getSiteUrl()}/fr/admission/${params.token}`;
   return sendGenericEmail({
     email: params.email,
-    subject: "Epi'AI — tu es convoqué(e) à l’entretien",
+    subject: "Epi'AI - tu es convoqué(e) à l’entretien",
     html: wrap(
       'Entretien',
       `<p>Bonjour ${params.firstName},</p>
@@ -123,7 +123,7 @@ export async function sendInterviewSlotEmail(params: {
 }) {
   return sendGenericEmail({
     email: params.email,
-    subject: 'Créneau d’entretien confirmé — Epi’AI',
+    subject: 'Créneau d’entretien confirmé - Epi’AI',
     html: wrap(
       'Entretien confirmé',
       `<p>Bonjour ${params.firstName},</p>
@@ -142,13 +142,13 @@ export async function sendAdmissionRejectedEmail(email: string, firstName: strin
 
   return sendGenericEmail({
     email,
-    subject: "Candidature Epi'AI — décision du jury",
+    subject: "Candidature Epi'AI - décision du jury",
     html: wrap(
       'Décision du jury',
       `<p>Bonjour ${firstName},</p>
        <p>Après un examen attentif de ta candidature, nous ne pouvons malheureusement pas te proposer d’intégrer l’association Epi’AI à l’issue de cette session.</p>
        ${participationLine}
-       <p>Les places sont limitées, et les résultats de cette session étaient particulièrement serrés. Faire un choix a été difficile pour le jury — cela ne remet pas en cause ta motivation ni ton parcours.</p>
+       <p>Les places sont limitées, et les résultats de cette session étaient particulièrement serrés. Faire un choix a été difficile pour le jury - cela ne remet pas en cause ta motivation ni ton parcours.</p>
        <p>Tu ne pourras donc pas faire partie de l’association en tant que membre pour cette session. En revanche, tu continues d’avoir toute ta place dans la communauté Epi’AI : nos Special Talks, Epi’AI Weekly et les activités ouvertes au public restent accessibles à toutes et à tous.</p>
        <p>Merci encore pour ta confiance. On te souhaite le meilleur pour la suite.</p>
        <p style="margin-top:20px;color:#a1a1aa;">L’équipe Epi’AI</p>`,

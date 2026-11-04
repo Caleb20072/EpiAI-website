@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       await notifyAllActiveMembers({
         type: 'activity',
         title: 'Activité obligatoire',
-        message: `${activity.title} — ${dateStr}`,
+        message: `${activity.title} - ${dateStr}`,
         link,
         emailActionLabel: "Voir l'activité",
       });

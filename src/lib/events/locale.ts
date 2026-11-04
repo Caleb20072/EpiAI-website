@@ -17,18 +17,25 @@ export function eventField(
 ): string {
   const localized = locale === 'en' ? event[`${field}En`] : event[`${field}Fr`];
   const text = localized?.trim();
-  return text || event[field] || '';
+  return (text || event[field] || '').replace(/[—–]/g, '-');
 }
 
 const LOCATION_EN: Record<string, string> = {
   'Campus Epitech Bénin': 'Campus Epitech Benin',
-  'Mezzanine — Campus Epitech Bénin': 'Mezzanine — Campus Epitech Benin',
-  'Mézzanine — Campus Epitech Bénin': 'Mezzanine — Campus Epitech Benin',
+  'Mezzanine - Campus Epitech Bénin': 'Mezzanine - Campus Epitech Benin',
+  'Mézzanine - Campus Epitech Bénin': 'Mezzanine - Campus Epitech Benin',
+  'Mezzanine — Campus Epitech Bénin': 'Mezzanine - Campus Epitech Benin',
+  'Mézzanine — Campus Epitech Bénin': 'Mezzanine - Campus Epitech Benin',
 };
 
 export function eventLocation(location: string, locale: string): string {
+  const normalized = location.replace(/[—–]/g, '-');
   if (locale === 'en') {
-    return LOCATION_EN[location] || location.replaceAll('Bénin', 'Benin').replaceAll('Mézzanine', 'Mezzanine');
+    return (
+      LOCATION_EN[location] ||
+      LOCATION_EN[normalized] ||
+      normalized.replaceAll('Bénin', 'Benin').replaceAll('Mézzanine', 'Mezzanine')
+    );
   }
-  return location;
+  return normalized;
 }

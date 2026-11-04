@@ -12,7 +12,7 @@ interface StatCardProps {
   trend?: string;
 }
 
-/** Compact horizontal metric — dense analytics style */
+/** Compact horizontal metric - dense analytics style */
 export function StatCard({
   label,
   value,

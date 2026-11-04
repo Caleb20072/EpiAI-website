@@ -33,7 +33,7 @@ export async function GET(
       }
       const registrations = await getActivityRegistrations(id);
 
-      // Enrich with fresh Clerk data — fixes old bad records stored in MongoDB
+      // Enrich with fresh Clerk data - fixes old bad records stored in MongoDB
       if (registrations.length > 0) {
         try {
           const client = await clerkClient();

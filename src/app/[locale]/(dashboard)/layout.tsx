@@ -269,7 +269,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           />
         )}
 
-        {/* Sidebar — footer always visible; bottom nav is hidden while open on mobile */}
+        {/* Sidebar - footer always visible; bottom nav is hidden while open on mobile */}
         <aside
           className={cn(
             'fixed top-0 left-0 z-[220] flex h-dvh max-h-dvh w-[min(16rem,88vw)] flex-col border-r border-default bg-surface transform transition-transform duration-300 lg:z-50 lg:w-64 lg:translate-x-0',

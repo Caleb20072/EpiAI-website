@@ -42,7 +42,7 @@ export default function ExamLoginPage() {
         <p className="mt-2 text-sm text-white/70">
           {fr
             ? 'Identifiants reçus par e-mail, 10 minutes avant le test. Pas ceux d’un compte membre.'
-            : 'Use the login emailed 10 minutes before the test — not a member account.'}
+            : 'Use the login emailed 10 minutes before the test - not a member account.'}
         </p>
         {error ? <p className="mt-4 rounded-lg bg-red-500/20 px-3 py-2 text-sm text-red-200">{error}</p> : null}
         <label className="mt-6 block text-xs uppercase tracking-wide text-white/50">

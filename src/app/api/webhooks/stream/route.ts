@@ -22,7 +22,7 @@ function channelDisplayName(channelId: string): string {
   return ch?.name || channelId;
 }
 
-/** POST /api/webhooks/stream — nouveau message chat → alertes push hors ligne */
+/** POST /api/webhooks/stream - nouveau message chat → alertes push hors ligne */
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const signature = request.headers.get('x-signature');
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         notifyUser({
           clerkId: memberId,
           type: 'chat',
-          title: `Nouveau message — ${channelName}`,
+          title: `Nouveau message - ${channelName}`,
           message: `${senderName} : ${preview}`,
           link,
           skipEmail: true,

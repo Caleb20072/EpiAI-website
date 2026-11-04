@@ -203,7 +203,7 @@ export async function buildRecommendationPdf(input: RecommendationInput): Promis
     color: MUTED,
   });
   y -= 15;
-  page.drawText(locale === 'fr' ? "Epi'AI — Association d'Intelligence Artificielle" : "Epi'AI — Artificial Intelligence Association", {
+  page.drawText(locale === 'fr' ? "Epi'AI - Association d'Intelligence Artificielle" : "Epi'AI - Artificial Intelligence Association", {
     x: margin,
     y,
     size: 11,

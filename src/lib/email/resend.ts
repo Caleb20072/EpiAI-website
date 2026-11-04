@@ -43,7 +43,7 @@ export function resendErrorMessage(error: unknown): string {
 function ensureResend() {
   const client = getResendClient();
   if (!client) {
-    throw new Error("RESEND_API_KEY manquante — ajoute-la dans les variables d'environnement Netlify.");
+    throw new Error("RESEND_API_KEY manquante - ajoute-la dans les variables d'environnement Netlify.");
   }
   return client;
 }
@@ -72,7 +72,7 @@ export async function sendWelcomeEmail({ email, firstName, password }: WelcomeEm
   const { data, error } = await resend.emails.send({
     from: getFromAddress(),
     to: [email],
-    subject: "Bienvenue chez Epi'AI — tes identifiants de connexion",
+    subject: "Bienvenue chez Epi'AI - tes identifiants de connexion",
     html: `
       <!DOCTYPE html>
       <html>
@@ -205,7 +205,7 @@ export interface PlatformAlertEmailParams {
   actionLabel?: string;
 }
 
-/** Email d'alerte hors ligne — même contenu que la cloche in-app, avec lien direct. */
+/** Email d'alerte hors ligne - même contenu que la cloche in-app, avec lien direct. */
 export async function sendPlatformAlertEmail({
   email,
   firstName,
@@ -215,7 +215,7 @@ export async function sendPlatformAlertEmail({
   actionUrl,
   actionLabel = "Voir sur Epi'AI",
 }: PlatformAlertEmailParams) {
-  const subject = `[Epi'AI — ${category}] ${title}`;
+  const subject = `[Epi'AI - ${category}] ${title}`;
   const button = actionUrl
     ? `<a href="${actionUrl}" style="display:inline-block;background:#10b981;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;margin-top:16px;">${actionLabel}</a>`
     : '';
@@ -235,7 +235,7 @@ export async function sendPlatformAlertEmail({
           ${button}
         </div>
         <div style="padding:20px 32px;background:#18181b;text-align:center;">
-          <p style="margin:0;color:#52525b;font-size:12px;">Epi'AI — Tu reçois cet email car une activité t'a concerné sur la plateforme.</p>
+          <p style="margin:0;color:#52525b;font-size:12px;">Epi'AI - Tu reçois cet email car une activité t'a concerné sur la plateforme.</p>
         </div>
       </div>
     `,
@@ -264,13 +264,13 @@ export async function sendGenericEmail({ email, subject, html }: GenericEmailPar
 export async function sendMembershipRejectedEmail(email: string, firstName: string) {
   return sendGenericEmail({
     email,
-    subject: 'Candidature Epi\'AI — décision',
+    subject: 'Candidature Epi\'AI - décision',
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#27272a;color:#d4d4d8;">
         <h2 style="color:#fff;">Bonjour ${firstName},</h2>
         <p>Nous te remercions pour ta candidature à Epi'AI. Après examen, l'équipe a décidé de ne pas donner suite pour le moment.</p>
         <p>Tu peux renouveler ta candidature lors d'une prochaine session de recrutement.</p>
-        <p style="color:#71717a;font-size:12px;">Epi'AI — Epitech</p>
+        <p style="color:#71717a;font-size:12px;">Epi'AI - Epitech</p>
       </div>
     `,
   });

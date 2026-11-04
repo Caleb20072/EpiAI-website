@@ -22,7 +22,7 @@ export async function GET(
     const { id } = await params;
     const report = await getActivityAttendance(id);
 
-    // Enrich stored records with fresh Clerk data — fixes both new & existing bad records
+    // Enrich stored records with fresh Clerk data - fixes both new & existing bad records
     const allEntries = [...report.presentList, ...report.absentList];
     const userIds = [...new Set(allEntries.map((e) => e.userId))];
 
@@ -45,7 +45,7 @@ export async function GET(
         report.presentList = report.presentList.map(enrichEntry);
         report.absentList = report.absentList.map(enrichEntry);
       } catch (clerkErr) {
-        // If Clerk is unreachable, fall back to stored data — don't break the page
+        // If Clerk is unreachable, fall back to stored data - don't break the page
         console.warn('[attendance GET] Clerk enrichment failed, using stored data:', clerkErr);
       }
     }

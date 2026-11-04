@@ -282,7 +282,7 @@ export default function ResourceDetailPage() {
                 </Button>
               )}
 
-              {/* View File — visible si fichier uploadé (downloadable ou non) */}
+              {/* View File - visible si fichier uploadé (downloadable ou non) */}
               {hasUploadedFile && (
                 <Button onClick={handleViewFile} className="w-full" size="lg">
                   <Eye className="w-4 h-4" />
@@ -290,7 +290,7 @@ export default function ResourceDetailPage() {
                 </Button>
               )}
 
-              {/* Download — uniquement si isDownloadable */}
+              {/* Download - uniquement si isDownloadable */}
               {resource.isDownloadable && (hasUploadedFile || externalUrl) && (
                 <button
                   onClick={handleDownload}

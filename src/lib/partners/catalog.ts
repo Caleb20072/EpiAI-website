@@ -113,24 +113,24 @@ export const PARTNER_PROFILES: Record<string, PartnerProfile> = {
     linesTitleEn: 'Black Synapses, partner of Epi’AI',
     lines: [
       {
-        titleFr: 'Benin Data — l’IA en entreprise',
-        titleEn: 'Benin Data — AI for organisations',
+        titleFr: 'Benin Data - l’IA en entreprise',
+        titleEn: 'Benin Data - AI for organisations',
         textFr:
           'Basée à Cotonou, cette entité accompagne les organisations dans leur transformation numérique : ingénierie des données, solutions d’IA, analyse prédictive, vision par ordinateur, traitement du langage naturel, applications web et mobiles. Site : benindata.bj.',
         textEn:
           'Based in Cotonou, this entity supports organisations through digital transformation: data engineering, AI systems, predictive analytics, computer vision, NLP, and AI-powered web and mobile apps. Website: benindata.bj.',
       },
       {
-        titleFr: 'Racines & AW — recherche, incubation, talents',
-        titleEn: 'Racines & AW — research, incubation, talent',
+        titleFr: 'Racines & AW - recherche, incubation, talents',
+        titleEn: 'Racines & AW - research, incubation, talent',
         textFr:
           'Structure à but non lucratif : incubateur de startups, laboratoire Artificial Wisdom, et initiatives communautaires. Elle travaille une IA qui tient compte des langues, des valeurs et des contextes africains, et accompagne les jeunes vers des projets concrets.',
         textEn:
           'A not-for-profit arm: startup incubator, Artificial Wisdom research lab, and community initiatives. It designs AI that accounts for African languages, values and contexts, and helps young talent ship real projects.',
       },
       {
-        titleFr: 'Ventures — des projets qui deviennent des entreprises',
-        titleEn: 'Ventures — projects that become companies',
+        titleFr: 'Ventures - des projets qui deviennent des entreprises',
+        titleEn: 'Ventures - projects that become companies',
         textFr:
           'Les startups issues de l’incubateur, une fois autonomes : Tailleurie (confection sur mesure), Xixa (caisse et stocks pour petits commerçants), Kléounh (apprentissage par la synthèse de textes), plus des initiatives dans l’immobilier et la mode.',
         textEn:
@@ -160,9 +160,9 @@ export const PARTNER_PROFILES: Record<string, PartnerProfile> = {
       },
     ],
     closingFr:
-      'Stages, contenus, projets — et d’autres axes à ouvrir ensemble. blacksynapses.com · benindata.bj',
+      'Stages, contenus, projets - et d’autres axes à ouvrir ensemble. blacksynapses.com · benindata.bj',
     closingEn:
-      'Internships, content, projects — and more to open together. blacksynapses.com · benindata.bj',
+      'Internships, content, projects - and more to open together. blacksynapses.com · benindata.bj',
   },
 };
 

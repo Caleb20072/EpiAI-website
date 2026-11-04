@@ -9,7 +9,7 @@ interface FormShellProps {
   className?: string;
 }
 
-/** Standard form layout inside a Card — consistent padding & spacing */
+/** Standard form layout inside a Card - consistent padding & spacing */
 export function FormShell({ title, description, children, footer, className }: FormShellProps) {
   return (
     <Card className={cn('max-w-2xl', className)}>

@@ -24,7 +24,7 @@ export async function POST(
       );
     }
 
-    // Always fetch real user data from Clerk — never trust client-provided names/emails
+    // Always fetch real user data from Clerk - never trust client-provided names/emails
     const client = await clerkClient();
     const clerkUser = await client.users.getUser(userId);
     const userName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim()

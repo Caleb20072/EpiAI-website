@@ -1,4 +1,4 @@
-/** Cohesive role chips — neutral base + brand/amber only for senior levels (no rainbow). */
+/** Cohesive role chips - neutral base + brand/amber only for senior levels (no rainbow). */
 
 export function getRoleChipClass(level: number): string {
   if (level >= 8) {

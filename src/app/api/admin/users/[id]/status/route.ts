@@ -6,7 +6,7 @@ import type { MemberStatus } from '@prisma/client';
 
 const VALID_STATUSES: MemberStatus[] = ['active', 'pending', 'approved'];
 
-// PATCH /api/admin/users/[id]/status — valider fin de période d'essai, etc.
+// PATCH /api/admin/users/[id]/status - valider fin de période d'essai, etc.
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }

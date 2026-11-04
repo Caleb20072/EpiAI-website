@@ -355,7 +355,7 @@ iframe {
   .shadow-xl, .shadow-2xl { box-shadow: var(--shadow-md); }
   .product-shadow { box-shadow: var(--shadow-product); }
 
-  /* Bottom nav (~52px) + home indicator — keeps content above the fixed bar */
+  /* Bottom nav (~52px) + home indicator - keeps content above the fixed bar */
   .pb-mobile-nav {
     padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
   }
