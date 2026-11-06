@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     });
 
     let emailSent = false;
+    let emailError: string | null = null;
     try {
       await sendWelcomeEmail({
         email: normalizedEmail,
@@ -47,29 +48,24 @@ export async function POST(request: NextRequest) {
         password: newPassword,
       });
       emailSent = true;
-    } catch (emailError) {
-      console.error('[Resend credentials] Email failed:', resendErrorMessage(emailError));
-      return NextResponse.json({
-        success: true,
-        emailSent: false,
-        credentials: {
-          email: normalizedEmail,
-          password: newPassword,
-          note: resendErrorMessage(emailError),
-        },
-      });
+    } catch (err) {
+      emailError = resendErrorMessage(err);
+      console.error('[Resend credentials] Email failed:', emailError);
     }
 
+    // Toujours renvoyer le mot de passe à l'admin pour copie WhatsApp.
     return NextResponse.json({
       success: true,
       emailSent,
-      credentials: emailSent
-        ? null
-        : {
-            email: normalizedEmail,
-            password: newPassword,
-            note: "Email non envoyé - transmets ces identifiants manuellement (WhatsApp, etc.)",
-          },
+      emailError,
+      credentials: {
+        email: normalizedEmail,
+        password: newPassword,
+        note: emailSent
+          ? "Email renvoyé. Tu peux aussi copier ces identifiants pour WhatsApp."
+          : emailError ||
+            "Email non envoyé - transmets ces identifiants manuellement (WhatsApp, etc.)",
+      },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Erreur serveur';

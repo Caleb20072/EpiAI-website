@@ -69,12 +69,17 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
         throw new Error(data.error || 'Failed to approve application');
       }
 
-      if (data.credentials) {
+      if (data.credentials?.password) {
         setCredentialsModal({
-          email: data.credentials.email,
+          email: data.credentials.email || application.email,
           password: data.credentials.password,
-          emailSent: false,
-          note: data.emailError || data.credentials.note,
+          emailSent: Boolean(data.emailSent),
+          note:
+            data.credentials.note ||
+            data.emailError ||
+            (data.emailSent
+              ? 'Email envoyé. Tu peux aussi copier les identifiants ci-dessous.'
+              : "L'email n'a pas pu être envoyé. Copie les identifiants ci-dessous."),
         });
       } else if (data.emailSent === false) {
         setCredentialsModal({
@@ -88,7 +93,7 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
           email: application.email,
           password: '',
           emailSent: true,
-          note: 'Email envoyé avec succès.',
+          note: 'Email envoyé. Si le candidat ne le reçoit pas, utilise « Renvoyer identifiants » pour afficher un mot de passe à copier.',
         });
       }
 
@@ -141,19 +146,25 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Échec du renvoi');
 
-      if (data.credentials) {
+      if (data.credentials?.password) {
         setCredentialsModal({
-          email: data.credentials.email,
+          email: data.credentials.email || application.email,
           password: data.credentials.password,
-          emailSent: false,
-          note: data.credentials.note,
+          emailSent: Boolean(data.emailSent),
+          note:
+            data.credentials.note ||
+            (data.emailSent
+              ? 'Email renvoyé. Tu peux aussi copier les identifiants pour WhatsApp.'
+              : 'Email non parti - copie les identifiants ci-dessous.'),
         });
       } else {
         setCredentialsModal({
           email: application.email,
           password: '',
-          emailSent: true,
-          note: 'Email envoyé avec succès.',
+          emailSent: Boolean(data.emailSent),
+          note: data.emailSent
+            ? 'Email renvoyé. Si rien n’arrive, réessaie dans un instant.'
+            : data.error || 'Impossible d’obtenir les identifiants.',
         });
       }
     } catch (err: unknown) {
@@ -353,35 +364,60 @@ export function ApplicationCard({ application, locale, onUpdate }: ApplicationCa
         open={!!credentialsModal}
         onClose={() => setCredentialsModal(null)}
         title={
-          credentialsModal?.emailSent ? 'Email envoyé' : 'Identifiants de connexion'
+          credentialsModal?.emailSent
+            ? 'Email envoyé - identifiants'
+            : 'Identifiants de connexion'
         }
         borderClassName="border-amber-500/30"
       >
-        {credentialsModal?.note && (
-          <p className="text-amber-400/90 text-sm mb-4">{credentialsModal.note}</p>
-        )}
+        {credentialsModal?.note ? (
+          <p className="mb-4 text-sm text-amber-400/90">{credentialsModal.note}</p>
+        ) : null}
         {credentialsModal?.password ? (
-          <div className="p-4 rounded-xl bg-card space-y-2 text-sm font-mono">
-            <p className="text-secondary">
-              <span className="text-muted">Email :</span> {credentialsModal.email}
-            </p>
-            <p className="text-secondary">
-              <span className="text-muted">Mot de passe :</span> {credentialsModal.password}
-            </p>
+          <div className="space-y-3">
+            <div className="space-y-2 rounded-xl bg-card p-4 font-mono text-sm">
+              <p className="text-secondary">
+                <span className="text-muted">Email :</span> {credentialsModal.email}
+              </p>
+              <p className="text-secondary">
+                <span className="text-muted">Mot de passe :</span> {credentialsModal.password}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="inline-flex min-h-10 cursor-pointer items-center rounded-xl bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-500"
+                onClick={() => {
+                  const text = `Epi'AI - connexion\nEmail : ${credentialsModal.email}\nMot de passe : ${credentialsModal.password}\nLien : https://epiai.eu/fr/sign-in\n(Change ton mot de passe à la 1re connexion.)`;
+                  void navigator.clipboard.writeText(text);
+                }}
+              >
+                Copier pour WhatsApp
+              </button>
+              <button
+                type="button"
+                className="inline-flex min-h-10 cursor-pointer items-center rounded-xl border border-default bg-card px-4 text-sm font-medium text-primary hover:bg-card-muted"
+                onClick={() => {
+                  void navigator.clipboard.writeText(credentialsModal.password);
+                }}
+              >
+                Copier le mot de passe
+              </button>
+            </div>
           </div>
         ) : credentialsModal?.emailSent ? (
-          <p className="text-secondary text-sm">
-            Le membre devrait recevoir un email sous peu. Vérifie aussi les spams.
+          <p className="text-sm text-secondary">
+            Le membre devrait recevoir un email sous peu. Vérifie aussi les spams. Utilise « Renvoyer
+            identifiants » pour afficher un mot de passe à copier.
           </p>
         ) : null}
-        <p className="text-muted text-xs mt-4">
-          Transmets ces infos par WhatsApp si l&apos;email ne part pas. Le membre devra changer son
-          mot de passe à la première connexion.
+        <p className="mt-4 text-xs text-muted">
+          Le membre devra changer son mot de passe à la première connexion.
         </p>
         <button
           type="button"
           onClick={() => setCredentialsModal(null)}
-          className="mt-4 w-full px-4 py-2 rounded-xl bg-card-muted text-primary font-medium cursor-pointer hover:bg-white/15 transition-colors"
+          className="mt-4 w-full cursor-pointer rounded-xl bg-card-muted px-4 py-2 font-medium text-primary transition-colors hover:bg-white/15"
         >
           Fermer
         </button>

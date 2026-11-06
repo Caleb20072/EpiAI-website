@@ -664,7 +664,26 @@ function InterviewsPanel({ fr }: { fr: boolean }) {
     setBusy(false);
     if (!res.ok) setMessage(json.error);
     else {
-      setMessage(json.admitted ? (fr ? 'Membre créé, identifiants envoyés.' : 'Member created, credentials sent.') : fr ? 'Enregistré.' : 'Saved.');
+      if (json.admitted && json.credentials?.password) {
+        const cred = json.credentials as { email: string; password: string; note?: string };
+        const text = `Epi'AI - connexion\nEmail : ${cred.email}\nMot de passe : ${cred.password}\nLien : https://epiai.eu/fr/sign-in`;
+        void navigator.clipboard.writeText(text).catch(() => undefined);
+        setMessage(
+          fr
+            ? `Membre créé. ${json.emailSent ? 'Email envoyé.' : 'Email non parti.'} Identifiants copiés : ${cred.email} / ${cred.password}`
+            : `Member created. ${json.emailSent ? 'Email sent.' : 'Email failed.'} Credentials copied: ${cred.email} / ${cred.password}`,
+        );
+      } else {
+        setMessage(
+          json.admitted
+            ? fr
+              ? 'Membre créé, identifiants envoyés.'
+              : 'Member created, credentials sent.'
+            : fr
+              ? 'Enregistré.'
+              : 'Saved.',
+        );
+      }
       setOpenId(null);
       await reload();
     }

@@ -85,12 +85,15 @@ export async function admitApplicationToMembership(params: {
     accountId: clerkUser.id,
     emailSent: emailSentSuccessfully,
     emailError,
-    credentials: emailSentSuccessfully
-      ? null
-      : {
-          email: params.email,
-          password: generatedPassword,
-          note: emailError || 'Email failed to send. User must use these credentials to log in.',
-        },
+    // Toujours renvoyer le mot de passe à l'admin : pour WhatsApp si le mail
+    // n'arrive pas (spam) ou si Resend échoue.
+    credentials: {
+      email: params.email,
+      password: generatedPassword,
+      note: emailSentSuccessfully
+        ? "Email de bienvenue envoyé. Tu peux aussi copier ces identifiants pour WhatsApp si besoin."
+        : emailError ||
+          "Email non envoyé. Copie ces identifiants et envoie-les au candidat (WhatsApp, etc.).",
+    },
   };
 }
