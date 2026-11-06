@@ -30,11 +30,25 @@ export async function POST(
     return NextResponse.json({ error: 'Titre et date de début requis' }, { status: 400 });
   }
 
+  let pdfUrl: string | undefined;
+  const rawUrl = typeof body.pdfUrl === 'string' ? body.pdfUrl.trim() : '';
+  if (rawUrl) {
+    try {
+      const parsed = new URL(rawUrl);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        return NextResponse.json({ error: 'Le lien du sujet doit être http(s)' }, { status: 400 });
+      }
+      pdfUrl = parsed.toString();
+    } catch {
+      return NextResponse.json({ error: 'Lien du sujet invalide' }, { status: 400 });
+    }
+  }
+
   const project = await createModuleProject({
     moduleId: id,
     title: body.title,
     description: body.description || '',
-    pdfUrl: body.pdfUrl,
+    pdfUrl,
     startsAt: body.startsAt,
     createdBy: userId,
   });

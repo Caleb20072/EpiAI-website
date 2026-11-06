@@ -128,7 +128,7 @@ function MaterialList({
             </div>
             {item.kind === 'file' && (
               <a href={`/api/modules/materials/${item.id}`} className="text-sm text-brand-500 underline" target="_blank" rel="noreferrer">
-                {fr ? 'Ouvrir' : 'Open'} {item.fileName || 'PDF'}
+                {fr ? 'Ouvrir' : 'Open'} {item.fileName || (fr ? 'fichier' : 'file')}
               </a>
             )}
             {item.kind !== 'file' && item.url && !embed && (
@@ -167,10 +167,12 @@ export default function ModuleDetailPage() {
   const [enrollName, setEnrollName] = useState('');
   const [enrollKey, setEnrollKey] = useState(0);
   const [myGithub, setMyGithub] = useState('');
-  const [project, setProject] = useState({ title: '', description: '', startsAt: '' });
+  const [project, setProject] = useState({ title: '', description: '', startsAt: '', docUrl: '' });
   const [projectFile, setProjectFile] = useState<File | null>(null);
   const [resource, setResource] = useState({ title: '', kind: 'link', url: '' });
   const [resourceFile, setResourceFile] = useState<File | null>(null);
+  const [projectExtra, setProjectExtra] = useState<Record<string, { kind: 'file' | 'link'; title: string; url: string }>>({});
+  const [projectExtraFile, setProjectExtraFile] = useState<Record<string, File | null>>({});
   const [activity, setActivity] = useState({ title: '', description: '', date: '', location: '' });
   const [leadGithub, setLeadGithub] = useState('');
   const [lead2Github, setLead2Github] = useState('');
@@ -630,13 +632,15 @@ export default function ModuleDetailPage() {
             >
               <option value="link">{fr ? 'Lien' : 'Link'}</option>
               <option value="video">{fr ? 'Vidéo' : 'Video'}</option>
-              <option value="file">{fr ? 'Fichier (PDF, document, image)' : 'File (PDF, document, image)'}</option>
+              <option value="file">
+                {fr ? 'Fichier (PDF, HTML, document, image…)' : 'File (PDF, HTML, document, image…)'}
+              </option>
             </select>
             {resource.kind === 'file' ? (
               <input
                 required
                 type="file"
-                accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.zip,.txt"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.zip,.txt,.html,.htm"
                 onChange={(e) => setResourceFile(e.target.files?.[0] || null)}
                 className="text-sm"
               />
@@ -644,7 +648,13 @@ export default function ModuleDetailPage() {
               <input
                 required
                 type="url"
-                placeholder={resource.kind === 'video' ? 'https://youtube.com/...' : 'https://'}
+                placeholder={
+                  resource.kind === 'video'
+                    ? 'https://youtube.com/...'
+                    : fr
+                      ? 'https://drive.google.com/... ou autre lien'
+                      : 'https://drive.google.com/... or any link'
+                }
                 value={resource.url}
                 onChange={(e) => setResource({ ...resource, url: e.target.value })}
                 className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
@@ -666,11 +676,11 @@ export default function ModuleDetailPage() {
                 </span>
               </div>
               <p className="text-sm text-secondary mt-1 whitespace-pre-wrap">{p.description}</p>
-              {p.pdfUrl && (
-                <a href={p.pdfUrl} className="text-sm text-brand-500 underline" target="_blank" rel="noreferrer">
-                  PDF
+              {p.pdfUrl ? (
+                <a href={p.pdfUrl} className="text-sm text-brand-500 underline break-all" target="_blank" rel="noreferrer">
+                  {fr ? 'Ouvrir le sujet / document' : 'Open brief / document'}
                 </a>
-              )}
+              ) : null}
               <div className="mt-3">
                 <MaterialList
                   items={(mod.materials || []).filter((item) => item.projectId === p.id)}
@@ -679,24 +689,108 @@ export default function ModuleDetailPage() {
                   onDelete={(materialId) => void removeMaterial(materialId)}
                 />
               </div>
-              {mod.canManage && (
+              {mod.canManage ? (
                 <form
-                  className="mt-2 flex flex-wrap items-center gap-2"
+                  className="mt-3 grid gap-2 rounded-lg border border-dashed border-default p-3"
                   onSubmit={async (ev) => {
                     ev.preventDefault();
-                    const input = ev.currentTarget.elements.namedItem('pdf');
-                    const file = input instanceof HTMLInputElement ? input.files?.[0] : null;
-                    if (!file) return;
-                    const uploaded = await uploadFile(file, p.title, p.id);
-                    if (uploaded) ev.currentTarget.reset();
+                    const extra = projectExtra[p.id] || { kind: 'file' as const, title: '', url: '' };
+                    const title = extra.title.trim() || p.title;
+                    if (extra.kind === 'file') {
+                      const file = projectExtraFile[p.id];
+                      if (!file) {
+                        setError(fr ? 'Choisis un fichier.' : 'Choose a file.');
+                        return;
+                      }
+                      const uploaded = await uploadFile(file, title, p.id);
+                      if (uploaded) {
+                        setProjectExtra((prev) => ({ ...prev, [p.id]: { kind: 'file', title: '', url: '' } }));
+                        setProjectExtraFile((prev) => ({ ...prev, [p.id]: null }));
+                      }
+                      return;
+                    }
+                    if (!extra.url.trim()) {
+                      setError(fr ? 'Indique un lien http(s).' : 'Provide an http(s) link.');
+                      return;
+                    }
+                    const ok = await post(`/api/modules/${id}/materials`, {
+                      title,
+                      kind: 'link',
+                      url: extra.url.trim(),
+                      projectId: p.id,
+                    });
+                    if (ok.ok) {
+                      setProjectExtra((prev) => ({ ...prev, [p.id]: { kind: 'link', title: '', url: '' } }));
+                    }
                   }}
                 >
-                  <input name="pdf" type="file" accept=".pdf,application/pdf" className="text-xs" />
+                  <p className="text-xs font-medium text-secondary">
+                    {fr ? 'Ajouter un document au projet' : 'Add a document to this project'}
+                  </p>
+                  <select
+                    value={(projectExtra[p.id]?.kind || 'file')}
+                    onChange={(e) =>
+                      setProjectExtra((prev) => ({
+                        ...prev,
+                        [p.id]: {
+                          kind: e.target.value === 'link' ? 'link' : 'file',
+                          title: prev[p.id]?.title || '',
+                          url: prev[p.id]?.url || '',
+                        },
+                      }))
+                    }
+                    className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+                  >
+                    <option value="file">{fr ? 'Fichier (PDF, HTML…)' : 'File (PDF, HTML…)'}</option>
+                    <option value="link">{fr ? 'Lien (Drive, Notion…)' : 'Link (Drive, Notion…)'}</option>
+                  </select>
+                  <input
+                    placeholder={fr ? 'Titre (optionnel)' : 'Title (optional)'}
+                    value={projectExtra[p.id]?.title || ''}
+                    onChange={(e) =>
+                      setProjectExtra((prev) => ({
+                        ...prev,
+                        [p.id]: {
+                          kind: prev[p.id]?.kind || 'file',
+                          title: e.target.value,
+                          url: prev[p.id]?.url || '',
+                        },
+                      }))
+                    }
+                    className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+                  />
+                  {(projectExtra[p.id]?.kind || 'file') === 'file' ? (
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.zip,.txt,.html,.htm"
+                      onChange={(e) =>
+                        setProjectExtraFile((prev) => ({ ...prev, [p.id]: e.target.files?.[0] || null }))
+                      }
+                      className="text-xs"
+                    />
+                  ) : (
+                    <input
+                      type="url"
+                      placeholder="https://drive.google.com/..."
+                      value={projectExtra[p.id]?.url || ''}
+                      onChange={(e) =>
+                        setProjectExtra((prev) => ({
+                          ...prev,
+                          [p.id]: {
+                            kind: 'link',
+                            title: prev[p.id]?.title || '',
+                            url: e.target.value,
+                          },
+                        }))
+                      }
+                      className="rounded-lg border border-default bg-card px-3 py-2 text-sm"
+                    />
+                  )}
                   <Button type="submit" size="sm" variant="secondary">
-                    {fr ? 'Ajouter un PDF' : 'Add a PDF'}
+                    {fr ? 'Ajouter' : 'Add'}
                   </Button>
                 </form>
-              )}
+              ) : null}
               <p className="text-xs text-muted mt-2">
                 {p.submissions.length} {fr ? 'rendus' : 'submissions'} · {p.repos.length} repos
               </p>
@@ -726,24 +820,44 @@ export default function ModuleDetailPage() {
               ev.preventDefault();
               const title = project.title;
               const file = projectFile;
-              const ok = await post(`/api/modules/${id}/projects`, project);
+              const docUrl = project.docUrl.trim();
+              const ok = await post(`/api/modules/${id}/projects`, {
+                title: project.title,
+                description: project.description,
+                startsAt: project.startsAt,
+                pdfUrl: docUrl || undefined,
+              });
               if (!ok.ok) return;
               if (file && ok.data?.id) {
-                await uploadFile(file, title || ok.data.title || 'PDF', ok.data.id);
+                await uploadFile(file, title || ok.data.title || (fr ? 'Sujet' : 'Brief'), ok.data.id);
               }
-              setProject({ title: '', description: '', startsAt: '' });
+              setProject({ title: '', description: '', startsAt: '', docUrl: '' });
               setProjectFile(null);
             }}
           >
             <input required placeholder={fr ? 'Titre du projet' : 'Project title'} value={project.title} onChange={(e) => setProject({ ...project, title: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" />
             <textarea placeholder={fr ? 'Description' : 'Description'} value={project.description} onChange={(e) => setProject({ ...project, description: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" rows={3} />
             <label className="text-xs text-muted">
-              {fr ? 'PDF du sujet (6 Mo max)' : 'Project PDF (6 MB max)'}
+              {fr
+                ? 'Fichier du sujet (PDF, HTML, document… - 6 Mo max) - optionnel'
+                : 'Brief file (PDF, HTML, document… - 6 MB max) - optional'}
               <input
                 type="file"
-                accept=".pdf,application/pdf"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp,.zip,.txt,.html,.htm"
                 onChange={(e) => setProjectFile(e.target.files?.[0] || null)}
                 className="mt-1 block text-sm"
+              />
+            </label>
+            <label className="text-xs text-muted">
+              {fr
+                ? 'Ou lien vers le sujet (Google Drive, Notion, site…) - optionnel'
+                : 'Or link to the brief (Google Drive, Notion, site…) - optional'}
+              <input
+                type="url"
+                placeholder="https://drive.google.com/..."
+                value={project.docUrl}
+                onChange={(e) => setProject({ ...project, docUrl: e.target.value })}
+                className="mt-1 block w-full rounded-lg border border-default bg-card px-3 py-2 text-sm"
               />
             </label>
             <input required type="datetime-local" value={project.startsAt} onChange={(e) => setProject({ ...project, startsAt: e.target.value })} className="rounded-lg border border-default bg-card px-3 py-2 text-sm" />

@@ -13,11 +13,27 @@ const FILE_TYPES = new Set([
   'application/zip',
   'application/x-zip-compressed',
   'text/plain',
+  'text/html',
+  'application/xhtml+xml',
   'image/jpeg',
   'image/png',
   'image/webp',
 ]);
-const FILE_EXT = new Set(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'zip', 'txt', 'jpg', 'jpeg', 'png', 'webp']);
+const FILE_EXT = new Set([
+  'pdf',
+  'doc',
+  'docx',
+  'ppt',
+  'pptx',
+  'zip',
+  'txt',
+  'html',
+  'htm',
+  'jpg',
+  'jpeg',
+  'png',
+  'webp',
+]);
 
 function httpUrl(value: string) {
   try {
@@ -67,15 +83,29 @@ export async function POST(
       }
       const ext = file.name.split('.').pop()?.toLowerCase() || '';
       if (!FILE_EXT.has(ext) || (file.type && !FILE_TYPES.has(file.type) && file.type !== 'application/octet-stream')) {
-        return NextResponse.json({ error: 'Type de fichier non accepté. PDF, document, image ou zip.' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Type de fichier non accepté. PDF, document, HTML, image ou zip.' },
+          { status: 400 },
+        );
       }
+      const mimeFallback: Record<string, string> = {
+        html: 'text/html',
+        htm: 'text/html',
+        pdf: 'application/pdf',
+        txt: 'text/plain',
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        webp: 'image/webp',
+        zip: 'application/zip',
+      };
       const material = await addModuleMaterial({
         moduleId: id,
         projectId,
         kind: 'file',
         title,
         fileName: file.name.replace(/[^\w.\- ()]/g, '_').slice(0, 180),
-        mimeType: file.type || 'application/octet-stream',
+        mimeType: file.type || mimeFallback[ext] || 'application/octet-stream',
         fileSize: file.size,
         bytes: Buffer.from(await file.arrayBuffer()),
         createdBy: userId,

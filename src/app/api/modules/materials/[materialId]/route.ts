@@ -16,7 +16,8 @@ export async function GET(
 
   const filename = (material.fileName || 'document').replace(/["\r\n]/g, '');
   const mime = material.mimeType || 'application/octet-stream';
-  const inline = mime === 'application/pdf' || mime.startsWith('image/');
+  const isHtml = mime === 'text/html' || mime === 'application/xhtml+xml';
+  const inline = mime === 'application/pdf' || mime.startsWith('image/') || isHtml;
   const body = new Uint8Array(material.bytes);
 
   return new NextResponse(body, {
@@ -26,6 +27,14 @@ export async function GET(
       'Content-Disposition': `${inline ? 'inline' : 'attachment'}; filename="${filename}"`,
       'Content-Length': String(body.byteLength),
       'Cache-Control': 'private, no-store',
+      // HTML pédagogique : ouvrir dans le navigateur sans scripts tiers.
+      ...(isHtml
+        ? {
+            'Content-Security-Policy':
+              "default-src 'none'; style-src 'unsafe-inline'; img-src data: https: http:; font-src data: https: http:; base-uri 'none'; form-action 'none'; frame-ancestors 'self'",
+            'X-Content-Type-Options': 'nosniff',
+          }
+        : {}),
     },
   });
 }
